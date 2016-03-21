@@ -5,4 +5,5 @@
     <dimen name="drawer_width">300dp</dimen>
     <dimen name="timer_text_size">48sp</dimen>
     <dimen name="timer_padding">16dp</dimen>
+    <dimen name="drawer_item_padding">16dp</dimen>
 </resources>

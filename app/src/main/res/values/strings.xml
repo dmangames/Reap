@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Reap</string>
+    <string name="today">Today</string>
+    <string name="extras">Extras</string>
+    <string name="friends">Friends</string>
+    <string name="milestones">Milestones</string>
+    <string name="history">History</string>
 </resources>
