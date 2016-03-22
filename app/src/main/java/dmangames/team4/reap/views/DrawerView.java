@@ -19,8 +19,7 @@ import dmangames.team4.reap.R;
  * Created by brian on 3/21/16.
  */
 public class DrawerView extends FrameLayout {
-    @Bind(R.id.lv_drawer_list)
-    ListView optionsView;
+    @Bind(R.id.lv_drawer_list) ListView optionsView;
 
     private DrawerListener listener;
     private ArrayAdapter<String> adapter;
@@ -35,7 +34,7 @@ public class DrawerView extends FrameLayout {
         options = new ArrayList<>();
         for (Option o : Option.values())
             options.add(context.getString(o.id));
-        adapter = new ArrayAdapter<String>(context, R.layout.item_drawer, options);
+        adapter = new ArrayAdapter<>(context, R.layout.item_drawer, options);
         optionsView.setAdapter(adapter);
     }
 
@@ -43,8 +42,7 @@ public class DrawerView extends FrameLayout {
         this.listener = listener;
     }
 
-    @OnItemClick(R.id.lv_drawer_list)
-    void optionsItemSelected(int position) {
+    @OnItemClick(R.id.lv_drawer_list) void optionsItemSelected(int position) {
         if (listener == null)
             throw new NullPointerException("DrawerListener was never set");
         listener.switchTo(Option.values()[position]);

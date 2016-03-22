@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.annotations.Layout;
 
+import static java.lang.String.format;
+
 /**
  * Base {@link Fragment Fragment} class for Reap. Handles view binding via ButterKnife. All
  * classes which extend this class require a {@link Layout Layout} annotation.
@@ -18,14 +20,14 @@ import dmangames.team4.reap.annotations.Layout;
  */
 public class ReapFragment extends Fragment {
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        Layout l = this.getClass().getAnnotation(Layout.class);
-        if (l == null) {
+    public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
+        Class<? extends ReapFragment> cls = getClass();
+        if (!cls.isAnnotationPresent(Layout.class)) {
             throw new NoSuchFieldError(
-                    "Fragment " + getClass().getName() + " is missing @Layout specification");
+                    format("Fragment %s is missing @Layout specification", cls.getName()));
         }
 
-        View view = inflater.inflate(l.value(), container, false);
+        View view = inf.inflate(cls.getAnnotation(Layout.class).value(), parent, false);
         ButterKnife.bind(this, view);
         return view;
     }
