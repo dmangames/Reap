@@ -16,9 +16,26 @@ import butterknife.OnItemClick;
 import dmangames.team4.reap.R;
 
 /**
- * Created by brian on 3/21/16.
+ * Drawer view of the application.
+ *
+ * @author Brian Wang
+ * @version 3/21/16
  */
 public class DrawerView extends FrameLayout {
+    public enum Option {
+        TODAY(R.string.today),
+        HISTORY(R.string.history),
+        MILESTONES(R.string.milestones),
+        FRIENDS(R.string.friends),
+        EXTRAS(R.string.extras);
+
+        public final int id;
+
+        Option(int id) {
+            this.id = id;
+        }
+    }
+
     @Bind(R.id.lv_drawer_list) ListView optionsView;
 
     private DrawerListener listener;
@@ -46,20 +63,6 @@ public class DrawerView extends FrameLayout {
         if (listener == null)
             throw new NullPointerException("DrawerListener was never set");
         listener.switchTo(Option.values()[position]);
-    }
-
-    public enum Option {
-        TODAY(R.string.today),
-        HISTORY(R.string.history),
-        MILESTONES(R.string.milestones),
-        FRIENDS(R.string.friends),
-        EXTRAS(R.string.extras);
-
-        public final int id;
-
-        Option(int id) {
-            this.id = id;
-        }
     }
 
     public interface DrawerListener {

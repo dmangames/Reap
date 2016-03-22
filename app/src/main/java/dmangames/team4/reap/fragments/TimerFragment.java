@@ -20,7 +20,10 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
 
 /**
- * Created by brian on 3/21/16.
+ * Timer fragment.
+ *
+ * @author Brian Wang
+ * @version 3/21/16
  */
 @Layout(R.layout.fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
@@ -35,7 +38,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private SecondTimer timer;
 
     public static TimerFragment newInstance(Type timerType, long seconds,
-                                     @ColorRes int colorRes, @DrawableRes int iconRes) {
+                                            @ColorRes int colorRes, @DrawableRes int iconRes) {
         Bundle args = new Bundle(4);
         args.putBoolean(KEY_TIMER_TYPE, timerType.id);
         args.putLong(KEY_TIMER_SECONDS, seconds);

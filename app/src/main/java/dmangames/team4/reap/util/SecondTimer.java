@@ -1,7 +1,5 @@
 package dmangames.team4.reap.util;
 
-import android.app.Activity;
-import android.content.Context;
 import android.os.Handler;
 import android.os.Looper;
 
@@ -11,14 +9,22 @@ import java.util.TimerTask;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 
 /**
- * Created by brian on 3/21/16.
+ * Timer class implemented from {@link Timer Timer}. Calls a method on the UI thread
+ * every second, and can accommodate count up or down modes.
+ *
+ * @author Brian Wang
+ * @version 3/21/16
  */
 public class SecondTimer extends Timer {
-    private Type type;
-    private long total;
-    private long current;
-    private SecondListener listener;
-
+    public final Runnable finish = new Runnable() {
+        @Override public void run() {
+            listener.onFinish();
+        }
+    }, tick = new Runnable() {
+        @Override public void run() {
+            listener.onTick(current);
+        }
+    };
     private final TimerTask upTask = new TimerTask() {
         @Override public void run() {
             if (current >= total) {
@@ -41,17 +47,12 @@ public class SecondTimer extends Timer {
         }
     };
 
-    public Runnable finish = new Runnable() {
-        @Override public void run() {
-            listener.onFinish();
-        }
-    }, tick = new Runnable() {
-        @Override public void run() {
-            listener.onTick(current);
-        }
-    };
+    private final Handler handler;
+    private final Type type;
+    private final long total;
+    private final SecondListener listener;
 
-    Handler handler;
+    private long current;
 
     public SecondTimer(Type type, long seconds, SecondListener listener) {
         this.type = type;
