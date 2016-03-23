@@ -25,5 +25,6 @@ dependencies {
 
     // Butterknife
     compile 'com.jakewharton:butterknife:7.0.1'
-
+    // Blurry
+    compile 'jp.wasabeef:blurry:2.0.0'
 }
