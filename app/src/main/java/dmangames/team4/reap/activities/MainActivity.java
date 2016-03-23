@@ -2,8 +2,14 @@ package dmangames.team4.reap.activities;
 
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
+import org.json.JSONObject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -20,13 +26,16 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
     @Bind(R.id.dv_main_drawer) DrawerView drawer;
     @Bind(R.id.dl_main_drawerlayout) DrawerLayout layout;
 
+    private ActionBarDrawerToggle drawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        TimerFragment fragment = TimerFragment.newInstance(SecondTimer.Type.COUNT_UP, 10, R.color.timer_blue, android.R.drawable.btn_default);
+        TimerFragment fragment = TimerFragment.newInstance(SecondTimer.Type.COUNT_UP,
+                3600, R.color.timer_blue, android.R.drawable.btn_default);
 
         getFragmentManager()
                 .beginTransaction()

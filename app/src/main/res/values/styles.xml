@@ -9,6 +9,7 @@
     </style>
 
     <style name="Theme.Reap" parent="AppTheme"/>
+
     <style name="TextAppearance.Reap" parent="TextAppearance.AppCompat"/>
 
     <style name="Theme.Reap.Timer">
@@ -23,6 +24,16 @@
     <style name="TextAppearance.Reap.Timer">
         <item name="android:textSize">@dimen/timer_text_size</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Theme.Reap.PauseOverlay.Button" parent="Theme.Reap">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">50</item>
+        <item name="android:background">@drawable/clickable_grey</item>
+        <item name="android:paddingTop">@dimen/pause_padding</item>
+        <item name="android:paddingBottom">@dimen/pause_padding</item>
+        <item name="android:clickable">true</item>
     </style>
 
     <style name="TextAppearance.Reap.ListItem">

@@ -6,10 +6,12 @@ import android.support.annotation.DrawableRes;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.util.SecondTimer;
@@ -32,8 +34,12 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_COLOR = "color";
     public static final String KEY_ICON = "icon";
 
+    @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
     @Bind(R.id.iv_timer_icon) ImageView iconView;
+
+    @Bind(R.id.ol_timer_pause) View pContainer;
+    @Bind(R.id.tv_poverlay_timer) TextView pTimer;
 
     private SecondTimer timer;
 
@@ -75,5 +81,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Override public void onFinish() {
         //TODO
+    }
+
+    @OnClick(R.id.iv_poverlay_pause) void pauseTimer() {
+
+    }
+
+    @OnClick(R.id.iv_poverlay_switch) void switchActivity() {
+
     }
 }
