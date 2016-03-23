@@ -8,8 +8,7 @@ import android.util.Log;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
-import dmangames.team4.reap.fragments.TimerFragment;
-import dmangames.team4.reap.util.SecondTimer;
+import dmangames.team4.reap.fragments.ChooseActivityFragment;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
@@ -26,8 +25,8 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        TimerFragment fragment = TimerFragment.newInstance(SecondTimer.Type.COUNT_UP, 10, R.color.timer_blue, android.R.drawable.btn_default);
-
+//        TimerFragment fragment = TimerFragment.newInstance(SecondTimer.Type.COUNT_UP, 10, R.color.timer_blue, android.R.drawable.btn_default);
+        ChooseActivityFragment fragment = new ChooseActivityFragment();
         getFragmentManager()
                 .beginTransaction()
                 .add(R.id.fl_main_container, fragment)
