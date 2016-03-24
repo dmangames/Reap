@@ -6,4 +6,5 @@
     <dimen name="timer_text_size">48sp</dimen>
     <dimen name="timer_padding">16dp</dimen>
     <dimen name="drawer_item_padding">16dp</dimen>
+    <dimen name="pause_padding">24dp</dimen>
 </resources>

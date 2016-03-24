@@ -8,8 +8,8 @@ android {
         applicationId "dmangames.team4.reap"
         minSdkVersion 15
         targetSdkVersion 22
-        versionCode 1
-        versionName "1.0"
+        versionCode 10000
+        versionName "1.0.0"
     }
     buildTypes {
         release {
@@ -22,10 +22,14 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    // Butterknife
-    
-
+    // Android support libraries
     compile 'com.android.support:appcompat-v7:23.2.1'
+    compile 'com.android.support:recyclerview-v7:23.2.1'
+
+    // Butterknife
     compile 'com.jakewharton:butterknife:7.0.1'
-    compile 'com.android.support:support-v4:23.2.1'
+    // Blurry
+    compile 'jp.wasabeef:blurry:2.0.0'
+    // GSON
+    compile 'com.google.code.gson:gson:2.6.2'
 }
