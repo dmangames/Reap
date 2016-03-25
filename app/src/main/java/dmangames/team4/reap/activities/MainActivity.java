@@ -34,8 +34,7 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        TimerFragment fragment = TimerFragment.newInstance(SecondTimer.Type.COUNT_UP,
-                3600, R.color.timer_blue, android.R.drawable.btn_default);
+        TimerFragment fragment = TimerFragment.newInstance();
 
         getFragmentManager()
                 .beginTransaction()

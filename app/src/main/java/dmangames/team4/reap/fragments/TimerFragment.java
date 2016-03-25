@@ -16,6 +16,8 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.util.SecondTimer;
 
+import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
+import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
 import static dmangames.team4.reap.util.SecondTimer.Type;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
@@ -29,10 +31,33 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
  */
 @Layout(R.layout.fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
-    public static final String KEY_TIMER_SECONDS = "length";
-    public static final String KEY_TIMER_TYPE = "type";
-    public static final String KEY_TIMER_COLOR = "color";
-    public static final String KEY_ICON = "icon";
+    public enum State {
+        NO_ACTIVITY(0),
+        CHOOSE_TIMER(1),
+        POMODORO(2),
+        COUNT_UP(3);
+
+        public final int id;
+
+        State(int id) {
+            this.id = id;
+        }
+
+        public State fromInt(int id) {
+            if (values()[id].id == id)
+                return values()[id];
+            for (State s : values()) {
+                if (s.id == id)
+                    return s;
+            }
+            throw new IllegalArgumentException("Unknown id!");
+        }
+    }
+
+    public static final String KEY_TIMER_STATE = "timer.state";
+    public static final String KEY_TIMER_COLOR = "timer.color";
+    public static final String KEY_TIMER_SECONDS = "timer.seconds";
+    public static final String KEY_TIMER_ICON = "timer.icon";
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
@@ -41,16 +66,27 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Bind(R.id.ol_timer_pause) View pContainer;
     @Bind(R.id.tv_poverlay_timer) TextView pTimer;
 
+    private State state;
     private SecondTimer timer;
 
-    public static TimerFragment newInstance(Type timerType, long seconds,
-                                            @ColorRes int colorRes, @DrawableRes int iconRes) {
-        Bundle args = new Bundle(4);
-        args.putBoolean(KEY_TIMER_TYPE, timerType.id);
-        args.putLong(KEY_TIMER_SECONDS, seconds);
-        args.putInt(KEY_TIMER_COLOR, colorRes);
-        args.putInt(KEY_ICON, iconRes);
+    public static TimerFragment newInstance() {
+        Bundle args = new Bundle(1);
+        args.putInt(KEY_TIMER_STATE, NO_ACTIVITY.id);
+        return getFragmentWithArgs(args);
+    }
 
+    public static TimerFragment newInstance(State state, @ColorRes int colorRes,
+                                            @DrawableRes int iconRes, long seconds) {
+        Bundle args = new Bundle(3);
+        args.putInt(KEY_TIMER_STATE, state.id);
+        args.putInt(KEY_TIMER_COLOR, colorRes);
+        args.putInt(KEY_TIMER_ICON, iconRes);
+        args.putLong(KEY_TIMER_SECONDS, seconds);
+
+        return getFragmentWithArgs(args);
+    }
+
+    private static TimerFragment getFragmentWithArgs(Bundle args) {
         TimerFragment fragment = new TimerFragment();
         fragment.setArguments(args);
         return fragment;
@@ -61,16 +97,22 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         View view = super.onCreateView(inf, parent, savedInstanceState);
 
         Bundle args = getArguments();
-        Type timerType = args.getBoolean(KEY_TIMER_TYPE) == COUNT_DOWN.id ? COUNT_DOWN : COUNT_UP;
-        long timerSeconds = args.getLong(KEY_TIMER_SECONDS);
-        int timerColorRes = args.getInt(KEY_TIMER_COLOR);
-        int timerIconRes = args.getInt(KEY_ICON);
+        state = state.fromInt(args.getInt(KEY_TIMER_STATE));
+        if (state == NO_ACTIVITY) {
+            timerView.setText(getString(R.string.no_timer));
+        } else {
+            int color = getResources().getColor(args.getInt(KEY_TIMER_COLOR));
+            long seconds = args.getLong(KEY_TIMER_SECONDS);
 
-        timerView.setTextColor(getResources().getColor(timerColorRes));
-        iconView.setImageResource(timerIconRes);
+            timerView.setTextColor(color);
 
-        timer = new SecondTimer(timerType, timerSeconds, this);
-        timer.start();
+            if (state == POMODORO)
+                timer = new SecondTimer(COUNT_DOWN, seconds, this);
+            else timer = new SecondTimer(COUNT_UP, seconds, this);
+
+            iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
+            timer.start();
+        }
 
         return view;
     }
