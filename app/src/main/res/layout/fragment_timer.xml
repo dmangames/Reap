@@ -11,14 +11,14 @@
         style="@style/Theme.Reap.Timer"
         tools:text="00:00"/>
 
+
     <ImageView
         android:id="@+id/iv_timer_icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="96dp"
+        android:layout_height="96dp"
         android:layout_gravity="center"
         android:contentDescription="@string/icon_content_description"
-        android:scaleType="centerInside"
-        android:src="@drawable/no_activity_icon"/>
+        android:scaleType="centerInside" />
 
     <!-- TODO Andrew's custom view -->
 
