@@ -90,4 +90,14 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @OnClick(R.id.iv_poverlay_switch) void switchActivity() {
 
     }
+
+    @OnClick(R.id.iv_timer_icon) void openChooseActivityScreen() {
+        ChooseActivityFragment fragment = ChooseActivityFragment.newInstance();
+
+        getFragmentManager().popBackStack();
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.fl_main_container, fragment)
+                .commit();
+    }
 }
