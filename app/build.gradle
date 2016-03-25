@@ -32,4 +32,6 @@ dependencies {
     compile 'jp.wasabeef:blurry:2.0.0'
     // GSON
     compile 'com.google.code.gson:gson:2.6.2'
+    // Event Bus
+    compile 'org.greenrobot:eventbus:3.0.0'
 }

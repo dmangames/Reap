@@ -6,7 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.events.ChooseActivityEvent;
+import dmangames.team4.reap.objects.ActivityObject;
 
 /**
  * Fragment allowing user to pick current activity

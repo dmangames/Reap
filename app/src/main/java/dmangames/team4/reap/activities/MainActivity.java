@@ -9,11 +9,13 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
+import org.greenrobot.eventbus.EventBus;
 import org.json.JSONObject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.ReapApplication;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.DrawerView;
@@ -67,5 +69,13 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
         }
 
         layout.closeDrawer(drawer);
+    }
+
+    public EventBus bus() {
+        return ((ReapApplication) getApplication()).bus();
+    }
+
+    public void postToBus(Object obj) {
+        bus().post(obj);
     }
 }

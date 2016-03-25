@@ -1,5 +1,6 @@
 package dmangames.team4.reap.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -10,10 +11,13 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.Subscribe;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.events.ChooseActivityEvent;
 import dmangames.team4.reap.util.SecondTimer;
 
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
@@ -43,7 +47,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             this.id = id;
         }
 
-        public State fromInt(int id) {
+        public static State fromInt(int id) {
             if (values()[id].id == id)
                 return values()[id];
             for (State s : values()) {
@@ -58,6 +62,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_COLOR = "timer.color";
     public static final String KEY_TIMER_SECONDS = "timer.seconds";
     public static final String KEY_TIMER_ICON = "timer.icon";
+
+    public static final int CODE_REQUEST_ACTIVITY = 246;
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
@@ -97,9 +103,16 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         View view = super.onCreateView(inf, parent, savedInstanceState);
 
         Bundle args = getArguments();
-        state = state.fromInt(args.getInt(KEY_TIMER_STATE));
+        state = State.fromInt(args.getInt(KEY_TIMER_STATE));
         if (state == NO_ACTIVITY) {
             timerView.setText(getString(R.string.no_timer));
+            iconView.setImageResource(R.drawable.no_activity_icon);
+
+            iconView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View v) {
+
+                }
+            });
         } else {
             int color = getResources().getColor(args.getInt(KEY_TIMER_COLOR));
             long seconds = args.getLong(KEY_TIMER_SECONDS);
@@ -115,6 +128,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
 
         return view;
+    }
+
+    @Subscribe public void onActivityChosen(ChooseActivityEvent event) {
+        
     }
 
     @Override public void onTick(long secs) {
