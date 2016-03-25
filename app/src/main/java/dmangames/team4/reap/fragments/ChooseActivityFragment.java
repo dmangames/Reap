@@ -21,4 +21,12 @@ public class ChooseActivityFragment extends ReapFragment {
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
         return super.onCreateView(inf, parent, savedInstanceState);
     }
+
+    public static ChooseActivityFragment newInstance() {
+        Bundle args = new Bundle(0);
+
+        ChooseActivityFragment fragment = new ChooseActivityFragment();
+        fragment.setArguments(args);
+        return fragment;
+    }
 }
