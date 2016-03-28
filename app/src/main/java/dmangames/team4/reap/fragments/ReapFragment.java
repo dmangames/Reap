@@ -7,6 +7,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
+import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.Layout;
 
 import static java.lang.String.format;
@@ -27,8 +28,15 @@ public class ReapFragment extends Fragment {
                     format("Fragment %s is missing @Layout specification", cls.getName()));
         }
 
+        ((MainActivity) getActivity()).bus().register(this);
         View view = inf.inflate(cls.getAnnotation(Layout.class).value(), parent, false);
         ButterKnife.bind(this, view);
         return view;
+    }
+
+    @Override public void onStop() {
+        super.onStop();
+
+        ((MainActivity) getActivity()).bus().unregister(this);
     }
 }

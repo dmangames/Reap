@@ -63,8 +63,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_SECONDS = "timer.seconds";
     public static final String KEY_TIMER_ICON = "timer.icon";
 
-    public static final int CODE_REQUEST_ACTIVITY = 246;
-
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
     @Bind(R.id.iv_timer_icon) ImageView iconView;
@@ -83,7 +81,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     public static TimerFragment newInstance(State state, @ColorRes int colorRes,
                                             @DrawableRes int iconRes, long seconds) {
-        Bundle args = new Bundle(3);
+        Bundle args = new Bundle(4);
         args.putInt(KEY_TIMER_STATE, state.id);
         args.putInt(KEY_TIMER_COLOR, colorRes);
         args.putInt(KEY_TIMER_ICON, iconRes);
