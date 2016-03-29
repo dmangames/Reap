@@ -6,18 +6,15 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 import org.greenrobot.eventbus.EventBus;
-import org.json.JSONObject;
+import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.ReapApplication;
+import dmangames.team4.reap.events.ChooseFragmentEvent;
 import dmangames.team4.reap.fragments.TimerFragment;
-import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
@@ -44,6 +41,17 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
                 .commit();
 
         drawer.setListener(this);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        bus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        bus().unregister(this);
+        super.onStop();
     }
 
     @Override
@@ -77,5 +85,14 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
 
     public void postToBus(Object obj) {
         bus().post(obj);
+    }
+
+    // This method will be called when a ChooseFragmentEvent is posted
+    @Subscribe
+    public void handleChangeFragment(ChooseFragmentEvent event){
+        getFragmentManager()
+                .beginTransaction()
+                .add(R.id.fl_main_container, event.fragment)
+                .commit();
     }
 }

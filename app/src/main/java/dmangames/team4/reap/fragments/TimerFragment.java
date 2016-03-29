@@ -1,6 +1,5 @@
 package dmangames.team4.reap.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
@@ -11,19 +10,21 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.events.ChooseActivityEvent;
+import dmangames.team4.reap.events.ChooseFragmentEvent;
 import dmangames.team4.reap.util.SecondTimer;
 
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
 import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
-import static dmangames.team4.reap.util.SecondTimer.Type;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
 
@@ -57,6 +58,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             throw new IllegalArgumentException("Unknown id!");
         }
     }
+
+    EventBus bus;
 
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_COLOR = "timer.color";
@@ -97,8 +100,22 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @Override
+    public void onStart() {
+        super.onStart();
+        bus.register(this);
+    }
+
+    @Override
+    public void onStop() {
+        bus.unregister(this);
+        super.onStop();
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
         View view = super.onCreateView(inf, parent, savedInstanceState);
+
+        bus = ((MainActivity)getActivity()).bus();
 
         Bundle args = getArguments();
         state = State.fromInt(args.getInt(KEY_TIMER_STATE));
@@ -108,7 +125,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
             iconView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-
+                    ChooseActivityFragment fragment = ChooseActivityFragment.newInstance();
+                    bus.post(new ChooseFragmentEvent(fragment));
                 }
             });
         } else {
@@ -148,13 +166,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     }
 
-    @OnClick(R.id.iv_timer_icon) void openChooseActivityScreen() {
-        ChooseActivityFragment fragment = ChooseActivityFragment.newInstance();
 
-        getFragmentManager().popBackStack();
-        getFragmentManager()
-                .beginTransaction()
-                .add(R.id.fl_main_container, fragment)
-                .commit();
-    }
+
 }
