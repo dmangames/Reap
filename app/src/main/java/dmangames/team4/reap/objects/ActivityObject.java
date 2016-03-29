@@ -8,6 +8,11 @@ public class ActivityObject {
     String activityName;
     Double timeSpent;
 
+    public ActivityObject(String name){
+        activityName = name;
+        timeSpent = 0.0;
+    }
+
     public void setTimeSpent(Double timeSpent) {
         this.timeSpent = timeSpent;
     }
