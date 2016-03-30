@@ -7,13 +7,11 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 
 import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
 
 import butterknife.Bind;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.events.ChooseActivityEvent;
 import dmangames.team4.reap.events.ChooseFragmentEvent;
 
 /**
@@ -53,12 +51,4 @@ public class ChooseActivityFragment extends ReapFragment {
         fragment.setArguments(args);
         return fragment;
     }
-
-    //TODO: Placeholder subscribe, Eventbus throws errors if you register and don't have a subscribe
-    @Subscribe
-    public void onActivityChosen(ChooseActivityEvent event) {
-
-    }
-
-
 }
