@@ -6,7 +6,11 @@ package dmangames.team4.reap.objects;
 public class ActivityObject {
 
     String activityName;
-    Double timeSpent;
+    double timeSpent;
+    int color;
+
+    int iconRes;
+    String iconURL;
 
     public ActivityObject(String name){
         activityName = name;
@@ -29,5 +33,31 @@ public class ActivityObject {
         return activityName;
     }
 
+    public void setTimeSpent(double timeSpent) {
+        this.timeSpent = timeSpent;
+    }
 
+    public int getColor() {
+        return color;
+    }
+
+    public void setColor(int color) {
+        this.color = color;
+    }
+
+    public int getIconRes() {
+        return iconRes;
+    }
+
+    public void setIconRes(int iconRes) {
+        this.iconRes = iconRes;
+    }
+
+    public String getIconURL() {
+        return iconURL;
+    }
+
+    public void setIconURL(String iconURL) {
+        this.iconURL = iconURL;
+    }
 }

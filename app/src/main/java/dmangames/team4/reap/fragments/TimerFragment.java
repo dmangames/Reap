@@ -1,8 +1,6 @@
 package dmangames.team4.reap.fragments;
 
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -64,9 +62,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     public static final String KEY_TIMER_STATE = "timer.state";
-    public static final String KEY_TIMER_COLOR = "timer.color";
-    public static final String KEY_TIMER_SECONDS = "timer.seconds";
-    public static final String KEY_TIMER_ICON = "timer.icon";
+    public static final String KEY_TIMER_ACTIVITY = "timer.activity";
 
     public static final String TAG = "TimerFragment";
 
@@ -86,13 +82,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         return getFragmentWithArgs(args);
     }
 
-    public static TimerFragment newInstance(State state, @ColorRes int colorRes,
-                                            @DrawableRes int iconRes, long seconds) {
+    public static TimerFragment newInstance(State state, String activityName) {
         Bundle args = new Bundle(4);
         args.putInt(KEY_TIMER_STATE, state.id);
-        args.putInt(KEY_TIMER_COLOR, colorRes);
-        args.putInt(KEY_TIMER_ICON, iconRes);
-        args.putLong(KEY_TIMER_SECONDS, seconds);
+        args.putString(KEY_TIMER_ACTIVITY, activityName);
 
         return getFragmentWithArgs(args);
     }
@@ -119,16 +112,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 }
             });
         } else {
-            int color = getResources().getColor(args.getInt(KEY_TIMER_COLOR));
-            long seconds = args.getLong(KEY_TIMER_SECONDS);
-
-            timerView.setTextColor(color);
+//          TODO  timerView.setTextColor(color);
 
             if (state == POMODORO)
-                timer = new SecondTimer(COUNT_DOWN, seconds, this);
-            else timer = new SecondTimer(COUNT_UP, seconds, this);
+                timer = new SecondTimer(COUNT_DOWN, 0, this);
+            else timer = new SecondTimer(COUNT_UP, 0, this);
 
-            iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
+//          TODO  iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
             timer.start();
         }
 

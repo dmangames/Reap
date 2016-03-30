@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
     }
 
     @Subscribe public void receiveFragmentEvent(SwitchFragmentEvent event) {
-        switchFragment(event.fragment, true);
+        switchFragment(event.fragment, event.backstack);
     }
 
     @Override public void onBackPressed() {
