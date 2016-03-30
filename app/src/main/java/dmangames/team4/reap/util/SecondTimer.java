@@ -18,11 +18,11 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 public class SecondTimer extends Timer {
     public final Runnable finish = new Runnable() {
         @Override public void run() {
-            listener.onFinish();
+            listener.onTimerFinish();
         }
     }, tick = new Runnable() {
         @Override public void run() {
-            listener.onTick(current);
+            listener.onTimerTick(current);
         }
     };
     private final TimerTask upTask = new TimerTask() {
@@ -89,8 +89,8 @@ public class SecondTimer extends Timer {
     }
 
     public interface SecondListener {
-        void onTick(long secs);
+        void onTimerTick(long secs);
 
-        void onFinish();
+        void onTimerFinish();
     }
 }

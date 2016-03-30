@@ -8,7 +8,9 @@ import android.view.ViewGroup;
 
 import butterknife.ButterKnife;
 import dmangames.team4.reap.activities.MainActivity;
+import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.annotations.Tag;
 
 import static java.lang.String.format;
 
@@ -28,15 +30,27 @@ public class ReapFragment extends Fragment {
                     format("Fragment %s is missing @Layout specification", cls.getName()));
         }
 
-        ((MainActivity) getActivity()).bus().register(this);
         View view = inf.inflate(cls.getAnnotation(Layout.class).value(), parent, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
+    @Override public void onStart() {
+        super.onStart();
+        if (getClass().isAnnotationPresent(HasBusEvents.class))
+            ((MainActivity) getActivity()).bus().register(this);
+    }
+
     @Override public void onStop() {
         super.onStop();
+        if (getClass().isAnnotationPresent(HasBusEvents.class))
+            ((MainActivity) getActivity()).bus().unregister(this);
+    }
 
-        ((MainActivity) getActivity()).bus().unregister(this);
+    public String tag() {
+        Class<? extends ReapFragment> cls = getClass();
+        if (cls.isAnnotationPresent(Tag.class))
+            return getString(cls.getAnnotation(Tag.class).value());
+        return cls.getName();
     }
 }

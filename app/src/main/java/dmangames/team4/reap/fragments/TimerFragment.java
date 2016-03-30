@@ -1,9 +1,9 @@
 package dmangames.team4.reap.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.ColorRes;
 import android.support.annotation.DrawableRes;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,14 +16,17 @@ import org.greenrobot.eventbus.Subscribe;
 import butterknife.Bind;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.activities.MainActivity;
+import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.events.ChooseActivityEvent;
+import dmangames.team4.reap.annotations.Tag;
+import dmangames.team4.reap.events.SwitchFragmentEvent;
+import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
 
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
 import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
-import static dmangames.team4.reap.util.SecondTimer.Type;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
 
@@ -33,7 +36,9 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
  * @author Brian Wang
  * @version 3/21/16
  */
+@HasBusEvents
 @Layout(R.layout.fragment_timer)
+@Tag(R.string.tag_fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
     public enum State {
         NO_ACTIVITY(0),
@@ -62,6 +67,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_COLOR = "timer.color";
     public static final String KEY_TIMER_SECONDS = "timer.seconds";
     public static final String KEY_TIMER_ICON = "timer.icon";
+
+    public static final String TAG = "TimerFragment";
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
@@ -108,7 +115,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
             iconView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-
+                    ((MainActivity) getActivity()).postToBus(new SwitchFragmentEvent(new ChooseActivityFragment(), true));
                 }
             });
         } else {
@@ -128,15 +135,15 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         return view;
     }
 
-    @Subscribe public void onActivityChosen(ChooseActivityEvent event) {
-        
+    @Subscribe public void onActivityChosen(ActivityObject event) {
+        Log.d(TAG, "Chose activity " + event.getActivityName());
     }
 
-    @Override public void onTick(long secs) {
+    @Override public void onTimerTick(long secs) {
         timerView.setText(String.format("%02d:%02d", secs / 60, secs % 60));
     }
 
-    @Override public void onFinish() {
+    @Override public void onTimerFinish() {
         //TODO
     }
 
