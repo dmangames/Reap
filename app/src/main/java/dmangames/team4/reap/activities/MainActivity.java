@@ -7,6 +7,9 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
@@ -14,8 +17,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.ReapApplication;
-import dmangames.team4.reap.events.SwitchFragmentEvent;
-import dmangames.team4.reap.fragments.ReapFragment;
+import dmangames.team4.reap.events.ChooseFragmentEvent;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
@@ -39,6 +41,17 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
         switchFragment(fragment, false);
 
         drawer.setListener(this);
+    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        bus().register(this);
+    }
+
+    @Override
+    public void onStop() {
+        bus().unregister(this);
+        super.onStop();
     }
 
     @Override
