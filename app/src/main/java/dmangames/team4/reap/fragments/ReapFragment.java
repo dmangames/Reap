@@ -28,15 +28,19 @@ public class ReapFragment extends Fragment {
                     format("Fragment %s is missing @Layout specification", cls.getName()));
         }
 
-        ((MainActivity) getActivity()).bus().register(this);
         View view = inf.inflate(cls.getAnnotation(Layout.class).value(), parent, false);
         ButterKnife.bind(this, view);
         return view;
     }
 
-    @Override public void onStop() {
-        super.onStop();
+    @Override
+    public void onStart() {
+        super.onStart();
+        ((MainActivity) getActivity()).bus().register(this);
+    }
 
+    @Override public void onStop() {
         ((MainActivity) getActivity()).bus().unregister(this);
+        super.onStop();
     }
 }

@@ -100,18 +100,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @Override
-    public void onStart() {
-        super.onStart();
-        bus.register(this);
-    }
-
-    @Override
-    public void onStop() {
-        bus.unregister(this);
-        super.onStop();
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
         View view = super.onCreateView(inf, parent, savedInstanceState);
 
