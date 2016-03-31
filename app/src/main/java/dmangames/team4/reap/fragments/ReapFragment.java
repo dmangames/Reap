@@ -1,10 +1,10 @@
 package dmangames.team4.reap.fragments;
 
 import android.animation.Animator;
-import android.animation.AnimatorInflater;
 import android.animation.ObjectAnimator;
 import android.app.Fragment;
 import android.graphics.Point;
+import android.nfc.Tag;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +17,6 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.annotations.Tag;
 
 import static java.lang.String.format;
 
@@ -83,9 +82,6 @@ public class ReapFragment extends Fragment {
     }
 
     public String tag() {
-        Class<? extends ReapFragment> cls = getClass();
-        if (cls.isAnnotationPresent(Tag.class))
-            return getString(cls.getAnnotation(Tag.class).value());
-        return cls.getName();
+       return getClass().getSimpleName();
     }
 }

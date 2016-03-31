@@ -17,7 +17,6 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.annotations.Tag;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
@@ -62,8 +61,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
-
-    public static final String TAG = "TimerFragment";
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
@@ -126,7 +123,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @Subscribe public void onActivityChosen(ActivityObject event) {
-        Log.d(TAG, "Chose activity " + event.getActivityName());
+        Log.d(tag(), "Chose activity " + event.getActivityName());
     }
 
     @Override public void onTimerTick(long secs) {

@@ -63,8 +63,7 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
     @Override
     public void createActivity(String name) {
         //TODO: put the new activity in the activity blob
-        Log.e("ChooseActivityFragment", "name= " + name);
+        Log.e(tag(), "name= " + name);
         ActivityObject ao = new ActivityObject(name);
-
     }
 }
