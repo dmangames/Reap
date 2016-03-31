@@ -7,13 +7,12 @@ import android.widget.EditText;
 import butterknife.Bind;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.dialogs.ReapDialogBuilder;
 
 /**
  * Used to create a new activity that will be tracked
  * Created by stevenzhang on 3/30/16.
  */
-@Layout(R.layout.dialog_fragment_new_activity)
+@Layout(R.layout.dialog_new_activity)
 public class CreateNewActivityDialog extends ReapDialogBuilder {
     @Bind(R.id.et_activity_name) EditText activity_name;
     public interface CreateNewActivityListener {
