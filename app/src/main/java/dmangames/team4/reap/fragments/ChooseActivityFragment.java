@@ -24,11 +24,8 @@ import dmangames.team4.reap.objects.ActivityObject;
  * Created by stevenzhang on 3/23/16.
  */
 @Layout(R.layout.fragment_choose_activity)
-
 public class ChooseActivityFragment extends ReapFragment implements CreateNewActivityDialog.CreateNewActivityListener {
-
     EventBus bus;
-
 
     @Bind(R.id.guitar_activity) ImageButton guitar_activity_icon;
     @Bind(R.id.btn_new_activity) Button btn_new_activity;
@@ -36,7 +33,7 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
     @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
         View view = super.onCreateView(inf, parent, savedInstanceState);
-        bus = ((MainActivity)getActivity()).bus();
+        bus = ((MainActivity) getActivity()).bus();
 
         guitar_activity_icon.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -58,14 +55,14 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
     }
 
 
-    @OnClick(R.id.btn_new_activity) void newActivity(){
+    @OnClick(R.id.btn_new_activity) void newActivity() {
         CreateNewActivityDialog dialog = new CreateNewActivityDialog(getActivity(), this);
         dialog.show();
     }
 
     @Override
     public void createActivity(String name) {
-       //TODO: put the new activity in the activity blob
+        //TODO: put the new activity in the activity blob
         Log.e("ChooseActivityFragment", "name= " + name);
         ActivityObject ao = new ActivityObject(name);
 

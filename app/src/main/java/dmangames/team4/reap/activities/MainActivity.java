@@ -2,6 +2,7 @@ package dmangames.team4.reap.activities;
 
 import android.app.FragmentTransaction;
 import android.os.Bundle;
+import android.support.annotation.AnimatorRes;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
@@ -36,7 +37,7 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
         ButterKnife.bind(this);
 
         TimerFragment fragment = TimerFragment.newInstance();
-        switchFragment(fragment, false);
+        switchFragment(fragment, true);
 
         drawer.setListener(this);
     }
@@ -67,10 +68,20 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
     }
 
 
-    public void switchFragment(ReapFragment fragment, boolean addToBackStack) {
+    protected void switchFragment(ReapFragment fragment, boolean addToBackStack,
+                                  @AnimatorRes int... anim) {
         FragmentTransaction transaction = getFragmentManager()
-                .beginTransaction()
-                .add(R.id.fl_main_container, fragment);
+                .beginTransaction();
+        switch (anim.length) {
+            case 2:
+                transaction.setCustomAnimations(anim[0], anim[1], anim[0], anim[1]);
+                break;
+            case 4:
+                transaction.setCustomAnimations(anim[0], anim[1], anim[2], anim[3]);
+                break;
+            default:
+        }
+        transaction.replace(R.id.fl_main_container, fragment);
         if (addToBackStack)
             transaction.addToBackStack(fragment.tag());
         transaction.commit();
@@ -85,11 +96,13 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
     }
 
     @Subscribe public void receiveFragmentEvent(SwitchFragmentEvent event) {
-        switchFragment(event.fragment, event.backstack);
+        if (event.anim == null)
+            switchFragment(event.fragment, event.backstack);
+        else switchFragment(event.fragment, event.backstack, event.anim);
     }
 
     @Override public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() == 0) {
+        if (getFragmentManager().getBackStackEntryCount() <= 1) {
             super.onBackPressed();
             return;
         }

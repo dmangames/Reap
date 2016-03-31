@@ -36,7 +36,6 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
  */
 @HasBusEvents
 @Layout(R.layout.fragment_timer)
-@Tag(R.string.tag_fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
     public enum State {
         NO_ACTIVITY(0),
@@ -108,7 +107,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
             iconView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-                    ((MainActivity) getActivity()).postToBus(new SwitchFragmentEvent(new ChooseActivityFragment(), true));
+                    ((MainActivity) getActivity()).postToBus(
+                            new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
                 }
             });
         } else {
