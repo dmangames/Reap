@@ -38,7 +38,7 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
         guitar_activity_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bus.post(new ChooseActivityObjectEvent());
+                bus.post(new ChooseActivityObjectEvent(new ActivityObject("Guitar")));
             }
 
         });
