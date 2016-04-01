@@ -120,8 +120,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
     }
 
-    @Subscribe public void onActivityChosen(ChooseActivityObjectEvent event) {
+    @Subscribe(sticky = true) public void onActivityChosen(ChooseActivityObjectEvent event) {
         Log.d(tag(), "Chose activity " + event.object.getActivityName());
+        bus.removeStickyEvent(event);
     }
 
     @Override public void onTimerTick(long secs) {

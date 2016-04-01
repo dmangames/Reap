@@ -12,6 +12,8 @@ import android.view.ViewGroup;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
+import org.greenrobot.eventbus.EventBus;
+
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
@@ -28,6 +30,8 @@ import static java.lang.String.format;
  * @version 3/21/16
  */
 public class ReapFragment extends Fragment {
+    protected EventBus bus;
+
     @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
         Class<? extends ReapFragment> cls = getClass();
@@ -44,15 +48,16 @@ public class ReapFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+        bus = ((MainActivity) getActivity()).bus();
         if (getClass().isAnnotationPresent(HasBusEvents.class))
-            ((MainActivity) getActivity()).bus().register(this);
+            bus.register(this);
     }
 
     @Override
     public void onStop() {
         super.onStop();
         if (getClass().isAnnotationPresent(HasBusEvents.class))
-            ((MainActivity) getActivity()).bus().unregister(this);
+            bus.unregister(this);
     }
 
     @Override
