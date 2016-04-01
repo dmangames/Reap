@@ -93,9 +93,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         return fragment;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
-        View view = super.onCreateView(inf, parent, savedInstanceState);
+    @Override public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         Bundle args = getArguments();
         state = State.fromInt(args.getInt(KEY_TIMER_STATE));
@@ -119,8 +118,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 //          TODO  iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
             timer.start();
         }
-
-        return view;
     }
 
     @Subscribe public void onActivityChosen(ChooseActivityObjectEvent event) {

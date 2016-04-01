@@ -30,9 +30,9 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
     @Bind(R.id.guitar_activity) ImageButton guitar_activity_icon;
     @Bind(R.id.btn_new_activity) Button btn_new_activity;
 
-    @Override
-    public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
-        View view = super.onCreateView(inf, parent, savedInstanceState);
+    @Override public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
         bus = ((MainActivity) getActivity()).bus();
 
         guitar_activity_icon.setOnClickListener(new View.OnClickListener() {
@@ -42,8 +42,6 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
             }
 
         });
-
-        return view;
     }
 
     public static ChooseActivityFragment newInstance() {
