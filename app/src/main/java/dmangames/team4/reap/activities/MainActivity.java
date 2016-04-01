@@ -17,12 +17,15 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.ReapApplication;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.ReapFragment;
+import dmangames.team4.reap.fragments.ReapFragment.ReapFragmentBackListener;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
 
-public class MainActivity extends AppCompatActivity implements DrawerListener {
+public class MainActivity extends AppCompatActivity
+        implements DrawerListener, ReapFragmentBackListener{
+
     public static final String TAG = "MainActivity";
 
     @Bind(R.id.dv_main_drawer) DrawerView drawer;
@@ -117,5 +120,9 @@ public class MainActivity extends AppCompatActivity implements DrawerListener {
     @Override protected void onStop() {
         super.onStop();
         bus().unregister(this);
+    }
+
+    @Override public void back(ReapFragment fragment) {
+        onBackPressed();
     }
 }

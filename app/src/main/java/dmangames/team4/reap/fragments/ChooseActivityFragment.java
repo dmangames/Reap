@@ -35,6 +35,7 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
             @Override
             public void onClick(View v) {
                 bus.postSticky(new ChooseActivityObjectEvent(new ActivityObject("Guitar")));
+                goBack();
             }
 
         });
@@ -47,7 +48,6 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
         fragment.setArguments(args);
         return fragment;
     }
-
 
     @OnClick(R.id.btn_new_activity) void newActivity() {
         CreateNewActivityDialog dialog = new CreateNewActivityDialog(getActivity(), this);

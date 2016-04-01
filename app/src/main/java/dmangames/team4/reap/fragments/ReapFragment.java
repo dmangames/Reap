@@ -6,6 +6,7 @@ import android.app.Fragment;
 import android.graphics.Point;
 import android.nfc.Tag;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -86,7 +87,23 @@ public class ReapFragment extends Fragment {
         return anim;
     }
 
+    /**
+     * Goes back by calling back to the activity.
+     * {@link dmangames.team4.reap.fragments.ReapFragment.ReapFragmentBackListener} must be
+     * implemented by the activity for this to work.
+     */
+    public void goBack() {
+        if (getActivity() instanceof ReapFragmentBackListener)
+            ((ReapFragmentBackListener) getActivity()).back(this);
+        else
+            Log.e(tag(), "Activity isn't an instance of ReapFragmentBackListener.");
+    }
+
     public String tag() {
        return getClass().getSimpleName();
+    }
+
+    public interface ReapFragmentBackListener {
+        void back(ReapFragment fragment);
     }
 }
