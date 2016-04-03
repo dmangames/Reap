@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     android:id="@+id/fl_timer_container"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -24,7 +25,17 @@
         android:padding="@dimen/timer_image_padding"
         android:scaleType="centerInside"/>
 
-    <!-- TODO Andrew's custom view -->
+    <dmangames.team4.reap.views.IconView
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:background="@color/sand"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        app:iconDrawable="@drawable/no_activity_icon"
+        app:numIcons="1"/>
 
     <include
         android:id="@+id/ol_timer_break"
