@@ -8,4 +8,5 @@
     <dimen name="drawer_item_padding">16dp</dimen>
     <dimen name="pause_padding">24dp</dimen>
     <dimen name="timer_image_padding">24dp</dimen>
+    <dimen name="grid_text_padding">8dp</dimen>
 </resources>

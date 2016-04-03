@@ -7,6 +7,7 @@
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
     </style>
+
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
         <item name="android:windowBackground">@drawable/background_splash</item>
     </style>
@@ -27,6 +28,18 @@
     <style name="TextAppearance.Reap.Timer">
         <item name="android:textSize">@dimen/timer_text_size</item>
         <item name="android:textStyle">bold</item>
+    </style>
+
+    <style name="Theme.Reap.Icon">
+        <item name="android:layout_width">128dp</item>
+        <item name="android:layout_height">128dp</item>
+        <item name="android:padding">@dimen/timer_image_padding</item>
+        <item name="android:scaleType">centerInside</item>
+    </style>
+
+    <style name="Theme.Reap.Icon.Clickable">
+        <item name="android:background">@drawable/clickable_grey</item>
+        <item name="android:clickable">true</item>
     </style>
 
     <style name="Theme.Reap.PauseOverlay.Button" parent="Theme.Reap">

@@ -1,8 +1,12 @@
 package dmangames.team4.reap.objects;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.Calendar;
+import java.util.Set;
+import java.util.TreeMap;
+
+import static java.util.Calendar.DAY_OF_MONTH;
+import static java.util.Calendar.MONTH;
+import static java.util.Calendar.YEAR;
 
 /**
  * Created by Andrew on 3/29/2016.
@@ -10,7 +14,12 @@ import java.util.List;
 public class ActivityBlob {
 
     String date;
-    HashMap<String, ActivityObject> ActivityMap = new HashMap<>();
+    TreeMap<String, ActivityObject> ActivityMap = new TreeMap<>();
+
+    public ActivityBlob() {
+        Calendar c = Calendar.getInstance();
+        date = String.format("%s-%s-%s", c.get(MONTH), c.get(DAY_OF_MONTH), c.get(YEAR));
+    }
 
     public ActivityBlob(String date){
         this.date = date;
@@ -39,5 +48,13 @@ public class ActivityBlob {
 
     public ActivityObject getActivity(String name){
         return ActivityMap.get(name);
+    }
+
+    public Set<String> getKeys() {
+        return ActivityMap.keySet();
+    }
+
+    public int size() {
+        return ActivityMap.size();
     }
 }

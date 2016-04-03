@@ -1,28 +1,24 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-             xmlns:tools="http://schemas.android.com/tools"
-             android:layout_width="match_parent"
-             android:layout_height="match_parent"
-             android:background="@color/sand"
-             tools:context="dmangames.team4.reap.fragments.ChooseActivity">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/sand"
+    tools:context="dmangames.team4.reap.fragments.ChooseActivity">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Choose Activity"/>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_choose_grid"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-    <ImageButton
-        android:id="@+id/guitar_activity"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@android:color/transparent"
-        android:scaleType="centerInside"
-        android:src="@drawable/classic_acoustic_guitar"/>
-
-    <Button
+    <android.support.design.widget.FloatingActionButton
         android:id="@+id/btn_new_activity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="right|bottom"
-        android:text="New Activity"/>
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/add"
+        app:layout_behavior="dmangames.team4.reap.util.ScrollAwareBehavior"/>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

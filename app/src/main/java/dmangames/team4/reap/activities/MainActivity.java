@@ -38,7 +38,6 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle drawerToggle;
     public ActivityBlob dailyActivityBlob;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +112,9 @@ public class MainActivity extends AppCompatActivity
         bus().post(obj);
     }
 
+    public ActivityBlob blob() {
+        return ((ReapApplication) getApplication()).blob();
+    }
 
     @Subscribe public void receiveFragmentEvent(SwitchFragmentEvent event) {
         if (event.anim == null)

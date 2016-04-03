@@ -16,14 +16,9 @@
 
     <ImageView
         android:id="@+id/iv_timer_icon"
-        android:layout_width="120dp"
-        android:layout_height="120dp"
+        style="@style/Theme.Reap.Icon.Clickable"
         android:layout_gravity="center"
-        android:background="@drawable/clickable_grey"
-        android:clickable="true"
-        android:contentDescription="@string/icon_content_description"
-        android:padding="@dimen/timer_image_padding"
-        android:scaleType="centerInside"/>
+        />
 
     <dmangames.team4.reap.views.IconView
         android:layout_width="fill_parent"

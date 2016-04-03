@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:id="@+id/ll_griditem_container"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/clickable_grey"
+    android:clickable="true"
+    android:gravity="center"
+    android:orientation="vertical">
+
+    <ImageView
+        android:id="@+id/iv_griditem_icon"
+        style="@style/Theme.Reap.Icon"
+        android:layout_width="match_parent"
+        android:scaleType="centerInside"
+        tools:src="@drawable/classic_acoustic_guitar"/>
+
+    <TextView
+        android:id="@+id/tv_griditem_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="@dimen/grid_text_padding"
+        android:textAppearance="@style/TextAppearance.Reap.ListItem"
+        tools:text="Guitar Practice"/>
+
+</LinearLayout>
