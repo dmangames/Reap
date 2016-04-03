@@ -37,7 +37,7 @@ public class ChooseActivityFragment extends ReapFragment
         MainActivity activity = (MainActivity) getActivity();
         adapter = new ActivityGridAdapter(activity, activity.blob(), this);
 
-        activityGrid.setLayoutManager(new GridLayoutManager(activity, 4));
+        activityGrid.setLayoutManager(new GridLayoutManager(activity, 3));
         activityGrid.setAdapter(adapter);
     }
 

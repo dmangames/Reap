@@ -7,4 +7,5 @@
     <color name="timer_red">#b71c1c</color>
     <color name="grey_selected">#bfbfbf</color>
     <color name="sand">#EEF1CA</color>
+    <color name="timer_line">#1e88e5</color>
 </resources>

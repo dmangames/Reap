@@ -7,6 +7,7 @@ import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.widget.ImageView;
 
+import dmangames.team4.reap.R;
 import dmangames.team4.reap.util.SecondTimer;
 
 /**
@@ -28,7 +29,7 @@ public class TimerIndicatorView extends ImageView implements SecondTimer.SecondL
         linePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setStrokeWidth(STROKE_WIDTH);
-        setLineColor(0xff000000);
+        setLineColor(context.getResources().getColor(R.color.timer_line));
 
         viewBounds = new RectF(0, 0, getWidth(), getHeight());
     }
