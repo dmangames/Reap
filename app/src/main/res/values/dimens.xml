@@ -7,4 +7,5 @@
     <dimen name="timer_padding">16dp</dimen>
     <dimen name="drawer_item_padding">16dp</dimen>
     <dimen name="pause_padding">24dp</dimen>
+    <dimen name="timer_image_padding">24dp</dimen>
 </resources>

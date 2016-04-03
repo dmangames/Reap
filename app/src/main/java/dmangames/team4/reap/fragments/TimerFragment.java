@@ -1,12 +1,8 @@
 package dmangames.team4.reap.fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.ColorRes;
-import android.support.annotation.DrawableRes;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -16,15 +12,16 @@ import org.greenrobot.eventbus.Subscribe;
 import butterknife.Bind;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.activities.MainActivity;
+import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.events.ChooseActivityEvent;
+import dmangames.team4.reap.events.ChooseActivityObjectEvent;
+import dmangames.team4.reap.events.SwitchFragmentEvent;
+import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
 
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
-import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
-import static dmangames.team4.reap.util.SecondTimer.Type;
-import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
 
 /**
@@ -33,6 +30,7 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
  * @author Brian Wang
  * @version 3/21/16
  */
+@HasBusEvents
 @Layout(R.layout.fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
     public enum State {
@@ -59,9 +57,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     public static final String KEY_TIMER_STATE = "timer.state";
-    public static final String KEY_TIMER_COLOR = "timer.color";
-    public static final String KEY_TIMER_SECONDS = "timer.seconds";
-    public static final String KEY_TIMER_ICON = "timer.icon";
+    public static final String KEY_TIMER_ACTIVITY = "timer.activity";
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
@@ -72,6 +68,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     private State state;
     private SecondTimer timer;
+    private ActivityObject activityObject;
 
     public static TimerFragment newInstance() {
         Bundle args = new Bundle(1);
@@ -79,13 +76,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         return getFragmentWithArgs(args);
     }
 
-    public static TimerFragment newInstance(State state, @ColorRes int colorRes,
-                                            @DrawableRes int iconRes, long seconds) {
+    public static TimerFragment newInstance(State state, String activityName) {
         Bundle args = new Bundle(4);
         args.putInt(KEY_TIMER_STATE, state.id);
-        args.putInt(KEY_TIMER_COLOR, colorRes);
-        args.putInt(KEY_TIMER_ICON, iconRes);
-        args.putLong(KEY_TIMER_SECONDS, seconds);
+        args.putString(KEY_TIMER_ACTIVITY, activityName);
 
         return getFragmentWithArgs(args);
     }
@@ -96,48 +90,92 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         return fragment;
     }
 
-    @Override
-    public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
-        View view = super.onCreateView(inf, parent, savedInstanceState);
+    @Override public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Log.d("Timer Fragment", "Fragment started");
 
         Bundle args = getArguments();
         state = State.fromInt(args.getInt(KEY_TIMER_STATE));
+
+        //Create activity object if none exists
+        if (activityObject == null){
+            activityObject = new ActivityObject("Null", 0);
+        }
+
         if (state == NO_ACTIVITY) {
+
             timerView.setText(getString(R.string.no_timer));
             iconView.setImageResource(R.drawable.no_activity_icon);
 
             iconView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
-
+                    saveSecondTimer();
+                    ((MainActivity) getActivity()).postToBus(
+                            new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
                 }
             });
-        } else {
-            int color = getResources().getColor(args.getInt(KEY_TIMER_COLOR));
-            long seconds = args.getLong(KEY_TIMER_SECONDS);
-
-            timerView.setTextColor(color);
-
-            if (state == POMODORO)
-                timer = new SecondTimer(COUNT_DOWN, seconds, this);
-            else timer = new SecondTimer(COUNT_UP, seconds, this);
-
-            iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
-            timer.start();
+//            if (state == POMODORO)
+//                timer = new SecondTimer(COUNT_DOWN, 0, this);
+//            else timer = new SecondTimer(COUNT_UP, 10, this);
+//            timer.start();
+//        } else {
+////          TODO  timerView.setTextColor(color);
+//
+//            if (state == POMODORO)
+//                timer = new SecondTimer(COUNT_DOWN, 0, this);
+//            else timer = new SecondTimer(COUNT_UP, 0, this);
+//
+////          TODO  iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
+//
+//            timer.start();
         }
 
-        return view;
+        Log.d("Timer Fragment", "Fragment view loaded");
     }
 
-    @Subscribe public void onActivityChosen(ChooseActivityEvent event) {
-        
+    /*
+    ## SecondTimer is saved onStop and whenever the ActivityObject changes
+    */
+    private void saveSecondTimer() {
+        Log.d("timer", "Saving Timer");
+        if(timer != null)
+            activityObject.addTimeSpent(timer.getTotalSeconds());
+    }
+    private void pauseSecondTimer() {
+        Log.d("timer", "Pausing Timer");
+        //timer.pause();
+    }
+    private void startSecondTimer() {
+        Log.d("timer", "Starting Timer with " + activityObject.getTimeSpent() + " seconds");
+        timer = new SecondTimer(COUNT_UP, 100, this);
+        timer.setCurrentSeconds(activityObject.getTimeSpent());
+        iconView.setImageResource(activityObject.getIconRes());
+        timer.start();
+    }
+    private void stopSecondTimer() {
+        Log.d("timer", "Stopping timer");
+        if(timer != null)
+            timer.stop();
     }
 
-    @Override public void onTick(long secs) {
+
+    @Subscribe(sticky = true) public void onActivityChosen(ChooseActivityObjectEvent event) {
+        Log.d(tag(), "Chose activity " + event.object.getActivityName());
+        saveSecondTimer();
+        stopSecondTimer();
+        activityObject = event.object;
+        startSecondTimer();
+        bus.removeStickyEvent(event);
+    }
+
+    @Override public void onTimerTick(long secs) {
         timerView.setText(String.format("%02d:%02d", secs / 60, secs % 60));
     }
 
-    @Override public void onFinish() {
+    @Override public void onTimerFinish() {
         //TODO
+        Log.d("timer", "Timer is stopped");
     }
 
     @OnClick(R.id.iv_poverlay_pause) void pauseTimer() {
