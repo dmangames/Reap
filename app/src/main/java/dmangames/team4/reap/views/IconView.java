@@ -37,7 +37,7 @@ public class IconView extends View {
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.IconView, defStyle, 0);
 
-        if(!a.hasValue(R.styleable.IconView_numIcons))
+        if(a.hasValue(R.styleable.IconView_numIcons))
             mNumIcons = a.getInt(R.styleable.IconView_numIcons, 1);
         else
             throw new RuntimeException("Must declare numIcons");
