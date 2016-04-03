@@ -2,18 +2,13 @@ package dmangames.team4.reap.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageButton;
-
-import org.greenrobot.eventbus.EventBus;
 
 import butterknife.Bind;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
-import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog;
 import dmangames.team4.reap.events.ChooseActivityObjectEvent;
@@ -34,7 +29,7 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
         guitar_activity_icon.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                bus.postSticky(new ChooseActivityObjectEvent(new ActivityObject("Guitar")));
+                bus.postSticky(new ChooseActivityObjectEvent(new ActivityObject("Guitar", R.drawable.classic_acoustic_guitar)));
                 goBack();
             }
 
@@ -58,6 +53,6 @@ public class ChooseActivityFragment extends ReapFragment implements CreateNewAct
     public void createActivity(String name) {
         //TODO: put the new activity in the activity blob
         Log.e(tag(), "name= " + name);
-        ActivityObject ao = new ActivityObject(name);
+        ActivityObject ao = new ActivityObject(name, 0);
     }
 }

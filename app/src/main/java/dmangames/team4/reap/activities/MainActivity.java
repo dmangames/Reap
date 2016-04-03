@@ -11,6 +11,9 @@ import android.util.Log;
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
@@ -19,6 +22,7 @@ import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.ReapFragment.ReapFragmentBackListener;
 import dmangames.team4.reap.fragments.TimerFragment;
+import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
@@ -32,6 +36,8 @@ public class MainActivity extends AppCompatActivity
     @Bind(R.id.dl_main_drawerlayout) DrawerLayout layout;
 
     private ActionBarDrawerToggle drawerToggle;
+    public ActivityBlob dailyActivityBlob;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,6 +47,15 @@ public class MainActivity extends AppCompatActivity
 
         TimerFragment fragment = TimerFragment.newInstance();
         switchFragment(fragment, true);
+
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy"); //Whatever date format we decide on
+        String formatted = format1.format(cal.getTime());
+
+        //Create ActivityBlob if it doesn't exist
+        if (dailyActivityBlob==null){
+            dailyActivityBlob = new ActivityBlob(formatted);
+        }
 
         drawer.setListener(this);
     }
@@ -97,6 +112,7 @@ public class MainActivity extends AppCompatActivity
     public void postToBus(Object obj) {
         bus().post(obj);
     }
+
 
     @Subscribe public void receiveFragmentEvent(SwitchFragmentEvent event) {
         if (event.anim == null)

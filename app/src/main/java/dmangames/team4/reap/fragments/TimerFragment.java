@@ -2,9 +2,7 @@ package dmangames.team4.reap.fragments;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,9 +21,7 @@ import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
 
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
-import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
-import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
 
 /**
@@ -72,6 +68,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     private State state;
     private SecondTimer timer;
+    private ActivityObject activityObject;
 
     public static TimerFragment newInstance() {
         Bundle args = new Bundle(1);
@@ -96,32 +93,79 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Log.d("Timer Fragment", "Fragment started");
+
         Bundle args = getArguments();
         state = State.fromInt(args.getInt(KEY_TIMER_STATE));
+
+        //Create activity object if none exists
+        if (activityObject == null){
+            activityObject = new ActivityObject("Null", 0);
+        }
+
         if (state == NO_ACTIVITY) {
+
             timerView.setText(getString(R.string.no_timer));
             iconView.setImageResource(R.drawable.no_activity_icon);
 
             iconView.setOnClickListener(new View.OnClickListener() {
                 @Override public void onClick(View v) {
+                    saveSecondTimer();
                     ((MainActivity) getActivity()).postToBus(
                             new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
                 }
             });
-        } else {
-//          TODO  timerView.setTextColor(color);
-
-            if (state == POMODORO)
-                timer = new SecondTimer(COUNT_DOWN, 0, this);
-            else timer = new SecondTimer(COUNT_UP, 0, this);
-
-//          TODO  iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
-            timer.start();
+//            if (state == POMODORO)
+//                timer = new SecondTimer(COUNT_DOWN, 0, this);
+//            else timer = new SecondTimer(COUNT_UP, 10, this);
+//            timer.start();
+//        } else {
+////          TODO  timerView.setTextColor(color);
+//
+//            if (state == POMODORO)
+//                timer = new SecondTimer(COUNT_DOWN, 0, this);
+//            else timer = new SecondTimer(COUNT_UP, 0, this);
+//
+////          TODO  iconView.setImageResource(args.getInt(KEY_TIMER_ICON));
+//
+//            timer.start();
         }
+
+        Log.d("Timer Fragment", "Fragment view loaded");
     }
+
+    /*
+    ## SecondTimer is saved onStop and whenever the ActivityObject changes
+    */
+    private void saveSecondTimer() {
+        Log.d("timer", "Saving Timer");
+        if(timer != null)
+            activityObject.addTimeSpent(timer.getTotalSeconds());
+    }
+    private void pauseSecondTimer() {
+        Log.d("timer", "Pausing Timer");
+        //timer.pause();
+    }
+    private void startSecondTimer() {
+        Log.d("timer", "Starting Timer with " + activityObject.getTimeSpent() + " seconds");
+        timer = new SecondTimer(COUNT_UP, 100, this);
+        timer.setCurrentSeconds(activityObject.getTimeSpent());
+        iconView.setImageResource(activityObject.getIconRes());
+        timer.start();
+    }
+    private void stopSecondTimer() {
+        Log.d("timer", "Stopping timer");
+        if(timer != null)
+            timer.stop();
+    }
+
 
     @Subscribe(sticky = true) public void onActivityChosen(ChooseActivityObjectEvent event) {
         Log.d(tag(), "Chose activity " + event.object.getActivityName());
+        saveSecondTimer();
+        stopSecondTimer();
+        activityObject = event.object;
+        startSecondTimer();
         bus.removeStickyEvent(event);
     }
 
@@ -131,6 +175,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Override public void onTimerFinish() {
         //TODO
+        Log.d("timer", "Timer is stopped");
     }
 
     @OnClick(R.id.iv_poverlay_pause) void pauseTimer() {

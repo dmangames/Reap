@@ -1,23 +1,29 @@
 package dmangames.team4.reap.objects;
 
+import dmangames.team4.reap.R;
+
 /**
  * Created by brian on 3/25/16.
  */
 public class ActivityObject {
 
     String activityName;
-    double timeSpent;
+    long timeSpent;
     int color;
 
     int iconRes;
     String iconURL;
 
-    public ActivityObject(String name){
+    public ActivityObject(String name, int iconRes){
         activityName = name;
-        timeSpent = 0.0;
+        if( iconRes != 0)
+            this.iconRes = iconRes;
+        else
+            iconRes = R.drawable.no_activity_icon;
+        timeSpent = 0;
     }
 
-    public void setTimeSpent(Double timeSpent) {
+    public void setTimeSpent(long timeSpent) {
         this.timeSpent = timeSpent;
     }
 
@@ -25,7 +31,7 @@ public class ActivityObject {
         this.activityName = activityName;
     }
 
-    public Double getTimeSpent() {
+    public long getTimeSpent() {
         return timeSpent;
     }
 
@@ -33,9 +39,7 @@ public class ActivityObject {
         return activityName;
     }
 
-    public void setTimeSpent(double timeSpent) {
-        this.timeSpent = timeSpent;
-    }
+    public void addTimeSpent(double additionalTimeSpent) {this.timeSpent += additionalTimeSpent; }
 
     public int getColor() {
         return color;
