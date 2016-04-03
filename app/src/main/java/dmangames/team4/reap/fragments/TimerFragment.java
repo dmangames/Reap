@@ -19,6 +19,7 @@ import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
+import dmangames.team4.reap.views.TimerIndicatorView;
 
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
@@ -61,7 +62,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
-    @Bind(R.id.iv_timer_icon) ImageView iconView;
+    @Bind(R.id.iv_timer_icon) TimerIndicatorView iconView;
 
     @Bind(R.id.ol_timer_pause) View pContainer;
     @Bind(R.id.tv_poverlay_timer) TextView pTimer;
@@ -149,6 +150,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private void startSecondTimer() {
         Log.d("timer", "Starting Timer with " + activityObject.getTimeSpent() + " seconds");
         timer = new SecondTimer(COUNT_UP, 100, this);
+        iconView.setTimer(timer);
         timer.setCurrentSeconds(activityObject.getTimeSpent());
         iconView.setImageResource(activityObject.getIconRes());
         timer.start();

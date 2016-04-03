@@ -81,6 +81,6 @@ public class ActivityGridAdapter extends Adapter<ActivityGridAdapter.ActivityVie
     }
 
     public interface ActivityGridListener {
-        public void chooseActivity(ActivityObject object);
+        void chooseActivity(ActivityObject object);
     }
 }

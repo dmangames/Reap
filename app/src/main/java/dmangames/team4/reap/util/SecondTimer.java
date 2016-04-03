@@ -4,6 +4,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 
+import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,11 +20,13 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 public class SecondTimer extends Timer {
     public final Runnable finish = new Runnable() {
         @Override public void run() {
-            listener.onTimerFinish();
+            for (SecondListener l : listeners)
+                l.onTimerFinish();
         }
     }, tick = new Runnable() {
         @Override public void run() {
-            listener.onTimerTick(current);
+            for (SecondListener l : listeners)
+                l.onTimerTick(current);
         }
     };
     private final TimerTask upTask = new TimerTask() {
@@ -51,7 +54,7 @@ public class SecondTimer extends Timer {
 
 
     private final Type type;
-    private final SecondListener listener;
+    private final LinkedList<SecondListener> listeners;
 
     private Handler handler;
     private long current;
@@ -59,7 +62,8 @@ public class SecondTimer extends Timer {
 
     public SecondTimer(Type type, long seconds, SecondListener listener) {
         this.type = type;
-        this.listener = listener;
+        this.listeners = new LinkedList<>();
+        listeners.add(listener);
         init(type, seconds);
     }
 
@@ -68,6 +72,10 @@ public class SecondTimer extends Timer {
         total = seconds;
         current = type == COUNT_DOWN ? total : 0;
         handler = new Handler(Looper.getMainLooper());
+    }
+
+    public void addListener(SecondListener l) {
+        listeners.add(l);
     }
 
     public void start() {
