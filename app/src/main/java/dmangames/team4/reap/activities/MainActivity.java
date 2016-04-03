@@ -4,8 +4,10 @@ import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.AnimatorRes;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 
 import org.greenrobot.eventbus.EventBus;
@@ -28,14 +30,16 @@ import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
 
 public class MainActivity extends AppCompatActivity
-        implements DrawerListener, ReapFragmentBackListener{
+        implements DrawerListener, ReapFragmentBackListener {
 
     public static final String TAG = "MainActivity";
 
     @Bind(R.id.dv_main_drawer) DrawerView drawer;
     @Bind(R.id.dl_main_drawerlayout) DrawerLayout layout;
+    @Bind(R.id.tb_main_toolbar) Toolbar toolbar;
 
     private ActionBarDrawerToggle drawerToggle;
+
     public ActivityBlob dailyActivityBlob;
 
     @Override
@@ -51,8 +55,17 @@ public class MainActivity extends AppCompatActivity
         SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy"); //Whatever date format we decide on
         String formatted = format1.format(cal.getTime());
 
+        setSupportActionBar(toolbar);
+        drawerToggle = new ActionBarDrawerToggle(this, layout, toolbar, 0, 0);
+        layout.addDrawerListener(drawerToggle);
+
+        ActionBar actionbar = getSupportActionBar();
+        actionbar.setDisplayHomeAsUpEnabled(true);
+        actionbar.setHomeButtonEnabled(true);
+        drawerToggle.syncState();
+
         //Create ActivityBlob if it doesn't exist
-        if (dailyActivityBlob==null){
+        if (dailyActivityBlob == null) {
             dailyActivityBlob = new ActivityBlob(formatted);
         }
 

@@ -10,6 +10,8 @@ import android.widget.ImageView;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.util.SecondTimer;
 
+import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
+
 /**
  * Created by brian on 4/3/16.
  */
@@ -53,10 +55,12 @@ public class TimerIndicatorView extends ImageView implements SecondTimer.SecondL
 
     @Override public void onTimerTick(long secs) {
         degrees = (float) secs / timer.getTotalSeconds() * 360;
+        if (timer.getType() == COUNT_DOWN)
+            degrees = 360 - degrees;
         invalidate();
     }
 
     @Override public void onTimerFinish() {
-
+        degrees = 0;
     }
 }

@@ -17,7 +17,7 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
  * @author Brian Wang
  * @version 3/21/16
  */
-public class SecondTimer extends Timer {
+public class SecondTimer {
     public final Runnable finish = new Runnable() {
         @Override public void run() {
             for (SecondListener l : listeners)
@@ -52,39 +52,53 @@ public class SecondTimer extends Timer {
         }
     };
 
+    private Timer timer;
 
-    private final Type type;
     private final LinkedList<SecondListener> listeners;
+    private final Handler handler;
 
-    private Handler handler;
+    private Type type;
     private long current;
     private long total;
 
     public SecondTimer(Type type, long seconds, SecondListener listener) {
-        this.type = type;
         this.listeners = new LinkedList<>();
+        handler = new Handler(Looper.getMainLooper());
+        timer = new Timer();
         listeners.add(listener);
-        init(type, seconds);
+        setup(type, seconds);
     }
 
-    public void init(Type type, long seconds) {
-        Log.d("Second Timer", "init called");
+    public void setTotalSeconds(long seconds) {
+        Log.d("Second Timer", "setTotalSeconds called");
         total = seconds;
-        current = type == COUNT_DOWN ? total : 0;
-        handler = new Handler(Looper.getMainLooper());
+        reset();
+    }
+
+    public void setup(Type type, long seconds) {
+        this.type = type;
+        setTotalSeconds(seconds);
     }
 
     public void addListener(SecondListener l) {
         listeners.add(l);
     }
 
+    public void reset() {
+        current = type == COUNT_DOWN ? total : 0;
+    }
+
     public void start() {
-        scheduleAtFixedRate(type == COUNT_DOWN ? downTask : upTask, 0, 1000);
+        timer = new Timer();
+        timer.scheduleAtFixedRate(type == COUNT_DOWN ? downTask : upTask, 0, 1000);
     }
 
     public void stop() {
-        cancel();
-        total = current;
+        timer.cancel();
+    }
+
+    public Type getType() {
+        return type;
     }
 
     public long getTotalSeconds() {
@@ -92,10 +106,6 @@ public class SecondTimer extends Timer {
     }
 
     public void setCurrentSeconds(long current) { this.current = current; }
-
-    public Type getType() {
-        return type;
-    }
 
     public enum Type {
         COUNT_UP(true), COUNT_DOWN(false);
