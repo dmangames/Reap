@@ -3,12 +3,12 @@ package dmangames.team4.reap.fragments;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
 import org.greenrobot.eventbus.Subscribe;
-
-import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.OnClick;
@@ -22,6 +22,7 @@ import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.TimerIndicatorView;
 
+import static android.view.View.GONE;
 import static dmangames.team4.reap.fragments.TimerFragment.State.CHOOSE_TIMER;
 import static dmangames.team4.reap.fragments.TimerFragment.State.HOUR;
 import static dmangames.team4.reap.fragments.TimerFragment.State.NO_ACTIVITY;
@@ -29,6 +30,8 @@ import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
+import static java.util.concurrent.TimeUnit.HOURS;
+import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
  * Timer fragment.
@@ -64,6 +67,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
+
+    private static final long POMODORO_WORK_SECS = MINUTES.toSeconds(25);
+    private static final long POMODORO_BREAK_SECS = MINUTES.toSeconds(5);
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
@@ -175,27 +181,40 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         saveSecondTimer();
         pomodoroBreak = !pomodoroBreak;
         if (pomodoroBreak)
-            timer.setTotalSeconds(TimeUnit.MINUTES.toSeconds(5));
+            timer.setTotalSeconds(POMODORO_BREAK_SECS);
         restartSecondTimer();
+    }
+
+    private void fadeOutTimerChooser() {
+        Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+        anim.setAnimationListener(new Animation.AnimationListener() {
+            @Override public void onAnimationStart(Animation animation) {}
+
+            @Override public void onAnimationEnd(Animation animation) {
+                timerChooser.setVisibility(GONE);
+            }
+
+            @Override public void onAnimationRepeat(Animation animation) {}
+        });
+        timerChooser.startAnimation(anim);
     }
 
     @OnClick(R.id.iv_timer_pomodoro) void selectPomodoro() {
         state = POMODORO;
         pomodoroBreak = false;
-        timerChooser.setVisibility(View.GONE);
+        fadeOutTimerChooser();
 
-        timer.setup(COUNT_DOWN, TimeUnit.MINUTES.toSeconds(25));
+        timer.setup(COUNT_DOWN, POMODORO_WORK_SECS);
         restartSecondTimer();
     }
 
     @OnClick(R.id.iv_timer_stopwatch) void selectStopwatch() {
         state = HOUR;
-        timerChooser.setVisibility(View.GONE);
+        fadeOutTimerChooser();
 
-        timer.setup(COUNT_UP, TimeUnit.HOURS.toSeconds(1));
+        timer.setup(COUNT_UP, HOURS.toSeconds(1));
         restartSecondTimer();
     }
-
 
     @OnClick(R.id.iv_poverlay_pause) void pauseTimer() {
     }

@@ -56,7 +56,6 @@ public class ChooseActivityFragment extends ReapFragment
 
     @Override
     public void createActivity(String name, String iconURL, int iconRes) {
-        //TODO: put the new activity in the activity blob
         Log.e(tag(), "name = " + name);
         ActivityObject ao = new ActivityObject(name, iconRes);
         adapter.addActivity(ao);
