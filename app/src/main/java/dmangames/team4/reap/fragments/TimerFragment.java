@@ -27,7 +27,6 @@ import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
-import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.AnimationEndListener;
 import dmangames.team4.reap.util.SecondTimer;
@@ -78,51 +77,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
     }
 
-    public class BreakOverlay {
-        @Bind(R.id.ol_timer_break) View overlayContainer;
-        @Bind(R.id.rv_boverlay_icons) RecyclerView grid;
-        @Bind(R.id.iv_timer_blur_container) ImageView blurContainer;
-
-        BreakGridAdapter adapter;
-
-        public BreakOverlay(View view) {
-            ButterKnife.bind(this, view);
-
-            adapter = new BreakGridAdapter(activity);
-            grid.setLayoutManager(new GridLayoutManager(activity, 3));
-            grid.setAdapter(adapter);
-        }
-
-        public void fadeIn() {
-            Blurry.with(activity).capture(container).into(blurContainer);
-            Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
-            anim.setAnimationListener(new AnimationEndListener() {
-                @Override public void onAnimationEnd(Animation animation) {
-                    overlayContainer.setVisibility(VISIBLE);
-                    blurContainer.setVisibility(VISIBLE);
-                    animating = false;
-                }
-            });
-            overlayContainer.setAnimation(anim);
-            blurContainer.setAnimation(anim);
-            anim.start();
-        }
-
-        public void fadeOut() {
-            Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
-            anim.setAnimationListener(new AnimationEndListener() {
-                @Override public void onAnimationEnd(Animation animation) {
-                    overlayContainer.setVisibility(GONE);
-                    blurContainer.setVisibility(GONE);
-                    blurContainer.setImageDrawable(null);
-                    animating = false;
-                }
-            });
-            overlayContainer.setAnimation(anim);
-            blurContainer.setAnimation(anim);
-            anim.start();
-        }
-    }
+    private int numJars;
 
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
@@ -137,21 +92,18 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Bind(R.id.fab_timer_pause) FloatingActionButton pauseButton;
     @Bind(R.id.icv_timer_icons) IconView jarView;
     @Bind(R.id.tv_total_time) TextView totalTimeView;
+
     @Bind(R.id.ll_timer_chooser) View timerChooser;
 
     private State state;
     private SecondTimer timer;
     private ActivityObject activityObject;
-    private BreakOverlay boverlay;
-    private MainActivity activity;
-
-    private int numJars;
-    private long currentTotal;
-
     private boolean pomodoroBreak = false;
     private boolean animating = false;
-    private boolean isPaused = false;
     private boolean previouslyCreated = false;
+    private long currentTotal;
+    private boolean isPaused = false;
+    private BreakOverlay boverlay;
 
     public static TimerFragment newInstance() {
         Bundle args = new Bundle(1);
@@ -175,84 +127,50 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity = (MainActivity) getActivity();
         boverlay = new BreakOverlay(view);
 
-        Log.d(tag(), "Fragment started");
+        Log.d("Timer Fragment", "Fragment started");
 
         if (!previouslyCreated) {
             Bundle args = getArguments();
             state = State.fromInt(args.getInt(KEY_TIMER_STATE));
-            Log.d(tag(), "New Second Timer created");
+            Log.d("New Second Timer", "New Second Timer created");
             timer = new SecondTimer(this);
             previouslyCreated = true;
+        } else {
+            resumeSecondTimer();
         }
 
         iconView.setTimer(timer);
-        if (activityObject == null)
+
+        //Create activity object if none exists
+        if (activityObject == null) {
             activityObject = new ActivityObject("Null", 0);
-
-        Log.d(tag(), "Fragment view loaded");
-    }
-
-    public void reconstructFromState() {
-        if (activityObject != null) {
-            int iconRes = activityObject.getIconRes();
-            if (iconRes == 0)
-                iconRes = R.drawable.no_activity_icon;
-            currentTotal = activityObject.getTimeSpent();
-            numJars = (int) TimeUnit.SECONDS.toMinutes(currentTotal);
-            jarView.changeIcon(iconRes);
-            jarView.setNumIcons(numJars);
-            iconView.setImageResource(iconRes);
+        } else {
+            iconView.setImageResource(activityObject.getIconRes());
+            //currentTotal = activityObject.getTimeSpent();
+            Log.d("Timer Fragment", "" + activityObject.getTimeSpent());
+            pauseButton.show();
         }
 
-        switch (state) {
-            case NO_ACTIVITY:
-                timerView.setText(getString(R.string.no_timer));
-                totalTimeView.setText(getString(R.string.no_timer));
-                iconView.setImageResource(R.drawable.no_activity_icon);
-
-                pauseButton.hide();
-                jarView.setVisibility(GONE);
-                timerChooser.setVisibility(GONE);
-                break;
-            case CHOOSE_TIMER:
-                timerView.setText(getString(R.string.no_timer));
-                totalTimeView.setText(getString(R.string.no_timer));
-
-                pauseButton.hide();
-                jarView.setVisibility(GONE);
-                timerChooser.setVisibility(VISIBLE);
-                break;
-            case POMODORO:
-                resumeSecondTimer();
-
-                pauseButton.show();
-                jarView.setVisibility(VISIBLE);
-                timerChooser.setVisibility(GONE);
-                break;
-            case HOUR:
-                resumeSecondTimer();
-
-                pauseButton.show();
-                jarView.setVisibility(VISIBLE);
-                timerChooser.setVisibility(GONE);
-                break;
-            default:
-                Log.e(tag(), "Unknown state!");
+        if (state == NO_ACTIVITY) {
+            timerView.setText(getString(R.string.no_timer));
+            iconView.setImageResource(R.drawable.no_activity_icon);
+            totalTimeView.setText(getString(R.string.no_timer));
         }
+
+        Log.d("Timer Fragment", "Fragment view loaded");
     }
 
     /*
     ## SecondTimer is saved onStop and whenever the ActivityObject changes
     */
     private void saveSecondTimer() {
-        Log.d(tag(), "Saving Timer");
+        Log.d("timer", "Saving Timer");
         if (timer != null)
             activityObject.addTimeSpent(timer.getSecondsElapsed());
-        activity.blob.updateActivity(activityObject);
-        activity.data.getRecentActivities().updateActivity(activityObject);
+        ((MainActivity) getActivity()).blob.updateActivity(activityObject);
+        ((MainActivity) getActivity()).data.getRecentActivities().updateActivity(activityObject);
         currentTotal = activityObject.getTimeSpent();
     }
 
@@ -260,12 +178,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         super.onStop();
         saveSecondTimer();
         stopSecondTimer();
-        Log.d(tag(), "Timer Fragment stopped");
-    }
-
-    @Override public void onResume() {
-        super.onResume();
-        reconstructFromState();
+        Log.d("Stop", "Timer Fragment stopped");
     }
 
     private void restartSecondTimer() {
@@ -279,29 +192,41 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     private void stopSecondTimer() {
-        Log.d(tag(), "Stopping timer");
+        Log.d("timer", "Stopping timer");
         if (timer != null)
             timer.stop();
     }
 
     @Subscribe(sticky = true) public void onActivityChosen(ChooseActivityObjectEvent event) {
-        String activityName = event.object.getActivityName();
-        Log.d(tag(), "Chose activity " + activityName);
-
+        Log.d(tag(), "Chose activity " + event.object.getActivityName());
         stopSecondTimer();
         timer.reset();
+        timerView.setText(R.string.no_timer);
+        pauseButton.hide();
 
-        ActivityBlob recent = activity.data.getRecentActivities();
-        if (recent.checkActivity(activityName))
-            activityObject = recent.getActivity(activityName);
+        MainActivity activity = (MainActivity) getActivity();
+        if(activity.data.getRecentActivities().checkActivity(event.object.getActivityName()))
+            activityObject = activity.data.getRecentActivities().getActivity(event.object.getActivityName());
         else {
-            activityObject = new ActivityObject(activityName, event.object.getIconRes());
-            recent.addActivity(activityObject);
+            activityObject = new ActivityObject(event.object.getActivityName(), event.object.getIconRes());
+            activity.data.getRecentActivities().addActivity(activityObject);
         }
         bus.removeStickyEvent(event);
 
+        Log.d("blob",activity.blob.size()+"");
+
+        currentTotal = activityObject.getTimeSpent();
+
         state = CHOOSE_TIMER;
-        reconstructFromState();
+        iconView.setImageResource(activityObject.getIconRes());
+        timerChooser.setVisibility(VISIBLE);
+
+        int iconID = activity.data.getActivityByName(event.object.getActivityName()).getIconRes();
+        jarView.changeIcon(iconID);
+        long seconds = activity.blob.getActivity(event.object.getActivityName()).getTimeSpent();
+        numJars = (int) TimeUnit.SECONDS.toMinutes(seconds);
+
+        jarView.setNumIcons((float)seconds/60);
     }
 
     @Override public void onTimerTick(long secs) {
@@ -313,7 +238,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 totalTimeView.setText(String.format("%02d:%02d", (secs + currentTotal) / 60, (secs + currentTotal) % 60));
                 break;
             case POMODORO:
-                if (!pomodoroBreak) {
+                if(!pomodoroBreak) {
                     actualCurrentTime = POMODORO_WORK_SECS - secs + currentTotal;
                     totalTimeView.setText(String.format("%02d:%02d", (POMODORO_WORK_SECS - secs + currentTotal) / 60, (POMODORO_WORK_SECS - secs + currentTotal) % 60));
                 }
@@ -322,15 +247,18 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 Log.e(tag(), "Timer mode does not exist");
         }
 
-        if (numJars != TimeUnit.SECONDS.toMinutes(actualCurrentTime)) {
-            numJars = (int) TimeUnit.SECONDS.toMinutes(actualCurrentTime);
-            Log.d(tag(), numJars + "");
-            jarView.setNumIcons(numJars);
-        }
+//        if (numJars != TimeUnit.SECONDS.toMinutes(actualCurrentTime)) {
+//            numJars = (int) TimeUnit.SECONDS.toMinutes(actualCurrentTime);
+//            Log.d("D", numJars + "");
+//            jarView.setNumIcons(numJars);
+//        }
+//        Log.d("D", (float)actualCurrentTime/60+"");
+        jarView.setNumIcons((float)actualCurrentTime/60);
+
     }
 
     @Override public void onTimerFinish() {
-        Log.d(tag(), "Timer finished");
+        Log.d("onTimerFinish", "Timer finished");
         if (state == POMODORO) {
             if (!pomodoroBreak)
                 saveSecondTimer();
@@ -348,7 +276,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     private void fadeOutTimerChooser() {
         animating = true;
-        Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+        Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
         anim.setAnimationListener(new AnimationEndListener() {
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -396,6 +324,54 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @OnClick(R.id.iv_timer_icon) void chooseActivity() {
-        activity.postToBus(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
+        ((MainActivity) getActivity()).postToBus(
+                new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
+    }
+
+    public class BreakOverlay {
+        @Bind(R.id.ol_timer_break) View overlayContainer;
+        @Bind(R.id.rv_boverlay_icons) RecyclerView grid;
+        @Bind(R.id.iv_timer_blur_container) ImageView blurContainer;
+
+        BreakGridAdapter adapter;
+
+        public BreakOverlay(View view) {
+            ButterKnife.bind(this, view);
+
+            Activity activity = getActivity();
+            adapter = new BreakGridAdapter(activity);
+            grid.setLayoutManager(new GridLayoutManager(activity, 3));
+            grid.setAdapter(adapter);
+        }
+
+        public void fadeIn() {
+            Blurry.with(getActivity()).capture(container).into(blurContainer);
+            Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
+            anim.setAnimationListener(new AnimationEndListener() {
+                @Override public void onAnimationEnd(Animation animation) {
+                    overlayContainer.setVisibility(VISIBLE);
+                    blurContainer.setVisibility(VISIBLE);
+                    animating = false;
+                }
+            });
+            overlayContainer.setAnimation(anim);
+            blurContainer.setAnimation(anim);
+            anim.start();
+        }
+
+        public void fadeOut() {
+            Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
+            anim.setAnimationListener(new AnimationEndListener() {
+                @Override public void onAnimationEnd(Animation animation) {
+                    overlayContainer.setVisibility(GONE);
+                    blurContainer.setVisibility(GONE);
+                    blurContainer.setImageDrawable(null);
+                    animating = false;
+                }
+            });
+            overlayContainer.setAnimation(anim);
+            blurContainer.setAnimation(anim);
+            anim.start();
+        }
     }
 }

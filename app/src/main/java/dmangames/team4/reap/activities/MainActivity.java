@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 
         data.newDay(formatted);
         blob = data.getRecentActivities();
+        Log.d("blob",blob.size()+"");
 
         setSupportActionBar(toolbar);
         drawerToggle = new ActionBarDrawerToggle(this, layout, toolbar, 0, 0);

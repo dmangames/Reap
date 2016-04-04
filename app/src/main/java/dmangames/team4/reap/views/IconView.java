@@ -2,8 +2,11 @@ package dmangames.team4.reap.views;
 
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextPaint;
@@ -13,8 +16,8 @@ import android.view.View;
 import dmangames.team4.reap.R;
 
 public class IconView extends View {
-    private int mNumIcons;
-    private Drawable mIcon;
+    private float mNumIcons;
+    private Bitmap mIcon;
 
     private TextPaint mTextPaint;
 
@@ -34,7 +37,8 @@ public class IconView extends View {
     }
 
     public void changeIcon(int iconID){
-        mIcon = ResourcesCompat.getDrawable(getResources(), iconID, null);
+//        mIcon = ResourcesCompat.getDrawable(getResources(), iconID, null);
+        mIcon = BitmapFactory.decodeResource(getResources(), iconID);
         invalidate();
     }
 
@@ -44,12 +48,13 @@ public class IconView extends View {
                 attrs, R.styleable.IconView, defStyle, 0);
 
         if(a.hasValue(R.styleable.IconView_numIcons))
-            mNumIcons = a.getInt(R.styleable.IconView_numIcons, 1);
+            mNumIcons = a.getFloat(R.styleable.IconView_numIcons, 1);
         else
             throw new RuntimeException("Must declare numIcons");
 
         if (a.hasValue(R.styleable.IconView_iconDrawable)) {
-            mIcon = a.getDrawable(R.styleable.IconView_iconDrawable);
+//            mIcon = a.getDrawable(R.styleable.IconView_iconDrawable);
+            mIcon = BitmapFactory.decodeResource(getResources(),R.styleable.IconView_iconDrawable);
         }
         else
             throw new RuntimeException("Must declare iconDrawable");
@@ -75,17 +80,15 @@ public class IconView extends View {
         int contentWidth = getWidth() - paddingLeft - paddingRight;
         int contentHeight = getHeight() - paddingTop - paddingBottom;
 
-        int width = mIcon.getIntrinsicWidth();
-        int height = mIcon.getIntrinsicHeight();
+        int width = mIcon.getWidth();
+        int height = mIcon.getHeight();
+
 
         double scale = (double)contentHeight / height;
         int scaledHeight = (int)Math.floor(height * scale);
         int scaledWidth = (int)Math.floor(width * scale);
         int spacing = 40;
 
-        mTextPaint.setTextSize(scaledHeight/3);
-        int textY = paddingTop + scaledHeight*3/4;
-        int textX = scaledWidth + paddingLeft + spacing;
 
         // Number of icons that will fit on the screen
         int num = getWidth()/(scaledWidth+spacing);
@@ -93,23 +96,65 @@ public class IconView extends View {
         boolean xMode = false;
         if(num<mNumIcons)
             xMode = true;
-        else
-            num = mNumIcons;
+
+        num = (int)Math.floor(mNumIcons);
+
+        Rect dst = new Rect();
+        Rect src = new Rect();
+
+        float fraction = mNumIcons - num;
 
         if (!xMode&& mIcon != null) {
             for(int i = 0; i < num; i ++){
-                mIcon.setBounds(paddingLeft + (i*scaledWidth) + (i*spacing), paddingTop,
+                dst.set(paddingLeft + (i*scaledWidth) + (i*spacing), paddingTop,
                         ((i+1)*scaledWidth) + paddingRight + (i*spacing), scaledHeight + paddingBottom);
-                mIcon.draw(canvas);
+                canvas.drawBitmap(mIcon, null, dst, null);
             }
+            if(getWidth()/(scaledWidth+spacing)>num) {
+                dst.set(paddingLeft + (num*scaledWidth) + (num*spacing), paddingTop,
+                        ((num)*scaledWidth) + paddingRight + (num*spacing) + (int)Math.floor(fraction*scaledWidth), scaledHeight + paddingBottom);
+                src.set(0,0,(int)Math.floor(fraction*mIcon.getWidth()), mIcon.getHeight());
+                canvas.drawBitmap(mIcon, src, dst, null);
+            }
+
         }
-        if(xMode&& mIcon != null){
-            mIcon.setBounds(paddingLeft, paddingTop,
-                    scaledWidth + paddingLeft, scaledHeight + paddingTop);
-            mIcon.draw(canvas);
-            canvas.drawText("x"+mNumIcons,textX, textY,
+        if(xMode && mIcon != null){
+            mTextPaint.setTextSize(scaledHeight / 3);
+            int textY = paddingTop + scaledHeight * 3 / 4;
+            int textX = scaledWidth + paddingLeft + spacing;
+
+            dst.set(paddingLeft, paddingTop,
+                    scaledWidth + paddingRight, scaledHeight + paddingBottom);
+            canvas.drawBitmap(mIcon, null, dst, null);
+            String text = "x"+(int)Math.floor(mNumIcons);
+            canvas.drawText(text, textX, textY,
                     mTextPaint);
+
+            Rect textBound = new Rect();
+            mTextPaint.getTextBounds(text, 0, text.length(), textBound);
+            if(textX+textBound.right+scaledWidth+spacing<contentWidth) {
+                dst.set(textX + textBound.right + spacing, paddingTop, textX + spacing + textBound.right + (int) Math.floor(fraction * scaledWidth), scaledHeight + paddingBottom);
+                src.set(0, 0, (int) Math.floor(fraction * mIcon.getWidth()), mIcon.getHeight());
+                canvas.drawBitmap(mIcon, src, dst, null);
+            }
+
         }
+
+//
+//        if (!xMode&& mIcon != null) {
+//            for(int i = 0; i < num; i ++){
+//                mIcon.setBounds(paddingLeft + (i*scaledWidth) + (i*spacing), paddingTop,
+//                        ((i+1)*scaledWidth) + paddingRight + (i*spacing), scaledHeight + paddingBottom);
+//                mIcon.draw(canvas);
+//            }
+//        }
+//        if(xMode&& mIcon != null){
+//            mIcon.setBounds(paddingLeft, paddingTop,
+//                    scaledWidth + paddingLeft, scaledHeight + paddingTop);
+//            mIcon.draw(canvas);
+//            canvas.drawText("x"+mNumIcons,textX, textY,
+//                    mTextPaint);
+//        }
     }
 //
 //    public Drawable getIcon() {
@@ -120,11 +165,11 @@ public class IconView extends View {
 //        mIcon = icon;
 //    }
 
-    public int getNumIcons() {
+    public float getNumIcons() {
         return mNumIcons;
     }
 
-    public void setNumIcons(int mNumIcons) {
+    public void setNumIcons(float mNumIcons) {
         this.mNumIcons = mNumIcons;
         invalidate();
     }
