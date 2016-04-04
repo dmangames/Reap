@@ -15,8 +15,8 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
-import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.ActivityObject;
+import dmangames.team4.reap.objects.DataObject;
 
 /**
  * Created by brian on 4/1/16.
@@ -45,13 +45,13 @@ public class ActivityGridAdapter extends Adapter<ActivityGridAdapter.ActivityVie
         }
     }
 
-    private final ActivityBlob activities;
+    private final DataObject activities;
     private final Context context;
     private final ActivityGridListener listener;
 
     private ArrayList<String> names;
 
-    public ActivityGridAdapter(Context context, ActivityBlob activities,
+    public ActivityGridAdapter(Context context, DataObject activities,
                                ActivityGridListener listener) {
         this.context = context;
         this.activities = activities;
@@ -68,12 +68,12 @@ public class ActivityGridAdapter extends Adapter<ActivityGridAdapter.ActivityVie
 
     @Override
     public void onBindViewHolder(ActivityViewHolder holder, int position) {
-        holder.setActivityObject(activities.getActivity(names.get(position)));
+        holder.setActivityObject(activities.getActivityByName(names.get(position)));
     }
 
-    public void addActivity(ActivityObject object) {
-        activities.addActivity(object);
+    public void update() {
         names = new ArrayList<>(activities.getKeys());
+        notifyDataSetChanged();
     }
 
     @Override public int getItemCount() {

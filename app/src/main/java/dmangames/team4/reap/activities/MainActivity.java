@@ -25,6 +25,8 @@ import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.ReapFragment.ReapFragmentBackListener;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
+import dmangames.team4.reap.objects.DataObject;
+import dmangames.team4.reap.util.GsonWrapper;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
@@ -40,7 +42,8 @@ public class MainActivity extends AppCompatActivity
 
     private ActionBarDrawerToggle drawerToggle;
 
-    public ActivityBlob dailyActivityBlob;
+    public DataObject data;
+    public ActivityBlob blob;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +51,22 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        // Create data object
+        data = GsonWrapper.getDataObject(getApplicationContext());
+
         TimerFragment fragment = TimerFragment.newInstance();
         switchFragment(fragment, true);
 
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy"); //Whatever date format we decide on
         String formatted = format1.format(cal.getTime());
+
+        if(data==null){
+            data = new DataObject("Steven",formatted);
+        }
+
+        data.newDay(formatted);
+        blob = data.getRecentActivities();
 
         setSupportActionBar(toolbar);
         drawerToggle = new ActionBarDrawerToggle(this, layout, toolbar, 0, 0);
@@ -63,11 +76,6 @@ public class MainActivity extends AppCompatActivity
         actionbar.setDisplayHomeAsUpEnabled(true);
         actionbar.setHomeButtonEnabled(true);
         drawerToggle.syncState();
-
-        //Create ActivityBlob if it doesn't exist
-        if (dailyActivityBlob == null) {
-            dailyActivityBlob = new ActivityBlob(formatted);
-        }
 
         drawer.setListener(this);
     }
@@ -126,7 +134,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     public ActivityBlob blob() {
-        return ((ReapApplication) getApplication()).blob();
+        return blob;
     }
 
     @Subscribe public void receiveFragmentEvent(SwitchFragmentEvent event) {
@@ -151,6 +159,8 @@ public class MainActivity extends AppCompatActivity
     @Override protected void onStop() {
         super.onStop();
         bus().unregister(this);
+        data.setRecentActivities(blob());
+        GsonWrapper.commitData(data,getApplicationContext());
     }
 
     @Override public void back(ReapFragment fragment) {
