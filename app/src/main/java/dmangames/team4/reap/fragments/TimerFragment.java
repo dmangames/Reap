@@ -175,8 +175,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        boverlay = new BreakOverlay(view);
         activity = (MainActivity) getActivity();
+        boverlay = new BreakOverlay(view);
 
         Log.d(tag(), "Fragment started");
 
