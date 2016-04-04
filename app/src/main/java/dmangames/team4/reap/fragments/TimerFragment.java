@@ -14,8 +14,6 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.Subscribe;
 
-import java.util.concurrent.TimeUnit;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -96,11 +94,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         public void fadeIn() {
             Blurry.with(activity).capture(container).into(blurContainer);
             Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+            overlayContainer.setVisibility(VISIBLE);
+            blurContainer.setVisibility(VISIBLE);
             anim.setAnimationListener(new AnimationEndListener() {
                 @Override
                 public void onAnimationEnd(Animation animation) {
-                    overlayContainer.setVisibility(VISIBLE);
-                    blurContainer.setVisibility(VISIBLE);
                     animating = false;
                 }
             });
@@ -113,9 +111,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
             anim.setAnimationListener(new AnimationEndListener() {
                 @Override public void onAnimationEnd(Animation animation) {
-                    overlayContainer.setVisibility(GONE);
-                    blurContainer.setVisibility(GONE);
-                    blurContainer.setImageDrawable(null);
+                    setVisibilityGone();
                     animating = false;
                 }
             });
@@ -165,6 +161,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private boolean pomodoroBreak = false;
     private boolean animating = false;
     private boolean isPaused = false;
+    private boolean isBreak = false;
     private boolean previouslyCreated = false;
 
     public static TimerFragment newInstance() {
@@ -202,7 +199,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
             String name = args.getString(KEY_TIMER_ACTIVITY, null);
             if (name != null) {
-                boolean isBreak = args.getBoolean(KEY_TIMER_BREAK);
+                isBreak = args.getBoolean(KEY_TIMER_BREAK);
                 if (isBreak)
                     activityObject = activity.data.getBreakByName(name);
                 else
@@ -229,15 +226,15 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     public void reconstructFromState() {
-        if (isPaused) {
-            boverlay.setVisibilityGone();
-            isPaused = false;
-        }
+        boverlay.setVisibilityGone();
+        isPaused = false;
+        animating = false;
+
         if (activityObject != null) {
             int iconRes = activityObject.getIconRes();
             if (iconRes == 0)
                 iconRes = R.drawable.no_activity_icon;
-            numJars = (float)activityObject.getTimeSpent()/60;
+            numJars = (float)activityObject.getTimeSpent() / 60;
             jarView.changeIcon(iconRes);
             jarView.setNumIcons(numJars);
             iconView.setImageResource(iconRes);
@@ -403,6 +400,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @OnClick(R.id.fab_timer_pause) void pauseClicked() {
         if (animating)
             return;
+        if (isBreak) {
+            goBack();
+            return;
+        }
         animating = true;
         if (!isPaused) {
             stopSecondTimer();
@@ -415,6 +416,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @OnClick(R.id.iv_timer_icon) void chooseActivity() {
+        if (isBreak) {
+            goBack();
+            return;
+        }
         activity.postToBus(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
     }
 }
