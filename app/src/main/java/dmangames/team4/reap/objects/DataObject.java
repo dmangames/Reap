@@ -1,6 +1,8 @@
 package dmangames.team4.reap.objects;
 
 import java.util.HashMap;
+import java.util.Set;
+import java.util.TreeMap;
 
 /**
  * Created by Andrew on 3/28/2016.
@@ -11,7 +13,7 @@ public class DataObject {
     String name;
     HashMap<String, ActivityBlob> history = new HashMap<>();
     ActivityBlob recentActivities;
-    HashMap<String, Boolean> activityList = new HashMap<>();
+    TreeMap<String,ActivityObject> activityList = new TreeMap<>();
 
     public DataObject(String name, String date){
         this.recentDate = date;
@@ -39,20 +41,24 @@ public class DataObject {
         this.recentActivities = recentActivities;
     }
 
-    public void deactivateActivity(String name){
-        if(activityList.containsKey(name))
-            activityList.put(name, false);
-    }
+//    public void deactivateActivity(String name) {
+//        if (activityList.containsKey(name)) {
+//
+//            activityList.get(name).setActivityName(name);
+//
+//        }
+//    }
+//
+//    public void activateActivity(String name){
+//        if(activityList.containsKey(name))
+//            activityList.put(name, true);
+//    }
 
-    public void activateActivity(String name){
-        if(activityList.containsKey(name))
-            activityList.put(name, true);
-    }
-
-    public void addActivity(ActivityObject activity){
-        recentActivities.addActivity(activity);
-        if(!activityList.containsKey(activity.getActivityName()))
-            activityList.put(activity.getActivityName(), true);
+    public void addNewActivity(String activityName, int iconID){
+        if(!activityList.containsKey(activityName)) {
+            ActivityObject activity = new ActivityObject(activityName, iconID);
+            activityList.put(activityName, activity);
+        }
     }
 
     public boolean checkActivity(String name){
@@ -77,5 +83,17 @@ public class DataObject {
 
     public ActivityBlob getActivityBlobByDate(String date){
         return history.get(date);
+    }
+
+    public Set<String> getKeys() {
+        return activityList.keySet();
+    }
+
+    public ActivityObject getActivityByName(String name) {
+        return activityList.get(name);
+    }
+
+    public int size() {
+        return activityList.size();
     }
 }

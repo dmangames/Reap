@@ -35,7 +35,7 @@ public class ChooseActivityFragment extends ReapFragment
         super.onViewCreated(view, savedInstanceState);
 
         MainActivity activity = (MainActivity) getActivity();
-        adapter = new ActivityGridAdapter(activity, activity.blob(), this);
+        adapter = new ActivityGridAdapter(activity, activity.data, this);
 
         activityGrid.setLayoutManager(new GridLayoutManager(activity, 3));
         activityGrid.setAdapter(adapter);
@@ -57,9 +57,8 @@ public class ChooseActivityFragment extends ReapFragment
     @Override
     public void createActivity(String name, String iconURL, int iconRes) {
         Log.e(tag(), "name = " + name);
-        ActivityObject ao = new ActivityObject(name, iconRes);
-        adapter.addActivity(ao);
-        adapter.notifyDataSetChanged();
+        ((MainActivity) getActivity()).data.addNewActivity(name, iconRes);
+        adapter.update();
     }
 
     @Override public void chooseActivity(ActivityObject object) {
