@@ -264,14 +264,12 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             case POMODORO:
                 resumeSecondTimer();
 
-                pauseButton.show();
                 jarView.setVisibility(VISIBLE);
                 timerChooser.setVisibility(GONE);
                 break;
             case HOUR:
                 resumeSecondTimer();
 
-                pauseButton.show();
                 jarView.setVisibility(VISIBLE);
                 timerChooser.setVisibility(GONE);
                 break;
@@ -309,6 +307,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     private void resumeSecondTimer() {
         timer.start();
+        pauseButton.show();
     }
 
     private void stopSecondTimer() {
