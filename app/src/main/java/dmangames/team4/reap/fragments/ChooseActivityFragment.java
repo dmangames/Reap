@@ -62,7 +62,7 @@ public class ChooseActivityFragment extends ReapFragment
     }
 
     @Override public void chooseActivity(ActivityObject object) {
-        bus.postSticky(new ChooseActivityObjectEvent(object));
+        bus.postSticky(new ChooseActivityObjectEvent(object, false));
         goBack();
     }
 }
