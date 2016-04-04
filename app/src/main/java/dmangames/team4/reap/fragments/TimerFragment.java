@@ -10,6 +10,8 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import java.util.concurrent.TimeUnit;
+
 import butterknife.Bind;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
@@ -20,6 +22,7 @@ import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
+import dmangames.team4.reap.views.IconView;
 import dmangames.team4.reap.views.TimerIndicatorView;
 
 import static android.view.View.GONE;
@@ -74,6 +77,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
     @Bind(R.id.iv_timer_icon) TimerIndicatorView iconView;
+    @Bind(R.id.icv_timer_icons) IconView jarView;
     @Bind(R.id.tv_total_time) TextView totalTimeView;
 
     @Bind(R.id.ll_timer_chooser) View timerChooser;
@@ -176,6 +180,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         state = CHOOSE_TIMER;
         iconView.setImageResource(activityObject.getIconRes());
         timerChooser.setVisibility(View.VISIBLE);
+
+        int iconID = ((MainActivity)getActivity()).data.getActivityByName(event.object.getActivityName()).getIconRes();
+        jarView.changeIcon(iconID);
+        long seconds = ((MainActivity)getActivity()).blob.getActivity(event.object.getActivityName()).getTimeSpent();
+        jarView.setNumIcons((int) TimeUnit.SECONDS.toHours(seconds));
     }
 
     @Override public void onTimerTick(long secs) {
@@ -229,6 +238,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             }
         });
         timerChooser.startAnimation(anim);
+        jarView.setVisibility(View.VISIBLE);
     }
 
     @OnClick(R.id.iv_timer_pomodoro) void selectPomodoro() {
