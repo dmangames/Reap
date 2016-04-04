@@ -38,6 +38,10 @@ public class ActivityBlob {
             ActivityMap.put(activity.getActivityName(),activity);
     }
 
+    public void updateActivity(ActivityObject activity){
+        ActivityMap.put(activity.getActivityName(), activity);
+    }
+
     public boolean checkActivity(String name){
         return ActivityMap.containsKey(name);
     }
