@@ -67,6 +67,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
     }
 
+    private int numJars;
+
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
 
@@ -152,6 +154,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if(timer != null)
             activityObject.addTimeSpent(timer.getSecondsElapsed());
         ((MainActivity)getActivity()).blob.updateActivity(activityObject);
+        ((MainActivity)getActivity()).data.getRecentActivities().updateActivity(activityObject);
         currentTotal = activityObject.getTimeSpent();
     }
 
@@ -174,6 +177,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         Log.d(tag(), "Chose activity " + event.object.getActivityName());
         stopSecondTimer();
 
+        currentTotal = activityObject.getTimeSpent();
+
         activityObject = event.object;
         bus.removeStickyEvent(event);
 
@@ -184,11 +189,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         int iconID = ((MainActivity)getActivity()).data.getActivityByName(event.object.getActivityName()).getIconRes();
         jarView.changeIcon(iconID);
         long seconds = ((MainActivity)getActivity()).blob.getActivity(event.object.getActivityName()).getTimeSpent();
-        jarView.setNumIcons((int) TimeUnit.SECONDS.toHours(seconds));
+        numJars = (int)TimeUnit.SECONDS.toMinutes(seconds);
+        jarView.setNumIcons(numJars);
     }
 
     @Override public void onTimerTick(long secs) {
         timerView.setText(String.format("%02d:%02d", secs / 60, secs % 60));
+        long actualCurrentTime = POMODORO_WORK_SECS-secs + currentTotal;
         switch(state){
             case HOUR:
                 totalTimeView.setText(String.format("%02d:%02d", (secs + currentTotal) / 60, (secs + currentTotal) % 60));
@@ -200,6 +207,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             default:
                 Log.e(tag(), "Timer mode does not exist");
         }
+
+        if(numJars!= TimeUnit.SECONDS.toMinutes(actualCurrentTime)){
+            numJars = (int)TimeUnit.SECONDS.toMinutes(actualCurrentTime);
+            Log.d("D", numJars+"");
+            jarView.setNumIcons(numJars);
+        }
+
 
     }
 
