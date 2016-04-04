@@ -240,6 +240,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             iconView.setImageResource(iconRes);
         }
 
+        if(isBreak)
+            pauseButton.setImageResource(R.drawable.ic_arrow_down);
+
         switch (state) {
             case NO_ACTIVITY:
                 timerView.setText(getString(R.string.no_timer));
