@@ -177,10 +177,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         Log.d(tag(), "Chose activity " + event.object.getActivityName());
         stopSecondTimer();
 
-        currentTotal = activityObject.getTimeSpent();
-
         activityObject = event.object;
         bus.removeStickyEvent(event);
+
+        currentTotal = activityObject.getTimeSpent();
 
         state = CHOOSE_TIMER;
         iconView.setImageResource(activityObject.getIconRes());
@@ -195,13 +195,15 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Override public void onTimerTick(long secs) {
         timerView.setText(String.format("%02d:%02d", secs / 60, secs % 60));
-        long actualCurrentTime = POMODORO_WORK_SECS-secs + currentTotal;
+        long actualCurrentTime = 0;
         switch(state){
             case HOUR:
+                actualCurrentTime = secs + currentTotal;
                 totalTimeView.setText(String.format("%02d:%02d", (secs + currentTotal) / 60, (secs + currentTotal) % 60));
                 break;
             case POMODORO:
                 if(!pomodoroBreak)
+                    actualCurrentTime = POMODORO_WORK_SECS-secs + currentTotal;
                     totalTimeView.setText(String.format("%02d:%02d", (POMODORO_WORK_SECS-secs + currentTotal) / 60, (POMODORO_WORK_SECS-secs + currentTotal) % 60));
                 break;
             default:
