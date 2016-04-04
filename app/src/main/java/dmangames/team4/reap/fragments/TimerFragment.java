@@ -156,8 +156,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         Log.d("timer", "Saving Timer");
         if (timer != null)
             activityObject.addTimeSpent(timer.getSecondsElapsed());
-        ((MainActivity)getActivity()).blob.updateActivity(activityObject);
-        ((MainActivity)getActivity()).data.getRecentActivities().updateActivity(activityObject);
+        ((MainActivity) getActivity()).blob.updateActivity(activityObject);
+        ((MainActivity) getActivity()).data.getRecentActivities().updateActivity(activityObject);
         currentTotal = activityObject.getTimeSpent();
     }
 
@@ -201,28 +201,28 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         int iconID = activity.data.getActivityByName(event.object.getActivityName()).getIconRes();
         jarView.changeIcon(iconID);
         long seconds = activity.blob.getActivity(event.object.getActivityName()).getTimeSpent();
-        numJars = (int)TimeUnit.SECONDS.toMinutes(seconds);
+        numJars = (int) TimeUnit.SECONDS.toMinutes(seconds);
         jarView.setNumIcons(numJars);
     }
 
     @Override public void onTimerTick(long secs) {
         timerView.setText(String.format("%02d:%02d", secs / 60, secs % 60));
-        long actualCurrentTime = POMODORO_WORK_SECS-secs + currentTotal;
+        long actualCurrentTime = POMODORO_WORK_SECS - secs + currentTotal;
         switch (state) {
             case HOUR:
                 totalTimeView.setText(String.format("%02d:%02d", (secs + currentTotal) / 60, (secs + currentTotal) % 60));
                 break;
             case POMODORO:
-                if(!pomodoroBreak)
-                    totalTimeView.setText(String.format("%02d:%02d", (POMODORO_WORK_SECS-secs + currentTotal) / 60, (POMODORO_WORK_SECS-secs + currentTotal) % 60));
+                if (!pomodoroBreak)
+                    totalTimeView.setText(String.format("%02d:%02d", (POMODORO_WORK_SECS - secs + currentTotal) / 60, (POMODORO_WORK_SECS - secs + currentTotal) % 60));
                 break;
             default:
                 Log.e(tag(), "Timer mode does not exist");
         }
 
-        if(numJars!= TimeUnit.SECONDS.toMinutes(actualCurrentTime)){
-            numJars = (int)TimeUnit.SECONDS.toMinutes(actualCurrentTime);
-            Log.d("D", numJars+"");
+        if (numJars != TimeUnit.SECONDS.toMinutes(actualCurrentTime)) {
+            numJars = (int) TimeUnit.SECONDS.toMinutes(actualCurrentTime);
+            Log.d("D", numJars + "");
             jarView.setNumIcons(numJars);
         }
 
