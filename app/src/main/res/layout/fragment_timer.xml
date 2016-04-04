@@ -31,7 +31,8 @@
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
         app:iconDrawable="@drawable/no_activity_icon"
-        app:numIcons="1"/>
+        app:numIcons="0"
+        android:visibility="gone"/>
 
     <LinearLayout
         android:id="@+id/ll_timer_chooser"

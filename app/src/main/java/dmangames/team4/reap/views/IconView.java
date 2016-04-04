@@ -5,6 +5,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
@@ -30,6 +31,11 @@ public class IconView extends View {
     public IconView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         init(attrs, defStyle);
+    }
+
+    public void changeIcon(int iconID){
+        mIcon = ResourcesCompat.getDrawable(getResources(), iconID, null);
+        invalidate();
     }
 
     private void init(AttributeSet attrs, int defStyle) {
@@ -105,21 +111,22 @@ public class IconView extends View {
                     mTextPaint);
         }
     }
+//
+//    public Drawable getIcon() {
+//        return mIcon;
+//    }
+//
+//    public void setIcon(Drawable icon) {
+//        mIcon = icon;
+//    }
 
-    public Drawable getIcon() {
-        return mIcon;
-    }
-
-    public void setIcon(Drawable icon) {
-        mIcon = icon;
-    }
-
-    public int getmNumIcons() {
+    public int getNumIcons() {
         return mNumIcons;
     }
 
-    public void setmNumIcons(int mNumIcons) {
+    public void setNumIcons(int mNumIcons) {
         this.mNumIcons = mNumIcons;
+        invalidate();
     }
 
 }
