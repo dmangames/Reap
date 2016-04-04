@@ -42,7 +42,11 @@ public class IconGridAdapter extends RecyclerView.Adapter<IconGridAdapter.IconHo
     private final Context context;
     private final IconClickListener listener;
     private final int[] icons = {
-            R.drawable.classic_acoustic_guitar
+            R.drawable.classic_acoustic_guitar,
+            R.drawable.microphone,
+            R.drawable.laptop,
+            R.drawable.sports,
+            R.drawable.book
     };
 
     public IconGridAdapter(Context context, IconClickListener listener) {
