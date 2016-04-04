@@ -9,6 +9,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
+import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
 
 /**
  * Timer class implemented from {@link Timer Timer}. Calls a method on the UI thread
@@ -91,6 +92,10 @@ public class SecondTimer {
     }
 
     public void setCurrentSeconds(long current) { this.current = current; }
+
+    public long getSecondsElapsed() {
+        return type == COUNT_UP ? current : total - current;
+    }
 
     public enum Type {
         COUNT_UP(true), COUNT_DOWN(false);
