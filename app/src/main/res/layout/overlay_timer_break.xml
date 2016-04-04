@@ -1,20 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:tools="http://schemas.android.com/tools"
+<LinearLayout android:id="@+id/ll_boverlay_container"
+              xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
               android:orientation="vertical">
 
+    <!-- We want the user to still be able to see the blurry timer, so we shunt the icons down.-->
     <TextView
         android:id="@+id/tv_boverlay_timer"
         style="@style/Theme.Reap.Timer"
-        tools:text="00:00"
+        android:text=" "
         />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_boverlay_icons"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         />
 
 </LinearLayout>

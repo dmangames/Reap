@@ -87,9 +87,16 @@
         android:src="@drawable/ic_pause"
         android:visibility="gone"/>
 
+    <ImageView
+        android:id="@+id/iv_timer_blur_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@android:color/transparent"
+        android:visibility="invisible"/>
+
     <include
+        android:visibility="invisible"
         android:id="@+id/ol_timer_break"
-        layout="@layout/overlay_timer_break"
-        android:visibility="gone"/>
+        layout="@layout/overlay_timer_break"/>
 
 </FrameLayout>
