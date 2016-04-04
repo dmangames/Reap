@@ -134,6 +134,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if (!previouslyCreated) {
             Bundle args = getArguments();
             state = State.fromInt(args.getInt(KEY_TIMER_STATE));
+            Log.d("New Second Timer", "New Second Timer created");
             timer = new SecondTimer(this);
             previouslyCreated = true;
         }
@@ -145,7 +146,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             activityObject = new ActivityObject("Null", 0);
         } else {
             iconView.setImageResource(activityObject.getIconRes());
-            currentTotal = activityObject.getTimeSpent();
+            //currentTotal = activityObject.getTimeSpent();
             Log.d("Timer Fragment", "" + activityObject.getTimeSpent());
             pauseButton.show();
         }
@@ -174,6 +175,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Override public void onStop() {
         super.onStop();
         saveSecondTimer();
+        stopSecondTimer();
+        Log.d("Stop", "Timer Fragment stopped");
     }
 
     private void restartSecondTimer() {
@@ -195,10 +198,17 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Subscribe(sticky = true) public void onActivityChosen(ChooseActivityObjectEvent event) {
         Log.d(tag(), "Chose activity " + event.object.getActivityName());
         stopSecondTimer();
+        timer.reset();
         timerView.setText(R.string.no_timer);
         pauseButton.hide();
 
-        activityObject = event.object;
+        MainActivity activity = (MainActivity) getActivity();
+        if(activity.data.getRecentActivities().checkActivity(event.object.getActivityName()))
+            activityObject = activity.data.getRecentActivities().getActivity(event.object.getActivityName());
+        else {
+            activityObject = new ActivityObject(event.object.getActivityName(), event.object.getIconRes());
+            activity.data.getRecentActivities().addActivity(activityObject);
+        }
         bus.removeStickyEvent(event);
 
         currentTotal = activityObject.getTimeSpent();
@@ -207,7 +217,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         iconView.setImageResource(activityObject.getIconRes());
         timerChooser.setVisibility(VISIBLE);
 
-        MainActivity activity = (MainActivity) getActivity();
         int iconID = activity.data.getActivityByName(event.object.getActivityName()).getIconRes();
         jarView.changeIcon(iconID);
         long seconds = activity.blob.getActivity(event.object.getActivityName()).getTimeSpent();
@@ -238,11 +247,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             Log.d("D", numJars + "");
             jarView.setNumIcons(numJars);
         }
-
-
     }
 
     @Override public void onTimerFinish() {
+        Log.d("onTimerFinish", "Timer finished");
         if (state == POMODORO) {
             if (!pomodoroBreak)
                 saveSecondTimer();
