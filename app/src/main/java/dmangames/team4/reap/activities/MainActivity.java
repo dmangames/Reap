@@ -71,7 +71,14 @@ public class MainActivity extends AppCompatActivity
         data.newDay(formatted);
         blob = data.getRecentActivities();
 
-        setSupportActionBar(toolbar);
+        //Add breaks
+        data.addNewBreak("sleep", R.drawable.bed);
+        data.addNewBreak("restroom", R.drawable.restroom);
+        data.addNewBreak("social",R.drawable.social);
+        data.addNewBreak("eat", R.drawable.hamburger);
+        data.addNewBreak("play", R.drawable.game);
+
+                setSupportActionBar(toolbar);
         drawerToggle = new ActionBarDrawerToggle(this, layout, toolbar, 0, 0);
         layout.addDrawerListener(drawerToggle);
 

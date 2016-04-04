@@ -1,6 +1,5 @@
 package dmangames.team4.reap.fragments;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -23,6 +22,7 @@ import butterknife.OnClick;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.adapters.BreakGridAdapter;
+import dmangames.team4.reap.adapters.BreakGridAdapter.BreakGridListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.events.ChooseActivityObjectEvent;
@@ -78,7 +78,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
     }
 
-    public class BreakOverlay {
+    public class BreakOverlay implements BreakGridListener {
         @Bind(R.id.ol_timer_break) View overlayContainer;
         @Bind(R.id.rv_boverlay_icons) RecyclerView grid;
         @Bind(R.id.iv_timer_blur_container) ImageView blurContainer;
@@ -88,7 +88,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         public BreakOverlay(View view) {
             ButterKnife.bind(this, view);
 
-            adapter = new BreakGridAdapter(activity);
+            adapter = new BreakGridAdapter(activity, activity.data, this);
             grid.setLayoutManager(new GridLayoutManager(activity, 3));
             grid.setAdapter(adapter);
         }
@@ -121,6 +121,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             overlayContainer.setAnimation(anim);
             blurContainer.setAnimation(anim);
             anim.start();
+        }
+
+        @Override
+        public void chooseBreak(ActivityObject activityObject) {
+            bus.postSticky(new ChooseActivityObjectEvent(activityObject, true));
         }
     }
 
@@ -293,10 +298,39 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             activityObject = new ActivityObject(activityName, event.object.getIconRes());
             recent.addActivity(activityObject);
         }
+
         bus.removeStickyEvent(event);
 
         state = CHOOSE_TIMER;
         reconstructFromState();
+        
+        //TODO look at this
+        currentTotal = activityObject.getTimeSpent();
+
+        iconView.setImageResource(activityObject.getIconRes());
+
+
+
+        if(!event.isBreak) {
+            state = CHOOSE_TIMER;
+            timerChooser.setVisibility(VISIBLE);
+            int iconID = activity.data.getActivityByName(event.object.getActivityName()).getIconRes();
+            jarView.changeIcon(iconID);
+            long seconds = activity.blob.getActivity(event.object.getActivityName()).getTimeSpent();
+            numJars = (int) TimeUnit.SECONDS.toMinutes(seconds);
+            jarView.setNumIcons(numJars);
+        }
+        else{
+            state = HOUR;
+            timerChooser.setVisibility(GONE);
+            int iconID = activity.data.getBreakByName(event.object.getActivityName()).getIconRes();
+            jarView.changeIcon(iconID);
+            long seconds = activity.blob.getActivity(event.object.getActivityName()).getTimeSpent();
+            numJars = (int) TimeUnit.SECONDS.toMinutes(seconds);
+            jarView.setNumIcons(numJars);
+        }
+
+
     }
 
     @Override public void onTimerTick(long secs) {

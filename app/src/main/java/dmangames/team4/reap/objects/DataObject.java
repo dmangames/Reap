@@ -1,5 +1,7 @@
 package dmangames.team4.reap.objects;
 
+import android.util.Log;
+
 import java.util.HashMap;
 import java.util.Set;
 import java.util.TreeMap;
@@ -14,6 +16,7 @@ public class DataObject {
     HashMap<String, ActivityBlob> history = new HashMap<>();
     ActivityBlob recentActivities;
     TreeMap<String,ActivityObject> activityList = new TreeMap<>();
+    TreeMap<String,ActivityObject> breakList = new TreeMap<>();
 
     public DataObject(String name, String date){
         this.recentDate = date;
@@ -61,6 +64,15 @@ public class DataObject {
         }
     }
 
+    public void addNewBreak(String activityName, int iconID){
+        Log.d("Activity list", activityList.toString());
+        Log.d("Break list", breakList.toString());
+        if(!breakList.containsKey(activityName)) {
+            ActivityObject activity = new ActivityObject(activityName, iconID);
+            breakList.put(activityName, activity);
+        }
+    }
+
     public boolean checkActivity(String name){
         return recentActivities.checkActivity(name);
     }
@@ -89,11 +101,21 @@ public class DataObject {
         return activityList.keySet();
     }
 
+    public Set<String> getBreakKeys() {
+        return breakList.keySet();
+    }
+
     public ActivityObject getActivityByName(String name) {
         return activityList.get(name);
+    }
+
+    public ActivityObject getBreakByName(String name) {
+        return breakList.get(name);
     }
 
     public int size() {
         return activityList.size();
     }
+
+    public int breakListSize() { return breakList.size(); }
 }

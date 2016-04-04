@@ -7,8 +7,10 @@ import dmangames.team4.reap.objects.ActivityObject;
  */
 public class ChooseActivityObjectEvent {
     public final ActivityObject object;
+    public final boolean isBreak;
 
-    public ChooseActivityObjectEvent(ActivityObject object) {
+    public ChooseActivityObjectEvent(ActivityObject object, boolean isBreak) {
         this.object = object;
+        this.isBreak = isBreak;
     }
 }
