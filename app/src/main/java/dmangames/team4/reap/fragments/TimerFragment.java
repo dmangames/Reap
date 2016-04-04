@@ -67,7 +67,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
 
-    private static final long POMODORO_WORK_SECS = MINUTES.toSeconds(2);
+    private static final long POMODORO_WORK_SECS = MINUTES.toSeconds(1);
     private static final long POMODORO_BREAK_SECS = MINUTES.toSeconds(1);
     private static final long COUNT_UP_SECS = MINUTES.toSeconds(1);
 
@@ -148,6 +148,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if(timer != null)
             activityObject.addTimeSpent(timer.getSecondsElapsed());
         ((MainActivity)getActivity()).blob.updateActivity(activityObject);
+        currentTotal = activityObject.getTimeSpent();
     }
 
     @Override public void onStop() {
@@ -171,7 +172,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
         activityObject = event.object;
         bus.removeStickyEvent(event);
-        currentTotal = activityObject.getTimeSpent();
 
         state = CHOOSE_TIMER;
         iconView.setImageResource(activityObject.getIconRes());
@@ -185,7 +185,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 totalTimeView.setText(String.format("%02d:%02d", (secs + currentTotal) / 60, (secs + currentTotal) % 60));
                 break;
             case POMODORO:
-                if(POMODORO_BREAK_SECS != 0)
+                if(!pomodoroBreak)
                     totalTimeView.setText(String.format("%02d:%02d", (POMODORO_WORK_SECS-secs + currentTotal) / 60, (POMODORO_WORK_SECS-secs + currentTotal) % 60));
                 break;
             default:
@@ -195,12 +195,18 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @Override public void onTimerFinish() {
-        saveSecondTimer();
-        pomodoroBreak = !pomodoroBreak;
-        if (pomodoroBreak)
-            timer.setTotalSeconds(POMODORO_BREAK_SECS);
-        else
-            timer.setTotalSeconds(POMODORO_WORK_SECS);
+        if (state == POMODORO) {
+            if (!pomodoroBreak)
+                saveSecondTimer();
+
+            pomodoroBreak = !pomodoroBreak;
+            if (pomodoroBreak)
+                timer.setTotalSeconds(POMODORO_BREAK_SECS);
+            else
+                timer.setTotalSeconds(POMODORO_WORK_SECS);
+        } else
+            saveSecondTimer();
+
         restartSecondTimer();
     }
 
