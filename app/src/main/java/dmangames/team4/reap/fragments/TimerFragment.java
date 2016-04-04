@@ -35,7 +35,6 @@ import dmangames.team4.reap.views.TimerIndicatorView;
 import jp.wasabeef.blurry.Blurry;
 
 import static android.view.View.GONE;
-import static android.view.View.INVISIBLE;
 import static android.view.View.VISIBLE;
 import static dmangames.team4.reap.fragments.TimerFragment.State.CHOOSE_TIMER;
 import static dmangames.team4.reap.fragments.TimerFragment.State.HOUR;
@@ -93,7 +92,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Bind(R.id.fab_timer_pause) FloatingActionButton pauseButton;
     @Bind(R.id.icv_timer_icons) IconView jarView;
     @Bind(R.id.tv_total_time) TextView totalTimeView;
-    @Bind(R.id.iv_timer_blur_container) ImageView blurContainer;
 
     @Bind(R.id.ll_timer_chooser) View timerChooser;
 
@@ -294,7 +292,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @OnClick(R.id.fab_timer_pause) void pauseClicked() {
         if (!isPaused) {
             stopSecondTimer();
-            Blurry.with(getActivity()).capture(container).into(blurContainer);
             boverlay.fadeIn();
         } else {
             resumeSecondTimer();
@@ -311,6 +308,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public class BreakOverlay {
         @Bind(R.id.ol_timer_break) View overlayContainer;
         @Bind(R.id.rv_boverlay_icons) RecyclerView grid;
+        @Bind(R.id.iv_timer_blur_container) ImageView blurContainer;
 
         BreakGridAdapter adapter;
 
@@ -321,11 +319,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             adapter = new BreakGridAdapter(activity);
             grid.setLayoutManager(new GridLayoutManager(activity, 3));
             grid.setAdapter(adapter);
-
-            overlayContainer.setVisibility(INVISIBLE);
         }
 
         public void fadeIn() {
+            Blurry.with(getActivity()).capture(container).into(blurContainer);
             Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_in);
             anim.setAnimationListener(new AnimationEndListener() {
                 @Override public void onAnimationEnd(Animation animation) {
