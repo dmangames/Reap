@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -30,6 +31,8 @@ import dmangames.team4.reap.util.GsonWrapper;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity
         implements DrawerListener, ReapFragmentBackListener {
@@ -61,8 +64,8 @@ public class MainActivity extends AppCompatActivity
         SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy"); //Whatever date format we decide on
         String formatted = format1.format(cal.getTime());
 
-        if(data==null){
-            data = new DataObject("Steven",formatted);
+        if (data == null) {
+            data = new DataObject("Steven", formatted);
         }
 
         data.newDay(formatted);
@@ -102,6 +105,7 @@ public class MainActivity extends AppCompatActivity
                 Log.e(TAG, "Unknown option in switchTo");
         }
 
+        Toast.makeText(this, "To be implemented", LENGTH_SHORT).show();
         layout.closeDrawer(drawer);
     }
 
@@ -160,7 +164,7 @@ public class MainActivity extends AppCompatActivity
         super.onStop();
         bus().unregister(this);
         data.setRecentActivities(blob());
-        GsonWrapper.commitData(data,getApplicationContext());
+        GsonWrapper.commitData(data, getApplicationContext());
     }
 
     @Override public void back(ReapFragment fragment) {

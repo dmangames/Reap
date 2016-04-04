@@ -1,12 +1,14 @@
 package dmangames.team4.reap.fragments;
 
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.FrameLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.greenrobot.eventbus.Subscribe;
 
@@ -21,6 +23,7 @@ import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.TimerIndicatorView;
+import jp.wasabeef.blurry.Blurry;
 
 import static android.view.View.GONE;
 import static dmangames.team4.reap.fragments.TimerFragment.State.CHOOSE_TIMER;
@@ -30,7 +33,6 @@ import static dmangames.team4.reap.fragments.TimerFragment.State.POMODORO;
 import static dmangames.team4.reap.util.SecondTimer.SecondListener;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
-import static java.util.concurrent.TimeUnit.HOURS;
 import static java.util.concurrent.TimeUnit.MINUTES;
 
 /**
@@ -72,9 +74,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private static final long POMODORO_BREAK_SECS = MINUTES.toSeconds(1);
     private static final long COUNT_UP_SECS = MINUTES.toSeconds(1);
 
-    @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
     @Bind(R.id.iv_timer_icon) TimerIndicatorView iconView;
+    @Bind(R.id.fl_timer_container) FrameLayout container;
+    @Bind(R.id.fab_timer_pause) FloatingActionButton pauseButton;
 
     @Bind(R.id.ll_timer_chooser) View timerChooser;
 
@@ -84,6 +87,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private boolean pomodoroBreak = false;
     private boolean animating = false;
     private boolean previouslyCreated = false;
+    private boolean isPaused = false;
 
     public static TimerFragment newInstance() {
         Bundle args = new Bundle(1);
@@ -120,10 +124,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         iconView.setTimer(timer);
 
         //Create activity object if none exists
-        if (activityObject == null){
+        if (activityObject == null) {
             activityObject = new ActivityObject("Null", 0);
         } else {
             iconView.setImageResource(activityObject.getIconRes());
+            pauseButton.show();
         }
 
         if (state == NO_ACTIVITY) {
@@ -139,7 +144,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     */
     private void saveSecondTimer() {
         Log.d("timer", "Saving Timer");
-        if(timer != null)
+        if (timer != null)
             activityObject.addTimeSpent(timer.getTotalSeconds());
     }
 
@@ -151,10 +156,16 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private void restartSecondTimer() {
         timer.reset();
         timer.start();
+        pauseButton.show();
     }
+
+    private void resumeSecondTimer() {
+        timer.start();
+    }
+
     private void stopSecondTimer() {
         Log.d("timer", "Stopping timer");
-        if(timer != null)
+        if (timer != null)
             timer.stop();
     }
 
@@ -162,6 +173,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         Log.d(tag(), "Chose activity " + event.object.getActivityName());
         saveSecondTimer();
         stopSecondTimer();
+        timerView.setText(R.string.no_timer);
+        pauseButton.hide();
 
         activityObject = event.object;
         bus.removeStickyEvent(event);
@@ -222,6 +235,23 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
         timer.setup(COUNT_UP, COUNT_UP_SECS);
         restartSecondTimer();
+    }
+
+    @OnClick(R.id.fab_timer_pause) void pauseClicked() {
+        if (!isPaused) {
+            stopSecondTimer();
+            int animTime = getResources().getInteger(android.R.integer.config_mediumAnimTime);
+            Blurry.with(getActivity()).animate(animTime).onto(container);
+            container.postDelayed(new Runnable() {
+                @Override public void run() {
+
+                }
+            }, animTime);
+        } else {
+            resumeSecondTimer();
+            Blurry.delete(container);
+        }
+        isPaused = !isPaused;
     }
 
     @OnClick(R.id.iv_timer_icon) void chooseActivity() {

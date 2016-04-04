@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout
     android:id="@+id/fl_timer_container"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -27,9 +27,9 @@
         android:layout_gravity="bottom"
         android:background="@color/sand"
         android:paddingBottom="10dp"
-        android:paddingTop="10dp"
         android:paddingLeft="20dp"
         android:paddingRight="20dp"
+        android:paddingTop="10dp"
         app:iconDrawable="@drawable/no_activity_icon"
         app:numIcons="1"/>
 
@@ -64,6 +64,14 @@
             android:src="@drawable/stopwatch"/>
     </LinearLayout>
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab_timer_pause"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="@dimen/activity_horizontal_margin"
+        android:src="@drawable/ic_pause"
+        android:visibility="gone"/>
 
     <include
         android:id="@+id/ol_timer_break"
