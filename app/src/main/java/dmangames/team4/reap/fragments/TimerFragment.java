@@ -68,21 +68,22 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
 
-    private static final long POMODORO_WORK_SECS = MINUTES.toSeconds(25);
-    private static final long POMODORO_BREAK_SECS = MINUTES.toSeconds(5);
+    private static final long POMODORO_WORK_SECS = MINUTES.toSeconds(2);
+    private static final long POMODORO_BREAK_SECS = MINUTES.toSeconds(1);
+    private static final long COUNT_UP_SECS = MINUTES.toSeconds(1);
 
     @Bind(R.id.fl_timer_container) FrameLayout container;
     @Bind(R.id.tv_timer_timer) TextView timerView;
     @Bind(R.id.iv_timer_icon) TimerIndicatorView iconView;
 
-    @Bind(R.id.ol_timer_pause) View pContainer;
-    @Bind(R.id.tv_poverlay_timer) TextView pTimer;
     @Bind(R.id.ll_timer_chooser) View timerChooser;
 
     private State state;
     private SecondTimer timer;
     private ActivityObject activityObject;
     private boolean pomodoroBreak = false;
+    private boolean animating = false;
+    private boolean previouslyCreated = false;
 
     public static TimerFragment newInstance() {
         Bundle args = new Bundle(1);
@@ -91,7 +92,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     public static TimerFragment newInstance(State state, String activityName) {
-        Bundle args = new Bundle(4);
+        Bundle args = new Bundle(2);
         args.putInt(KEY_TIMER_STATE, state.id);
         args.putString(KEY_TIMER_ACTIVITY, activityName);
 
@@ -109,27 +110,25 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
         Log.d("Timer Fragment", "Fragment started");
 
-        Bundle args = getArguments();
-        state = State.fromInt(args.getInt(KEY_TIMER_STATE));
-        timer = new SecondTimer(COUNT_UP, 3600, this);
+        if (!previouslyCreated) {
+            Bundle args = getArguments();
+            state = State.fromInt(args.getInt(KEY_TIMER_STATE));
+            timer = new SecondTimer(this);
+            previouslyCreated = true;
+        }
+
         iconView.setTimer(timer);
 
         //Create activity object if none exists
         if (activityObject == null){
             activityObject = new ActivityObject("Null", 0);
+        } else {
+            iconView.setImageResource(activityObject.getIconRes());
         }
 
         if (state == NO_ACTIVITY) {
             timerView.setText(getString(R.string.no_timer));
             iconView.setImageResource(R.drawable.no_activity_icon);
-
-            iconView.setOnClickListener(new View.OnClickListener() {
-                @Override public void onClick(View v) {
-                    saveSecondTimer();
-                    ((MainActivity) getActivity()).postToBus(
-                            new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
-                }
-            });
         }
 
         Log.d("Timer Fragment", "Fragment view loaded");
@@ -168,7 +167,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         bus.removeStickyEvent(event);
 
         state = CHOOSE_TIMER;
-        iconView.setOnClickListener(null);
         iconView.setImageResource(activityObject.getIconRes());
         timerChooser.setVisibility(View.VISIBLE);
     }
@@ -182,24 +180,32 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         pomodoroBreak = !pomodoroBreak;
         if (pomodoroBreak)
             timer.setTotalSeconds(POMODORO_BREAK_SECS);
+        else
+            timer.setTotalSeconds(POMODORO_WORK_SECS);
         restartSecondTimer();
     }
 
     private void fadeOutTimerChooser() {
+        animating = true;
         Animation anim = AnimationUtils.loadAnimation(getActivity(), R.anim.fade_out);
         anim.setAnimationListener(new Animation.AnimationListener() {
-            @Override public void onAnimationStart(Animation animation) {}
+            @Override public void onAnimationStart(Animation animation) {
+            }
 
             @Override public void onAnimationEnd(Animation animation) {
                 timerChooser.setVisibility(GONE);
+                animating = false;
             }
 
-            @Override public void onAnimationRepeat(Animation animation) {}
+            @Override public void onAnimationRepeat(Animation animation) {
+            }
         });
         timerChooser.startAnimation(anim);
     }
 
     @OnClick(R.id.iv_timer_pomodoro) void selectPomodoro() {
+        if (animating)
+            return;
         state = POMODORO;
         pomodoroBreak = false;
         fadeOutTimerChooser();
@@ -209,17 +215,18 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @OnClick(R.id.iv_timer_stopwatch) void selectStopwatch() {
+        if (animating)
+            return;
         state = HOUR;
         fadeOutTimerChooser();
 
-        timer.setup(COUNT_UP, HOURS.toSeconds(1));
+        timer.setup(COUNT_UP, COUNT_UP_SECS);
         restartSecondTimer();
     }
 
-    @OnClick(R.id.iv_poverlay_pause) void pauseTimer() {
-    }
-
-    @OnClick(R.id.iv_poverlay_switch) void switchActivity() {
-        bus.post(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
+    @OnClick(R.id.iv_timer_icon) void chooseActivity() {
+        saveSecondTimer();
+        ((MainActivity) getActivity()).postToBus(
+                new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
     }
 }

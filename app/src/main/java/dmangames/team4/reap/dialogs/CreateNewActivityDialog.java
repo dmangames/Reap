@@ -7,11 +7,14 @@ import android.support.annotation.DrawableRes;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import butterknife.Bind;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.dialogs.ChooseActivityIconDialog.ChooseIconListener;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * Used to create a new activity that will be tracked
@@ -40,8 +43,13 @@ public class CreateNewActivityDialog extends ReapDialogBuilder implements Choose
             @Override
             public void onClick(DialogInterface dialog, int id) {
                 // sign in the user ...
+                String name = activity_name.getText().toString();
+                if (name.isEmpty()) {
+                    Toast.makeText(getContext(), R.string.empty_activity_name, LENGTH_SHORT).show();
+                    return;
+                }
                 CreateNewActivityDialog.this.listener.createActivity(
-                        activity_name.getText().toString(), "", iconRes);
+                        name, "", iconRes);
             }
         });
         setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

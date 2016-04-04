@@ -70,9 +70,4 @@
         layout="@layout/overlay_timer_break"
         android:visibility="gone"/>
 
-    <include
-        android:id="@+id/ol_timer_pause"
-        layout="@layout/overlay_timer_pause"
-        android:visibility="gone"/>
-
 </FrameLayout>

@@ -29,28 +29,6 @@ public class SecondTimer {
                 l.onTimerTick(current);
         }
     };
-    private final TimerTask upTask = new TimerTask() {
-        @Override public void run() {
-            if (current >= total) {
-                handler.post(finish);
-                cancel();
-                return;
-            }
-            handler.post(tick);
-            ++current;
-            Log.d("Timer Task", "Counting");
-        }
-    }, downTask = new TimerTask() {
-        @Override public void run() {
-            if (current <= 0) {
-                handler.post(finish);
-                cancel();
-                return;
-            }
-            handler.post(tick);
-            --current;
-        }
-    };
 
     private Timer timer;
 
@@ -62,11 +40,15 @@ public class SecondTimer {
     private long total;
 
     public SecondTimer(Type type, long seconds, SecondListener listener) {
+        this(listener);
+        setup(type, seconds);
+    }
+
+    public SecondTimer(SecondListener listener) {
         this.listeners = new LinkedList<>();
-        handler = new Handler(Looper.getMainLooper());
+        this.handler = new Handler(Looper.getMainLooper());
         timer = new Timer();
         listeners.add(listener);
-        setup(type, seconds);
     }
 
     public void setTotalSeconds(long seconds) {
@@ -89,12 +71,15 @@ public class SecondTimer {
     }
 
     public void start() {
+        if (timer != null)
+            stop();
         timer = new Timer();
-        timer.scheduleAtFixedRate(type == COUNT_DOWN ? downTask : upTask, 0, 1000);
+        timer.scheduleAtFixedRate(type == COUNT_DOWN ? new DownTask() : new UpTask(), 0, 1000);
     }
 
     public void stop() {
         timer.cancel();
+        timer.purge();
     }
 
     public Type getType() {
@@ -121,5 +106,29 @@ public class SecondTimer {
         void onTimerTick(long secs);
 
         void onTimerFinish();
+    }
+
+    private class UpTask extends TimerTask {
+        @Override public void run() {
+            if (current >= total) {
+                handler.post(finish);
+                cancel();
+                return;
+            }
+            handler.post(tick);
+            ++current;
+        }
+    }
+
+    private class DownTask extends TimerTask {
+        @Override public void run() {
+            if (current <= 0) {
+                handler.post(finish);
+                cancel();
+                return;
+            }
+            handler.post(tick);
+            --current;
+        }
     }
 }
