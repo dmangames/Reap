@@ -137,6 +137,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             Log.d("New Second Timer", "New Second Timer created");
             timer = new SecondTimer(this);
             previouslyCreated = true;
+        } else {
+            resumeSecondTimer();
         }
 
         iconView.setTimer(timer);
@@ -302,6 +304,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     @OnClick(R.id.fab_timer_pause) void pauseClicked() {
+        if (animating)
+            return;
+        animating = true;
         if (!isPaused) {
             stopSecondTimer();
             boverlay.fadeIn();
@@ -340,6 +345,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 @Override public void onAnimationEnd(Animation animation) {
                     overlayContainer.setVisibility(VISIBLE);
                     blurContainer.setVisibility(VISIBLE);
+                    animating = false;
                 }
             });
             overlayContainer.setAnimation(anim);
@@ -354,6 +360,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                     overlayContainer.setVisibility(GONE);
                     blurContainer.setVisibility(GONE);
                     blurContainer.setImageDrawable(null);
+                    animating = false;
                 }
             });
             overlayContainer.setAnimation(anim);

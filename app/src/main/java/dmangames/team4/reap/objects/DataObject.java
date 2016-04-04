@@ -70,7 +70,7 @@ public class DataObject {
     }
 
     public void newDay(String newString){
-        if(this.recentDate.equals(recentActivities.getString())){
+        if(!this.recentDate.equals(recentActivities.getString())){
             archiveActivities(newString);
         }
         recentDate = newString;
