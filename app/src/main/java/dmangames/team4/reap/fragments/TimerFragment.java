@@ -191,12 +191,22 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         iconView.setTimer(timer);
         if (activityObject == null)
             activityObject = new ActivityObject("Null", 0);
-        reconstructFromState();
 
         Log.d(tag(), "Fragment view loaded");
     }
 
     public void reconstructFromState() {
+        if (activityObject != null) {
+            int iconRes = activityObject.getIconRes();
+            if (iconRes == 0)
+                iconRes = R.drawable.no_activity_icon;
+            currentTotal = activityObject.getTimeSpent();
+            numJars = (int) TimeUnit.SECONDS.toMinutes(currentTotal);
+            jarView.changeIcon(iconRes);
+            jarView.setNumIcons(numJars);
+            iconView.setImageResource(iconRes);
+        }
+
         switch (state) {
             case NO_ACTIVITY:
                 timerView.setText(getString(R.string.no_timer));
@@ -208,23 +218,14 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 timerChooser.setVisibility(GONE);
                 break;
             case CHOOSE_TIMER:
-                int iconRes = activityObject.getIconRes();
                 timerView.setText(getString(R.string.no_timer));
                 totalTimeView.setText(getString(R.string.no_timer));
-                iconView.setImageResource(iconRes);
-
-                currentTotal = activityObject.getTimeSpent();
-                numJars = (int) TimeUnit.SECONDS.toMinutes(currentTotal);
-                jarView.changeIcon(iconRes);
-                jarView.setNumIcons(numJars);
 
                 pauseButton.hide();
                 jarView.setVisibility(GONE);
                 timerChooser.setVisibility(VISIBLE);
                 break;
             case POMODORO:
-                iconView.setImageResource(activityObject.getIconRes());
-
                 resumeSecondTimer();
 
                 pauseButton.show();
@@ -232,7 +233,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 timerChooser.setVisibility(GONE);
                 break;
             case HOUR:
-                iconView.setImageResource(activityObject.getIconRes());
                 resumeSecondTimer();
 
                 pauseButton.show();
@@ -261,6 +261,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         saveSecondTimer();
         stopSecondTimer();
         Log.d(tag(), "Timer Fragment stopped");
+    }
+
+    @Override public void onResume() {
+        super.onResume();
+        reconstructFromState();
     }
 
     private void restartSecondTimer() {
