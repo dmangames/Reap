@@ -1,6 +1,6 @@
 <resources>
     <declare-styleable name="IconView">
         <attr name="iconDrawable" format="reference" />
-        <attr name="numIcons" format="integer" />
+        <attr name="numIcons" format="float" />
     </declare-styleable>
 </resources>

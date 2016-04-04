@@ -70,6 +70,7 @@ public class MainActivity extends AppCompatActivity
 
         data.newDay(formatted);
         blob = data.getRecentActivities();
+        Log.d("blob",blob.size()+"");
 
         //Add breaks
         data.addNewBreak("sleep", R.drawable.bed);

@@ -160,7 +160,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     private BreakOverlay boverlay;
     private MainActivity activity;
 
-    private int numJars;
+    private float numJars;
 
     private boolean pomodoroBreak = false;
     private boolean animating = false;
@@ -237,7 +237,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             int iconRes = activityObject.getIconRes();
             if (iconRes == 0)
                 iconRes = R.drawable.no_activity_icon;
-            numJars = (int) TimeUnit.SECONDS.toMinutes(activityObject.getTimeSpent());
+            numJars = (float)activityObject.getTimeSpent()/60;
             jarView.changeIcon(iconRes);
             jarView.setNumIcons(numJars);
             iconView.setImageResource(iconRes);
@@ -343,11 +343,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         long timeSpent = activityObject.getTimeSpent();
         totalTimeView.setText(String.format("%02d:%02d", timeSpent / 60, timeSpent % 60));
 
-        if (numJars != TimeUnit.SECONDS.toMinutes(timeSpent)) {
-            numJars = (int) TimeUnit.SECONDS.toMinutes(timeSpent);
-            Log.d(tag(), numJars + "");
-            jarView.setNumIcons(numJars);
-        }
+        numJars = (float)timeSpent/60;
+        jarView.setNumIcons(numJars);
+
     }
 
     @Override public void onTimerFinish() {
