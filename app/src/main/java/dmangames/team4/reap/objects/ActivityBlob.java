@@ -46,8 +46,8 @@ public class ActivityBlob {
         return ActivityMap.containsKey(name);
     }
 
-    public void removeActivity(String name){
-        ActivityMap.remove(name);
+    public ActivityObject removeActivity(String name){
+        return ActivityMap.remove(name);
     }
 
     public ActivityObject getActivity(String name){

@@ -16,6 +16,8 @@ import dmangames.team4.reap.adapters.ActivityGridAdapter.ActivityGridListener;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog.CreateNewActivityListener;
+import dmangames.team4.reap.events.ActivityObjectChangedEvent;
+import dmangames.team4.reap.events.ActivityObjectDeletedEvent;
 import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.objects.ActivityObject;
 
@@ -64,5 +66,13 @@ public class ChooseActivityFragment extends ReapFragment
     @Override public void chooseActivity(ActivityObject object) {
         bus.postSticky(new ChooseActivityObjectEvent(object, false));
         goBack();
+    }
+
+    @Override public void activityChanged(ActivityObject object) {
+        bus.postSticky(new ActivityObjectChangedEvent(object));
+    }
+
+    @Override public void activityDeleted(ActivityObject object) {
+        bus.postSticky(new ActivityObjectDeletedEvent(object));
     }
 }

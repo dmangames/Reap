@@ -10,9 +10,11 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import butterknife.Bind;
+import butterknife.OnClick;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.dialogs.ChooseActivityIconDialog.ChooseIconListener;
+import dmangames.team4.reap.objects.ActivityObject;
 
 import static android.widget.Toast.LENGTH_SHORT;
 
@@ -25,10 +27,6 @@ public class CreateNewActivityDialog extends ReapDialogBuilder implements Choose
     @Bind(R.id.et_activity_name) EditText activity_name;
     @Bind(R.id.iv_activity_icon) ImageView icon;
 
-    public interface CreateNewActivityListener {
-
-        void createActivity(String name, String iconURL, int iconRes);
-    }
     private final CreateNewActivityListener listener;
 
     private String iconURL = null;
@@ -59,16 +57,27 @@ public class CreateNewActivityDialog extends ReapDialogBuilder implements Choose
         });
 
         chooseIconDialog = new ChooseActivityIconDialog(context, this).create();
-        icon.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
-                chooseIconDialog.show();
-            }
-        });
+    }
+
+    public CreateNewActivityDialog(Context context, CreateNewActivityListener listener,
+                                   ActivityObject activity) {
+        this(context, listener);
+
+        icon.setImageResource(activity.getIconRes());
+        activity_name.setText(activity.getActivityName());
+    }
+
+    @OnClick(R.id.iv_activity_icon) void onIconClicked() {
+        chooseIconDialog.show();
     }
 
     @Override public void iconChosen(@DrawableRes int drawableRes) {
         icon.setImageResource(drawableRes);
         this.iconRes = drawableRes;
         chooseIconDialog.dismiss();
+    }
+
+    public interface CreateNewActivityListener {
+        void createActivity(String name, String iconURL, int iconRes);
     }
 }

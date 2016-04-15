@@ -73,12 +73,30 @@ public class DataObject {
         }
     }
 
+    public void update(String oldName, String newName, int iconID) {
+        if (!activityList.containsKey(oldName)) {
+            Log.e("DataObject", "Attempted to update nonexistent ActivityObject!");
+            return;
+        }
+
+        ActivityObject obj = activityList.remove(oldName);
+        obj.setActivityName(newName);
+        obj.setIconRes(iconID);
+        activityList.put(newName, obj);
+
+        obj = recentActivities.removeActivity(oldName);
+        obj.setActivityName(newName);
+        obj.setIconRes(iconID);
+        recentActivities.updateActivity(obj);
+    }
+
     public boolean checkActivity(String name){
         return recentActivities.checkActivity(name);
     }
 
     public void removeActivity(String name){
         recentActivities.removeActivity(name);
+        activityList.remove(name);
     }
 
     public void newDay(String newString){

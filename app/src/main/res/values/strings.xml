@@ -11,4 +11,9 @@
     <string name="cancel">Cancel</string>
     <string name="tag_fragment_timer">TimerFragment</string>
     <string name="empty_activity_name">Activity must have a name!</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="are_you_sure">Are you sure?</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
 </resources>

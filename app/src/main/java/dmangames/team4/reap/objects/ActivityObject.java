@@ -16,11 +16,13 @@ public class ActivityObject {
 
     public ActivityObject(String name, int iconRes){
         activityName = name;
-        if( iconRes != 0)
-            this.iconRes = iconRes;
-        else
-            iconRes = R.drawable.no_activity_icon;
+        this.iconRes = iconRes == 0 ? R.drawable.no_activity_icon : iconRes;
         timeSpent = 0;
+    }
+
+    @Override public boolean equals(Object o) {
+        return o instanceof ActivityObject &&
+                ((ActivityObject) o).activityName.equals(activityName);
     }
 
     public void setTimeSpent(long timeSpent) {

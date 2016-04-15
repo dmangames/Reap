@@ -23,6 +23,8 @@ import dmangames.team4.reap.adapters.BreakGridAdapter;
 import dmangames.team4.reap.adapters.BreakGridAdapter.BreakGridListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.events.ActivityObjectChangedEvent;
+import dmangames.team4.reap.events.ActivityObjectDeletedEvent;
 import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityBlob;
@@ -282,6 +284,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     ## SecondTimer is saved onStop and whenever the ActivityObject changes
     */
     private void saveSecondTimer() {
+        if (activity == null)
+            return;
         Log.d(tag(), "Saving Timer");
         activity.blob.updateActivity(activityObject);
         activity.data.getRecentActivities().updateActivity(activityObject);
@@ -334,6 +338,25 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         bus.removeStickyEvent(event);
 
         state = event.isBreak ? HOUR : CHOOSE_TIMER;
+        reconstructFromState();
+    }
+
+    @Subscribe(sticky = true) public void onActivityDeleted(ActivityObjectDeletedEvent event) {
+        if (activityObject == null || !activityObject.equals(event.object))
+            return;
+
+        bus.removeStickyEvent(event);
+        state = NO_ACTIVITY;
+        activityObject = null;
+        reconstructFromState();
+    }
+
+    @Subscribe(sticky = true) public void onActivityChanged(ActivityObjectChangedEvent event) {
+        if (activityObject == null || !activityObject.equals(event.object))
+            return;
+
+        bus.removeStickyEvent(event);
+        activityObject = event.object;
         reconstructFromState();
     }
 
