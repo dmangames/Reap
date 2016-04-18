@@ -1,5 +1,7 @@
 package dmangames.team4.reap.activities;
 
+import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.AnimatorRes;
@@ -23,7 +25,6 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.ReapApplication;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.ReapFragment;
-import dmangames.team4.reap.fragments.ReapFragment.ReapFragmentBackListener;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.DataObject;
@@ -35,7 +36,7 @@ import dmangames.team4.reap.views.DrawerView.Option;
 import static android.widget.Toast.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity
-        implements DrawerListener, ReapFragmentBackListener {
+        implements DrawerListener {
 
     public static final String TAG = "MainActivity";
 
@@ -70,16 +71,16 @@ public class MainActivity extends AppCompatActivity
 
         data.newDay(formatted);
         blob = data.getRecentActivities();
-        Log.d("blob",blob.size()+"");
+        Log.d("blob", blob.size() + "");
 
         //Add breaks
         data.addNewBreak("sleep", R.drawable.bed);
         data.addNewBreak("restroom", R.drawable.restroom);
-        data.addNewBreak("social",R.drawable.social);
+        data.addNewBreak("social", R.drawable.social);
         data.addNewBreak("eat", R.drawable.hamburger);
         data.addNewBreak("play", R.drawable.game);
 
-                setSupportActionBar(toolbar);
+        setSupportActionBar(toolbar);
         drawerToggle = new ActionBarDrawerToggle(this, layout, toolbar, 0, 0);
         layout.addDrawerListener(drawerToggle);
 
@@ -155,12 +156,34 @@ public class MainActivity extends AppCompatActivity
         else switchFragment(event.fragment, event.backstack, event.anim);
     }
 
-    @Override public void onBackPressed() {
-        if (getFragmentManager().getBackStackEntryCount() <= 1) {
+    /**
+     * This method should be called instead of {@link MainActivity#onBackPressed()}. Emulates a
+     * back button pressed, but governs the listener calls.
+     *
+     * @param programmatic If set false, this method will call the {@link BackButtonListener}
+     *                     of the current fragment, if the fragment has attached one.
+     */
+    public void goBack(boolean programmatic) {
+        FragmentManager manager = getFragmentManager();
+        if (!programmatic) {
+            Fragment f = manager.findFragmentById(R.id.fl_main_container);
+            if (f instanceof BackButtonListener && ((BackButtonListener) f).onBackPressed())
+                return;
+        }
+
+        if (manager.getBackStackEntryCount() <= 1) {
             super.onBackPressed();
             return;
         }
-        getFragmentManager().popBackStack();
+        manager.popBackStack();
+    }
+
+    /**
+     * This method should only be called by the system. Use {@link MainActivity#goBack(boolean)}
+     * instead.
+     */
+    @Override public void onBackPressed() {
+        goBack(false);
     }
 
     @Override protected void onStart() {
@@ -175,7 +198,12 @@ public class MainActivity extends AppCompatActivity
         GsonWrapper.commitData(data, getApplicationContext());
     }
 
-    @Override public void back(ReapFragment fragment) {
-        onBackPressed();
+    public interface BackButtonListener {
+        /**
+         * Called if {@link MainActivity#goBack(boolean)} is called with false.
+         *
+         * @return If the back event has been consumed.
+         */
+        boolean onBackPressed();
     }
 }

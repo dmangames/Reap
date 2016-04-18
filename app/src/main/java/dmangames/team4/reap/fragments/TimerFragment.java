@@ -388,6 +388,14 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         restartSecondTimer();
     }
 
+    @Override public boolean onBackPressed() {
+        if (isPaused) {
+            pauseClicked();
+            return true;
+        }
+        return false;
+    }
+
     private void fadeOutTimerChooser() {
         animating = true;
         Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_out);

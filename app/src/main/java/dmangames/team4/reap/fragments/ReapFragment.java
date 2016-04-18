@@ -2,9 +2,9 @@ package dmangames.team4.reap.fragments;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
+import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Point;
-import android.nfc.Tag;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -18,6 +18,7 @@ import org.greenrobot.eventbus.EventBus;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
+import dmangames.team4.reap.activities.MainActivity.BackButtonListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.Layout;
 
@@ -30,7 +31,7 @@ import static java.lang.String.format;
  * @author Brian Wang
  * @version 3/21/16
  */
-public class ReapFragment extends Fragment {
+public class ReapFragment extends Fragment implements BackButtonListener {
     protected EventBus bus;
 
     @Override
@@ -88,22 +89,21 @@ public class ReapFragment extends Fragment {
     }
 
     /**
-     * Goes back by calling back to the activity.
-     * {@link dmangames.team4.reap.fragments.ReapFragment.ReapFragmentBackListener} must be
-     * implemented by the activity for this to work.
+     * Goes back by calling back to the {@link MainActivity}.
      */
     public void goBack() {
-        if (getActivity() instanceof ReapFragmentBackListener)
-            ((ReapFragmentBackListener) getActivity()).back(this);
+        Activity activity = getActivity();
+        if (activity instanceof MainActivity)
+            ((MainActivity) activity).goBack(false);
         else
-            Log.e(tag(), "Activity isn't an instance of ReapFragmentBackListener.");
+            Log.e(tag(), "Activity isn't an instance of MainActivity.");
     }
 
     public String tag() {
        return getClass().getSimpleName();
     }
 
-    public interface ReapFragmentBackListener {
-        void back(ReapFragment fragment);
+    @Override public boolean onBackPressed() {
+        return false;
     }
 }
