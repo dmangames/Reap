@@ -4,13 +4,14 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.annotation.DrawableRes;
-import android.view.View;
+import android.view.KeyEvent;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import butterknife.Bind;
 import butterknife.OnClick;
+import butterknife.OnEditorAction;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.dialogs.ChooseActivityIconDialog.ChooseIconListener;
@@ -23,7 +24,7 @@ import static android.widget.Toast.LENGTH_SHORT;
  * Created by stevenzhang on 3/30/16.
  */
 @Layout(R.layout.dialog_new_activity)
-public class CreateNewActivityDialog extends ReapDialogBuilder implements ChooseIconListener {
+public class CreateNewActivityDialog extends ReapDialog implements ChooseIconListener {
     @Bind(R.id.et_activity_name) EditText activity_name;
     @Bind(R.id.iv_activity_icon) ImageView icon;
 
@@ -40,14 +41,7 @@ public class CreateNewActivityDialog extends ReapDialogBuilder implements Choose
         setPositiveButton(R.string.confirm, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-                // sign in the user ...
-                String name = activity_name.getText().toString();
-                if (name.isEmpty()) {
-                    Toast.makeText(getContext(), R.string.empty_activity_name, LENGTH_SHORT).show();
-                    return;
-                }
-                CreateNewActivityDialog.this.listener.createActivity(
-                        name, "", iconRes);
+                createActivity();
             }
         });
         setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -56,7 +50,17 @@ public class CreateNewActivityDialog extends ReapDialogBuilder implements Choose
             }
         });
 
-        chooseIconDialog = new ChooseActivityIconDialog(context, this).create();
+        chooseIconDialog = new ChooseActivityIconDialog(context, this);
+    }
+
+    private void createActivity() {
+        String name = activity_name.getText().toString();
+        if (name.isEmpty()) {
+            Toast.makeText(getContext(), R.string.empty_activity_name, LENGTH_SHORT).show();
+            return;
+        }
+        CreateNewActivityDialog.this.listener.createActivity(
+                name, "", iconRes);
     }
 
     public CreateNewActivityDialog(Context context, CreateNewActivityListener listener,
@@ -69,6 +73,15 @@ public class CreateNewActivityDialog extends ReapDialogBuilder implements Choose
 
     @OnClick(R.id.iv_activity_icon) void onIconClicked() {
         chooseIconDialog.show();
+    }
+
+    @OnEditorAction(R.id.et_activity_name) boolean onActivityNameKey(KeyEvent event) {
+        if (event.getKeyCode() == KeyEvent.KEYCODE_ENTER) {
+            createActivity();
+            dismiss();
+            return true;
+        }
+        return false;
     }
 
     @Override public void iconChosen(@DrawableRes int drawableRes) {

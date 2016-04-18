@@ -14,7 +14,7 @@ import dmangames.team4.reap.annotations.Layout;
  * Created by brian on 4/3/16.
  */
 @Layout(R.layout.dialog_choose_icon)
-public class ChooseActivityIconDialog extends ReapDialogBuilder implements IconGridAdapter.IconClickListener {
+public class ChooseActivityIconDialog extends ReapDialog implements IconGridAdapter.IconClickListener {
 
     @Bind(R.id.rv_chooseicon_grid) RecyclerView grid;
 
