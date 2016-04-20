@@ -27,7 +27,7 @@ import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.DataObject;
-import dmangames.team4.reap.util.DaggerInjector;
+import dmangames.team4.reap.dagger.DaggerInjector;
 import dmangames.team4.reap.util.GsonWrapper;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;

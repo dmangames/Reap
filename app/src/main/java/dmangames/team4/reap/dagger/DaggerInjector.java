@@ -1,10 +1,9 @@
-package dmangames.team4.reap.util;
+package dmangames.team4.reap.dagger;
 
 import android.content.Context;
 
 import dagger.ObjectGraph;
 import dmangames.team4.reap.ReapApplication;
-import dmangames.team4.reap.ReapModule;
 
 /**
  * Injector class to manage the <a href="https://square.github.io/dagger/">Dagger</a>

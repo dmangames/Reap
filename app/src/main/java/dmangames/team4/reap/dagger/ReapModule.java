@@ -1,4 +1,4 @@
-package dmangames.team4.reap;
+package dmangames.team4.reap.dagger;
 
 import android.content.Context;
 
@@ -10,6 +10,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.adapters.ActivityGridAdapter;
 import dmangames.team4.reap.adapters.BreakGridAdapter;

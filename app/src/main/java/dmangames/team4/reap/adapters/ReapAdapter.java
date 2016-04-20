@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 
 import dmangames.team4.reap.annotations.HasInjections;
-import dmangames.team4.reap.util.DaggerInjector;
+import dmangames.team4.reap.dagger.DaggerInjector;
 
 /**
  * Created by brian on 4/20/16.
