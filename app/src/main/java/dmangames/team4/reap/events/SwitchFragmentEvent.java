@@ -11,25 +11,48 @@ import dmangames.team4.reap.fragments.ReapFragment;
  */
 public class SwitchFragmentEvent {
     public final ReapFragment fragment;
-    public final boolean backstack;
-    @AnimatorRes @Nullable public final int[] anim;
+    /**
+     * Denotes whether multiple instances of the fragment will be allowed to exist on the backstack.
+     * If true, the fragment will be destroyed both upon the addition of a new fragment to the
+     * backstack and on back.
+     */
+    public final boolean singleTop;
+    @Nullable public final int[] anim;
 
-    public SwitchFragmentEvent(ReapFragment fragment, boolean addToBackstack, boolean animate) {
+    /**
+     * @param singleTop See {@link SwitchFragmentEvent#singleTop}
+     */
+    public SwitchFragmentEvent(ReapFragment fragment, boolean singleTop, boolean animate) {
         this.fragment = fragment;
-        this.backstack = addToBackstack;
-        anim = !animate ? null : new int[]{
-                R.animator.slide_in_bottom,
-                R.animator.fade_out,
-                R.animator.fade_in,
-                R.animator.slide_out_bottom
-        };
+        this.singleTop = singleTop;
+        if (animate) {
+            if (singleTop) {
+                anim = new int[] {
+                        R.animator.slide_in_bottom,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.fade_out
+                };
+            } else {
+                anim = new int[]{
+                        R.animator.slide_in_bottom,
+                        R.animator.fade_out,
+                        R.animator.fade_in,
+                        R.animator.slide_out_bottom
+                };
+            }
+        } else
+            anim = null;
     }
 
-    public SwitchFragmentEvent(ReapFragment fragment, boolean addToBackstack,
+    /**
+     * @param singleTop See {@link SwitchFragmentEvent#singleTop}
+     */
+    public SwitchFragmentEvent(ReapFragment fragment, boolean singleTop,
                                @AnimatorRes int enter, @AnimatorRes int exit,
                                @AnimatorRes int popEnter, @AnimatorRes int popExit) {
         this.fragment = fragment;
-        this.backstack = addToBackstack;
+        this.singleTop = singleTop;
         anim = new int[]{ enter, exit, popEnter, popExit };
     }
 }

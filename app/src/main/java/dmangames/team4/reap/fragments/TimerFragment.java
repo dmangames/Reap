@@ -131,7 +131,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         public void chooseBreak(ActivityObject activityObject) {
             TimerFragment fragment = TimerFragment
                     .newInstance(HOUR, activityObject.getActivityName(), true);
-            bus.post(new SwitchFragmentEvent(fragment, true, true));
+            bus.post(new SwitchFragmentEvent(fragment, false, true));
         }
 
         public void setVisibilityGone() {
@@ -462,6 +462,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             goBack();
             return;
         }
-        bus.post(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
+        bus.post(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), false, true));
     }
 }

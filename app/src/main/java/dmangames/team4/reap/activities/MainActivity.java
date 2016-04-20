@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity
     @Inject ActivityBlob blob;
 
     private ActionBarDrawerToggle drawerToggle;
+    private boolean singleTop = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity
 
         drawer.setListener(this);
 
-        switchFragment(TimerFragment.newInstance(), true);
+        switchFragment(TimerFragment.newInstance(), false);
     }
 
     @Override
@@ -95,11 +96,16 @@ public class MainActivity extends AppCompatActivity
         layout.closeDrawer(drawer);
     }
 
-
-    protected void switchFragment(ReapFragment fragment, boolean addToBackStack,
+    protected void switchFragment(ReapFragment fragment, boolean singleTop,
                                   @AnimatorRes int... anim) {
-        FragmentTransaction transaction = getFragmentManager()
-                .beginTransaction();
+        FragmentManager manager = getFragmentManager();
+        if (this.singleTop) {
+            if (manager.findFragmentById(R.id.fl_main_container).getTag().equals(fragment.tag()))
+                return;
+            manager.popBackStack();
+        }
+        this.singleTop = singleTop;
+        FragmentTransaction transaction = manager.beginTransaction();
         switch (anim.length) {
             case 2:
                 transaction.setCustomAnimations(anim[0], anim[1], anim[0], anim[1]);
@@ -109,9 +115,8 @@ public class MainActivity extends AppCompatActivity
                 break;
             default:
         }
-        transaction.replace(R.id.fl_main_container, fragment);
-        if (addToBackStack)
-            transaction.addToBackStack(fragment.tag());
+        transaction.replace(R.id.fl_main_container, fragment, fragment.tag());
+        transaction.addToBackStack(fragment.tag());
         transaction.commit();
     }
 
@@ -121,8 +126,8 @@ public class MainActivity extends AppCompatActivity
 
     @Subscribe public void receiveFragmentEvent(SwitchFragmentEvent event) {
         if (event.anim == null)
-            switchFragment(event.fragment, event.backstack);
-        else switchFragment(event.fragment, event.backstack, event.anim);
+            switchFragment(event.fragment, event.singleTop);
+        else switchFragment(event.fragment, event.singleTop, event.anim);
     }
 
     /**
@@ -140,6 +145,7 @@ public class MainActivity extends AppCompatActivity
                 return;
         }
 
+        singleTop = false;
         if (manager.getBackStackEntryCount() <= 1) {
             super.onBackPressed();
             return;
