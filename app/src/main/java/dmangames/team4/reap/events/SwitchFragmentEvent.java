@@ -28,7 +28,7 @@ public class SwitchFragmentEvent {
         if (animate) {
             if (singleTop) {
                 anim = new int[] {
-                        R.animator.slide_in_bottom,
+                        R.animator.fade_in,
                         R.animator.fade_out,
                         R.animator.fade_in,
                         R.animator.fade_out
