@@ -11,6 +11,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 
+import dmangames.team4.reap.R;
 import dmangames.team4.reap.objects.DataObject;
 import timber.log.Timber;
 
@@ -70,6 +71,18 @@ public class GsonWrapper {
         Timber.d(json.toString());
 
         return gson.fromJson(json.toString(), DataObject.class);
+
+    }
+
+    public static DataObject mockData(Context context){
+
+        String json = context.getString(R.string.mockData);
+
+        Gson gson = new Gson();
+
+        Timber.d("Mock Data: " + json);
+
+        return gson.fromJson(json, DataObject.class);
 
     }
 

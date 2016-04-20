@@ -2,6 +2,8 @@ package dmangames.team4.reap.dagger;
 
 import android.content.Context;
 
+import com.google.gson.Gson;
+
 import org.greenrobot.eventbus.EventBus;
 
 import java.util.Date;
@@ -23,6 +25,7 @@ import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.util.GsonWrapper;
+import timber.log.Timber;
 
 /**
  * Created by brian on 4/20/16.
@@ -48,6 +51,7 @@ import dmangames.team4.reap.util.GsonWrapper;
 public class ReapModule {
     private final Context appContext;
     private final String today;
+    private final boolean mockData = false;
 
     public ReapModule(Context context) {
         this.appContext = context;
@@ -59,16 +63,26 @@ public class ReapModule {
     }
 
     @Provides @Singleton DataObject provideDataObject(Context context) {
-        DataObject data = GsonWrapper.getDataObject(context);
-        if (data == null)
-            data = new DataObject("Steven", today);
 
-        //Add breaks
-        data.addNewBreak("sleep", R.drawable.bed);
-        data.addNewBreak("restroom", R.drawable.restroom);
-        data.addNewBreak("social", R.drawable.social);
-        data.addNewBreak("eat", R.drawable.hamburger);
-        data.addNewBreak("play", R.drawable.game);
+        DataObject data;
+
+        if(!mockData) {
+            Timber.d("No mock");
+            data = GsonWrapper.getDataObject(context);
+            if (data == null)
+                data = new DataObject("Steven", today);
+
+            //Add breaks
+            data.addNewBreak("sleep", R.drawable.bed);
+            data.addNewBreak("restroom", R.drawable.restroom);
+            data.addNewBreak("social", R.drawable.social);
+            data.addNewBreak("eat", R.drawable.hamburger);
+            data.addNewBreak("play", R.drawable.game);
+        }
+        else{
+            Timber.d("Mock!");
+            data = GsonWrapper.mockData(context);
+        }
 
         return data;
     }
