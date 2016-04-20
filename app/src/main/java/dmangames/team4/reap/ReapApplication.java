@@ -2,10 +2,7 @@ package dmangames.team4.reap;
 
 import android.app.Application;
 
-import org.greenrobot.eventbus.EventBus;
-
-import dagger.ObjectGraph;
-import dmangames.team4.reap.util.DaggerInjector;
+import dmangames.team4.reap.dagger.DaggerInjector;
 import timber.log.Timber;
 
 /**

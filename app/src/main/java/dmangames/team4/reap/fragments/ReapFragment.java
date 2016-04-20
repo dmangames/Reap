@@ -17,14 +17,13 @@ import org.greenrobot.eventbus.EventBus;
 import javax.inject.Inject;
 
 import butterknife.ButterKnife;
-import dagger.ObjectGraph;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.activities.MainActivity.BackButtonListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
 import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
-import dmangames.team4.reap.util.DaggerInjector;
+import dmangames.team4.reap.dagger.DaggerInjector;
 import timber.log.Timber;
 
 import static java.lang.String.format;

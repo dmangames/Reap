@@ -4,7 +4,6 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.RecyclerView.Adapter;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +25,7 @@ import dmangames.team4.reap.dialogs.CreateNewActivityDialog;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog.CreateNewActivityListener;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
-import dmangames.team4.reap.util.DaggerInjector;
+import dmangames.team4.reap.dagger.DaggerInjector;
 
 /**
  * Created by brian on 4/1/16.
