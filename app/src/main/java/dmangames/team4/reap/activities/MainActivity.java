@@ -25,6 +25,7 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.ReapApplication;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.ChooseActivityFragment;
+import dmangames.team4.reap.fragments.HistoryFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
@@ -103,6 +104,7 @@ public class MainActivity extends AppCompatActivity
                 Log.d(TAG, "Switch to: Today");
                 break;
             case HISTORY:
+                postToBus(new SwitchFragmentEvent(HistoryFragment.newInstance(), true, true));
                 Log.d(TAG, "Switch to: History");
                 break;
             case MILESTONES:

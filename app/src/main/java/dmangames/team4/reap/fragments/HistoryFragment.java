@@ -1,8 +1,6 @@
 package dmangames.team4.reap.fragments;
 
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -11,25 +9,25 @@ import android.view.View;
 import butterknife.Bind;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
-import dmangames.team4.reap.adapters.ActivityGridAdapter;
 import dmangames.team4.reap.adapters.TodayListAdapter;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.objects.ActivityBlob;
 
 /**
  * Created by Andrew on 4/19/2016.
  */
 @Layout(R.layout.fragment_today)
-public class TodayFragment extends ReapFragment{
+public class HistoryFragment extends ReapFragment{
 
     @Bind(R.id.today_activity_list)    RecyclerView activityList;
 
     private TodayListAdapter adapter;
 
 
-    public static TodayFragment newInstance() {
+    public static HistoryFragment newInstance() {
         Bundle args = new Bundle(0);
 
-        TodayFragment fragment = new TodayFragment();
+        HistoryFragment fragment = new HistoryFragment();
         fragment.setArguments(args);
         return fragment;
     }
@@ -38,7 +36,7 @@ public class TodayFragment extends ReapFragment{
         super.onViewCreated(view, savedInstanceState);
 
         MainActivity activity = (MainActivity) getActivity();
-        adapter = new TodayListAdapter(activity, activity.blob);
+        adapter = new TodayListAdapter(activity, activity.data.aggregateHistory());
 //        Log.d("something", "onViewCreated: "+activity.blob.size());
 
 

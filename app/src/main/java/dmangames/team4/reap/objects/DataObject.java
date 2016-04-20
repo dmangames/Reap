@@ -137,4 +137,32 @@ public class DataObject {
     }
 
     public int breakListSize() { return breakList.size(); }
+
+    public ActivityBlob aggregateHistory(){
+        ActivityBlob out = new ActivityBlob();
+        for (String date:history.keySet()) {
+            ActivityBlob blob = history.get(date);
+            for (String activityName:blob.getKeys()) {
+                if(!out.checkActivity(activityName)){
+                    ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconRes());
+                    out.addActivity(temp);
+                    out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
+                }
+                else{
+                    out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
+                }
+            }
+        }
+
+        for (String activityName:recentActivities.getKeys()) {
+            if(!out.checkActivity(activityName)){
+                out.addActivity(recentActivities.getActivity(activityName));
+            }
+            else{
+                out.getActivity(activityName).addTimeSpent(recentActivities.getActivity(activityName).timeSpent);
+            }
+        }
+
+        return out;
+    }
 }
