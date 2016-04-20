@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/item_today_activity"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/clickable_grey"
+    android:clickable="true"
+    android:gravity="start"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <TextView
+        android:id="@+id/today_activity_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:padding="@dimen/grid_text_padding"
+        android:textAppearance="@style/TextAppearance.Reap.ListItem"
+        tools:text="Guitar Practice"/>
+
+    <dmangames.team4.reap.views.IconView
+        android:id="@+id/today_activity_jars"
+        android:layout_width="fill_parent"
+        android:layout_height="100dp"
+        android:layout_gravity="bottom"
+        android:paddingBottom="10dp"
+        android:paddingTop="10dp"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
+        app:iconDrawable="@drawable/classic_acoustic_guitar"
+        app:numIcons="2" />
+
+</LinearLayout>
