@@ -12,17 +12,17 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import dmangames.team4.reap.objects.DataObject;
+import timber.log.Timber;
 
 /**
  * Created by Andrew on 3/28/2016.
  */
 public class GsonWrapper {
-
-    public static void commitData(DataObject data, Context context){
+    public static void commitData(DataObject data, Context context) {
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
         data.getRecentActivities().removeNulls();
-        System.out.println(gson.toJson(data));
+        Timber.d(gson.toJson(data));
 
         String filename = "data.dat";
         FileOutputStream outputStream;
@@ -36,7 +36,7 @@ public class GsonWrapper {
         }
     }
 
-    public static boolean checkDataObject(Context context){
+    public static boolean checkDataObject(Context context) {
 
         String filename = "data.dat";
         File file = new File(context.getFilesDir(), filename);
@@ -45,7 +45,7 @@ public class GsonWrapper {
     }
 
 
-    public static DataObject getDataObject(Context context){
+    public static DataObject getDataObject(Context context) {
 
         String filename = "data.dat";
         File file = new File(context.getFilesDir(), filename);
@@ -62,13 +62,12 @@ public class GsonWrapper {
                 json.append('\n');
             }
             br.close();
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
         }
 
         Gson gson = new Gson();
 
-        System.out.println(json.toString());
+        Timber.d(json.toString());
 
         return gson.fromJson(json.toString(), DataObject.class);
 

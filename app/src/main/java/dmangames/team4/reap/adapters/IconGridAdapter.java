@@ -17,7 +17,7 @@ import dmangames.team4.reap.R;
 /**
  * Created by brian on 4/3/16.
  */
-public class IconGridAdapter extends RecyclerView.Adapter<IconGridAdapter.IconHolder> {
+public class IconGridAdapter extends ReapAdapter<IconGridAdapter.IconHolder> {
     public class IconHolder extends RecyclerView.ViewHolder implements OnClickListener {
         @Bind(R.id.iv_iconitem_icon) ImageView iconView;
 
@@ -39,7 +39,6 @@ public class IconGridAdapter extends RecyclerView.Adapter<IconGridAdapter.IconHo
         }
     }
 
-    private final Context context;
     private final IconClickListener listener;
     private final int[] icons = {
             R.drawable.classic_acoustic_guitar,
@@ -50,7 +49,7 @@ public class IconGridAdapter extends RecyclerView.Adapter<IconGridAdapter.IconHo
     };
 
     public IconGridAdapter(Context context, IconClickListener listener) {
-        this.context = context;
+        super(context);
         this.listener = listener;
     }
 

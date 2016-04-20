@@ -2,11 +2,12 @@ package dmangames.team4.reap.util;
 
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import java.util.LinkedList;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import timber.log.Timber;
 
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
@@ -53,7 +54,7 @@ public class SecondTimer {
     }
 
     public void setTotalSeconds(long seconds) {
-        Log.d("Second Timer", "setTotalSeconds called");
+        Timber.d("setTotalSeconds called");
         total = seconds;
         reset();
     }
@@ -91,7 +92,9 @@ public class SecondTimer {
         return total;
     }
 
-    public void setCurrentSeconds(long current) { this.current = current; }
+    public void setCurrentSeconds(long current) {
+        this.current = current;
+    }
 
     public long getSecondsElapsed() {
         return type == COUNT_UP ? current : total - current;

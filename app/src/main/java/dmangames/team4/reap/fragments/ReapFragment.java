@@ -6,7 +6,6 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.graphics.Point;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,12 +14,18 @@ import android.view.animation.DecelerateInterpolator;
 
 import org.greenrobot.eventbus.EventBus;
 
+import javax.inject.Inject;
+
 import butterknife.ButterKnife;
+import dagger.ObjectGraph;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.activities.MainActivity.BackButtonListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
+import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.util.DaggerInjector;
+import timber.log.Timber;
 
 import static java.lang.String.format;
 
@@ -32,7 +37,7 @@ import static java.lang.String.format;
  * @version 3/21/16
  */
 public class ReapFragment extends Fragment implements BackButtonListener {
-    protected EventBus bus;
+    @Inject EventBus bus;
 
     @Override
     public View onCreateView(LayoutInflater inf, ViewGroup parent, Bundle savedInstanceState) {
@@ -44,13 +49,14 @@ public class ReapFragment extends Fragment implements BackButtonListener {
 
         View view = inf.inflate(cls.getAnnotation(Layout.class).value(), parent, false);
         ButterKnife.bind(this, view);
+        if (cls.isAnnotationPresent(HasInjections.class))
+            DaggerInjector.inject(this);
         return view;
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        bus = ((MainActivity) getActivity()).bus();
         if (getClass().isAnnotationPresent(HasBusEvents.class))
             bus.register(this);
     }
@@ -96,11 +102,11 @@ public class ReapFragment extends Fragment implements BackButtonListener {
         if (activity instanceof MainActivity)
             ((MainActivity) activity).goBack(false);
         else
-            Log.e(tag(), "Activity isn't an instance of MainActivity.");
+            Timber.e("Activity isn't an instance of MainActivity.");
     }
 
     public String tag() {
-       return getClass().getSimpleName();
+        return getClass().getSimpleName();
     }
 
     @Override public boolean onBackPressed() {

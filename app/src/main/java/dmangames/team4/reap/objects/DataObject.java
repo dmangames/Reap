@@ -1,8 +1,5 @@
 package dmangames.team4.reap.objects;
 
-import android.util.Log;
-
-import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -11,21 +8,22 @@ import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
 
-import dmangames.team4.reap.activities.MainActivity;
+import timber.log.Timber;
 
 /**
  * Created by Andrew on 3/28/2016.
  */
 public class DataObject {
+    public static final SimpleDateFormat DATEFORMAT = new SimpleDateFormat("MM-dd-yyyy", Locale.US);
 
     String recentDate;
     String name;
     HashMap<String, ActivityBlob> history = new HashMap<>();
     ActivityBlob recentActivities;
-    TreeMap<String,ActivityObject> activityList = new TreeMap<>();
-    TreeMap<String,ActivityObject> breakList = new TreeMap<>();
+    TreeMap<String, ActivityObject> activityList = new TreeMap<>();
+    TreeMap<String, ActivityObject> breakList = new TreeMap<>();
 
-    public DataObject(String name, String date){
+    public DataObject(String name, String date) {
         this.recentDate = date;
         this.name = name;
         recentActivities = new ActivityBlob(date);
@@ -39,7 +37,7 @@ public class DataObject {
         return history;
     }
 
-    public void setName(String name){
+    public void setName(String name) {
         this.name = name;
     }
 
@@ -64,17 +62,17 @@ public class DataObject {
 //            activityList.put(name, true);
 //    }
 
-    public void addNewActivity(String activityName, int iconID){
-        if(!activityList.containsKey(activityName)) {
+    public void addNewActivity(String activityName, int iconID) {
+        if (!activityList.containsKey(activityName)) {
             ActivityObject activity = new ActivityObject(activityName, iconID);
             activityList.put(activityName, activity);
         }
     }
 
-    public void addNewBreak(String activityName, int iconID){
-        Log.d("Activity list", activityList.toString());
-        Log.d("Break list", breakList.toString());
-        if(!breakList.containsKey(activityName)) {
+    public void addNewBreak(String activityName, int iconID) {
+        Timber.d("Activity List: %s", activityList.toString());
+        Timber.d("Break List: %s", breakList.toString());
+        if (!breakList.containsKey(activityName)) {
             ActivityObject activity = new ActivityObject(activityName, iconID);
             breakList.put(activityName, activity);
         }
@@ -82,7 +80,7 @@ public class DataObject {
 
     public void update(String oldName, String newName, int iconID) {
         if (!activityList.containsKey(oldName)) {
-            Log.e("DataObject", "Attempted to update nonexistent ActivityObject!");
+            Timber.e("Attempted to update nonexistent ActivityObject!");
             return;
         }
 
@@ -97,29 +95,29 @@ public class DataObject {
         recentActivities.updateActivity(obj);
     }
 
-    public boolean checkActivity(String name){
+    public boolean checkActivity(String name) {
         return recentActivities.checkActivity(name);
     }
 
-    public void removeActivity(String name){
+    public void removeActivity(String name) {
         recentActivities.removeActivity(name);
         activityList.remove(name);
     }
 
-    public void newDay(String newString){
-        if(!this.recentDate.equals(recentActivities.getString())){
+    public void newDay(String newString) {
+        if (!this.recentDate.equals(recentActivities.getString())) {
             archiveActivities(newString);
         }
         recentDate = newString;
     }
 
-    public void archiveActivities(String newString){
+    public void archiveActivities(String newString) {
         recentActivities.removeNulls();
         history.put(recentActivities.getString(), recentActivities);
         recentActivities = new ActivityBlob(newString);
     }
 
-    public ActivityBlob getActivityBlobByDate(String date){
+    public ActivityBlob getActivityBlobByDate(String date) {
         return history.get(date);
     }
 
@@ -143,29 +141,29 @@ public class DataObject {
         return activityList.size();
     }
 
-    public int breakListSize() { return breakList.size(); }
+    public int breakListSize() {
+        return breakList.size();
+    }
 
-    public ActivityBlob aggregateHistory(){
+    public ActivityBlob aggregateHistory() {
         ActivityBlob out = new ActivityBlob();
-        for (String date:history.keySet()) {
+        for (String date : history.keySet()) {
             ActivityBlob blob = history.get(date);
-            for (String activityName:blob.getKeys()) {
-                if(!out.checkActivity(activityName)){
+            for (String activityName : blob.getKeys()) {
+                if (!out.checkActivity(activityName)) {
                     ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconRes());
                     out.addActivity(temp);
                     out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
-                }
-                else{
+                } else {
                     out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
                 }
             }
         }
 
-        for (String activityName:recentActivities.getKeys()) {
-            if(!out.checkActivity(activityName)){
+        for (String activityName : recentActivities.getKeys()) {
+            if (!out.checkActivity(activityName)) {
                 out.addActivity(recentActivities.getActivity(activityName));
-            }
-            else{
+            } else {
                 out.getActivity(activityName).addTimeSpent(recentActivities.getActivity(activityName).timeSpent);
             }
         }
@@ -173,29 +171,28 @@ public class DataObject {
         return out;
     }
 
-    public ActivityBlob aggregateHistoryRange(String start, String end){
+    public ActivityBlob aggregateHistoryRange(String start, String end) {
         ActivityBlob out = new ActivityBlob();
 
-        DateFormat format = new SimpleDateFormat(MainActivity.DATEFORMAT, Locale.ENGLISH);
         Date dateObject = new Date();
         Date startDate = new Date();
         Date endDate = new Date();
         try {
-            startDate = format.parse(start);
-            endDate = format.parse(end);
+            startDate = DATEFORMAT.parse(start);
+            endDate = DATEFORMAT.parse(end);
         } catch (ParseException e) {
             e.printStackTrace();
         }
 
 
-        for (String date:history.keySet()) {
+        for (String date : history.keySet()) {
 
             try {
-                dateObject = format.parse(date);
+                dateObject = DATEFORMAT.parse(date);
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            if(!dateObject.before(startDate) && !dateObject.after(endDate)) {
+            if (!dateObject.before(startDate) && !dateObject.after(endDate)) {
                 ActivityBlob blob = history.get(date);
                 for (String activityName : blob.getKeys()) {
                     if (!out.checkActivity(activityName)) {
@@ -210,11 +207,11 @@ public class DataObject {
         }
 
         try {
-            dateObject = format.parse(recentActivities.date);
+            dateObject = DATEFORMAT.parse(recentActivities.date);
         } catch (ParseException e) {
             e.printStackTrace();
         }
-        if(!dateObject.before(startDate) && !dateObject.after(endDate)) {
+        if (!dateObject.before(startDate) && !dateObject.after(endDate)) {
             for (String activityName : recentActivities.getKeys()) {
 
                 if (!out.checkActivity(activityName)) {

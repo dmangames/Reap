@@ -14,20 +14,25 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnLongClick;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog.CreateNewActivityListener;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
+import dmangames.team4.reap.util.DaggerInjector;
 
 /**
  * Created by brian on 4/1/16.
  */
-public class ActivityGridAdapter extends Adapter<ActivityGridAdapter.ActivityViewHolder> {
+@HasInjections
+public class ActivityGridAdapter extends ReapAdapter<ActivityGridAdapter.ActivityViewHolder> {
     public class ActivityViewHolder extends ViewHolder
             implements Dialog.OnClickListener, CreateNewActivityListener {
         @Bind(R.id.iv_griditem_icon) ImageView icon;
@@ -88,8 +93,7 @@ public class ActivityGridAdapter extends Adapter<ActivityGridAdapter.ActivityVie
         }
     }
 
-    private final DataObject activities;
-    private final Context context;
+    @Inject DataObject activities;
     private final ActivityGridListener listener;
 
     private ArrayList<String> names;
@@ -98,11 +102,10 @@ public class ActivityGridAdapter extends Adapter<ActivityGridAdapter.ActivityVie
 
     private static String[] longPressStrings;
 
-    public ActivityGridAdapter(Context context, DataObject activities,
-                               ActivityGridListener listener) {
-        this.context = context;
-        this.activities = activities;
+    public ActivityGridAdapter(Context context, ActivityGridListener listener) {
+        super(context);
         this.listener = listener;
+        DaggerInjector.inject(this);
 
         names = new ArrayList<>(activities.getKeys());
 

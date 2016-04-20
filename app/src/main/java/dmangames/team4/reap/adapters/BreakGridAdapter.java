@@ -2,23 +2,27 @@ package dmangames.team4.reap.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
+import timber.log.Timber;
 
 /**
  * Created by brian on 4/3/16.
  */
-public class BreakGridAdapter extends RecyclerView.Adapter<BreakGridAdapter.BreakHolder> {
+@HasInjections
+public class BreakGridAdapter extends ReapAdapter<BreakGridAdapter.BreakHolder> {
     public class BreakHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.iv_iconitem_icon) ImageView icon;
 
@@ -35,14 +39,13 @@ public class BreakGridAdapter extends RecyclerView.Adapter<BreakGridAdapter.Brea
             this.icon.setImageResource(activityObject.getIconRes());
         }
 
-        @OnClick(R.id.iv_iconitem_icon) void onClick(){
+        @OnClick(R.id.iv_iconitem_icon) void onClick() {
             listener.chooseBreak(activityObject);
         }
     }
 
-    private final Context context;
+    @Inject DataObject activities;
     private final BreakGridListener listener;
-    private final DataObject activities;
     private final String[] breaks = {
             "sleep",
             "restroom",
@@ -51,11 +54,9 @@ public class BreakGridAdapter extends RecyclerView.Adapter<BreakGridAdapter.Brea
             "play"
     };
 
-    public BreakGridAdapter(Context context, DataObject activities, BreakGridListener listener) {
-        this.context = context;
-        this.activities = activities;
+    public BreakGridAdapter(Context context, BreakGridListener listener) {
+        super(context);
         this.listener = listener;
-
     }
 
     @Override
@@ -65,7 +66,7 @@ public class BreakGridAdapter extends RecyclerView.Adapter<BreakGridAdapter.Brea
     }
 
     @Override public void onBindViewHolder(BreakHolder holder, int position) {
-        Log.d("Break", position + "");
+        Timber.d("OnBindViewHolder: %d", position);
         holder.setBreakActivityObject(activities.getBreakByName((breaks[position])));
     }
 
@@ -73,7 +74,7 @@ public class BreakGridAdapter extends RecyclerView.Adapter<BreakGridAdapter.Brea
         return breaks.length;
     }
 
-    public interface BreakGridListener{
+    public interface BreakGridListener {
         void chooseBreak(ActivityObject activityObject);
     }
 }

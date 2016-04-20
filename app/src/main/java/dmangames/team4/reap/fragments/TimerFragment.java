@@ -1,10 +1,10 @@
 package dmangames.team4.reap.fragments;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
@@ -14,14 +14,16 @@ import android.widget.TextView;
 
 import org.greenrobot.eventbus.Subscribe;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import dmangames.team4.reap.R;
-import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.adapters.BreakGridAdapter;
 import dmangames.team4.reap.adapters.BreakGridAdapter.BreakGridListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
+import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.events.ActivityObjectChangedEvent;
 import dmangames.team4.reap.events.ActivityObjectDeletedEvent;
@@ -29,11 +31,13 @@ import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.ActivityObject;
+import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.util.AnimationEndListener;
 import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.IconView;
 import dmangames.team4.reap.views.TimerIndicatorView;
 import jp.wasabeef.blurry.Blurry;
+import timber.log.Timber;
 
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
@@ -53,6 +57,7 @@ import static java.util.concurrent.TimeUnit.MINUTES;
  * @version 3/21/16
  */
 @HasBusEvents
+@HasInjections
 @Layout(R.layout.fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
     public enum State {
@@ -88,14 +93,14 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         public BreakOverlay(View view) {
             ButterKnife.bind(this, view);
 
-            adapter = new BreakGridAdapter(activity, activity.data, this);
-            grid.setLayoutManager(new GridLayoutManager(activity, 3));
+            adapter = new BreakGridAdapter(context, this);
+            grid.setLayoutManager(new GridLayoutManager(context, 3));
             grid.setAdapter(adapter);
         }
 
         public void fadeIn() {
-            Blurry.with(activity).capture(container).into(blurContainer);
-            Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_in);
+            Blurry.with(context).capture(container).into(blurContainer);
+            Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_in);
             overlayContainer.setVisibility(VISIBLE);
             blurContainer.setVisibility(VISIBLE);
             anim.setAnimationListener(new AnimationEndListener() {
@@ -110,7 +115,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
 
         public void fadeOut() {
-            Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+            Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_out);
             anim.setAnimationListener(new AnimationEndListener() {
                 @Override public void onAnimationEnd(Animation animation) {
                     setVisibilityGone();
@@ -152,11 +157,14 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     @Bind(R.id.tv_total_time) TextView totalTimeView;
     @Bind(R.id.ll_timer_chooser) View timerChooser;
 
+    @Inject DataObject data;
+    @Inject ActivityBlob blob;
+
     private State state;
     private SecondTimer timer;
     private ActivityObject activityObject;
     private BreakOverlay boverlay;
-    private MainActivity activity;
+    private Context context;
 
     private float numJars;
 
@@ -189,10 +197,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        activity = (MainActivity) getActivity();
+        this.context = getActivity();
         boverlay = new BreakOverlay(view);
 
-        Log.d(tag(), "Fragment started");
+        Timber.d("Fragment started");
 
         if (!previouslyCreated) {
             Bundle args = getArguments();
@@ -203,9 +211,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             if (name != null) {
                 isBreak = args.getBoolean(KEY_TIMER_BREAK);
                 if (isBreak)
-                    activityObject = activity.data.getBreakByName(name);
+                    activityObject = data.getBreakByName(name);
                 else
-                    activityObject = activity.data.getActivityByName(name);
+                    activityObject = data.getActivityByName(name);
 
                 if (state == HOUR)
                     timer.setup(COUNT_UP, COUNT_UP_SECS);
@@ -216,7 +224,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 reconstructFromState();
             }
 
-            Log.d(tag(), "New Second Timer created");
+            Timber.d("New Second Timer created");
             previouslyCreated = true;
         }
 
@@ -224,7 +232,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if (activityObject == null)
             activityObject = new ActivityObject("Null", 0);
 
-        Log.d(tag(), "Fragment view loaded");
+        Timber.d("Fragment view loaded");
     }
 
     public void reconstructFromState() {
@@ -236,13 +244,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             int iconRes = activityObject.getIconRes();
             if (iconRes == 0)
                 iconRes = R.drawable.no_activity_icon;
-            numJars = (float)activityObject.getTimeSpent() / 60;
+            numJars = (float) activityObject.getTimeSpent() / 60;
             jarView.changeIcon(iconRes);
             jarView.setNumIcons(numJars);
             iconView.setImageResource(iconRes);
         }
 
-        if(isBreak)
+        if (isBreak)
             pauseButton.setImageResource(R.drawable.ic_arrow_down);
 
         switch (state) {
@@ -276,7 +284,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 timerChooser.setVisibility(GONE);
                 break;
             default:
-                Log.e(tag(), "Unknown state!");
+                Timber.e("Unknown state!");
         }
     }
 
@@ -284,18 +292,18 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     ## SecondTimer is saved onStop and whenever the ActivityObject changes
     */
     private void saveSecondTimer() {
-        if (activity == null)
+        if (activityObject == null || state == NO_ACTIVITY)
             return;
-        Log.d(tag(), "Saving Timer");
-        activity.blob.updateActivity(activityObject);
-        activity.data.getRecentActivities().updateActivity(activityObject);
+        Timber.d("Saving Timer");
+        blob.updateActivity(activityObject);
+        data.getRecentActivities().updateActivity(activityObject);
     }
 
     @Override public void onStop() {
         super.onStop();
         saveSecondTimer();
         stopSecondTimer();
-        Log.d(tag(), "Timer Fragment stopped");
+        Timber.d("Timer Fragment stopped");
     }
 
     @Override public void onResume() {
@@ -315,19 +323,19 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     }
 
     private void stopSecondTimer() {
-        Log.d(tag(), "Stopping timer");
+        Timber.d("Stopping timer");
         if (timer != null)
             timer.stop();
     }
 
     @Subscribe(sticky = true) public void onActivityChosen(ChooseActivityObjectEvent event) {
         String activityName = event.object.getActivityName();
-        Log.d(tag(), "Chose activity " + activityName);
+        Timber.d("Chose activity %s", activityName);
 
         stopSecondTimer();
         timer.reset();
 
-        ActivityBlob recent = activity.data.getRecentActivities();
+        ActivityBlob recent = data.getRecentActivities();
         if (recent.checkActivity(activityName))
             activityObject = recent.getActivity(activityName);
         else {
@@ -366,13 +374,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         long timeSpent = activityObject.getTimeSpent();
         totalTimeView.setText(String.format("%02d:%02d", timeSpent / 60, timeSpent % 60));
 
-        numJars = (float)timeSpent/60;
+        numJars = (float) timeSpent / 60;
         jarView.setNumIcons(numJars);
 
     }
 
     @Override public void onTimerFinish() {
-        Log.d(tag(), "Timer finished");
+        Timber.d("Timer finished");
         if (state == POMODORO) {
             if (!pomodoroBreak)
                 saveSecondTimer();
@@ -398,7 +406,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
     private void fadeOutTimerChooser() {
         animating = true;
-        Animation anim = AnimationUtils.loadAnimation(activity, R.anim.fade_out);
+        Animation anim = AnimationUtils.loadAnimation(context, R.anim.fade_out);
         anim.setAnimationListener(new AnimationEndListener() {
             @Override
             public void onAnimationEnd(Animation animation) {
@@ -454,6 +462,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             goBack();
             return;
         }
-        activity.postToBus(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
+        bus.post(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), true, true));
     }
 }
