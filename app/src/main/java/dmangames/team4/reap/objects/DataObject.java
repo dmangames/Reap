@@ -107,6 +107,7 @@ public class DataObject {
     }
 
     public void archiveActivities(String newString){
+        recentActivities.removeNulls();
         history.put(recentActivities.getString(), recentActivities);
         recentActivities = new ActivityBlob(newString);
     }

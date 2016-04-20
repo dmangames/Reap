@@ -24,8 +24,10 @@ import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.ReapApplication;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
+import dmangames.team4.reap.fragments.ChooseActivityFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
+import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.util.GsonWrapper;
@@ -71,6 +73,7 @@ public class MainActivity extends AppCompatActivity
 
         data.newDay(formatted);
         blob = data.getRecentActivities();
+        blob.removeNulls();
         Log.d("blob", blob.size() + "");
 
         //Add breaks
@@ -96,6 +99,7 @@ public class MainActivity extends AppCompatActivity
     public void switchTo(Option option) {
         switch (option) {
             case TODAY:
+                postToBus(new SwitchFragmentEvent(TodayFragment.newInstance(), true, true));
                 Log.d(TAG, "Switch to: Today");
                 break;
             case HISTORY:

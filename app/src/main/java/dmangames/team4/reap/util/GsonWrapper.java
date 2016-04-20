@@ -21,6 +21,7 @@ public class GsonWrapper {
     public static void commitData(DataObject data, Context context){
         GsonBuilder builder = new GsonBuilder();
         Gson gson = builder.create();
+        data.getRecentActivities().removeNulls();
         System.out.println(gson.toJson(data));
 
         String filename = "data.dat";
@@ -66,6 +67,8 @@ public class GsonWrapper {
         }
 
         Gson gson = new Gson();
+
+        System.out.println(json.toString());
 
         return gson.fromJson(json.toString(), DataObject.class);
 

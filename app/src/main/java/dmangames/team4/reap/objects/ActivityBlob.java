@@ -1,5 +1,7 @@
 package dmangames.team4.reap.objects;
 
+import android.util.Log;
+
 import java.util.Calendar;
 import java.util.Set;
 import java.util.TreeMap;
@@ -60,5 +62,15 @@ public class ActivityBlob {
 
     public int size() {
         return ActivityMap.size();
+    }
+
+    public void removeNulls(){
+        for (String x:this.ActivityMap.keySet()) {
+            Log.d("BLOB", "Remove Nulls: "+x+": "+this.ActivityMap.get(x).timeSpent);
+            if((int)this.ActivityMap.get(x).timeSpent==0) {
+                Log.d("BLOB", x+" removed");
+                this.removeActivity(x);
+            }
+        }
     }
 }
