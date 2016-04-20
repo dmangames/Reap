@@ -172,6 +172,9 @@ public class DataObject {
     }
 
     public ActivityBlob aggregateHistoryRange(String start, String end) {
+
+        Timber.d("Aggregating dates " + start + " to " + end);
+
         ActivityBlob out = new ActivityBlob();
 
         Date dateObject = new Date();

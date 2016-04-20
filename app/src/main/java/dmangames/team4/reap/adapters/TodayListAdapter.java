@@ -24,8 +24,8 @@ public class TodayListAdapter extends ReapAdapter<TodayListAdapter.TodayViewHold
 
     public class TodayViewHolder extends RecyclerView.ViewHolder {
 
-        @Bind(R.id.today_activity_jars) IconView iconView;
-        @Bind(R.id.today_activity_text) TextView name;
+        @Bind(R.id.iv_today_activity_jars) IconView iconView;
+        @Bind(R.id.tv_today_activity_text) TextView name;
 
 
         private ActivityObject activity;
@@ -37,7 +37,6 @@ public class TodayListAdapter extends ReapAdapter<TodayListAdapter.TodayViewHold
 
         public void setActivityObject(ActivityObject object) {
             this.activity = object;
-
 
             iconView.changeIcon(object.getIconRes());
             float numJars = (float) object.getTimeSpent() / 60;

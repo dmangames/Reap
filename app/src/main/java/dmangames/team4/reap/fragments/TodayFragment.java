@@ -14,7 +14,6 @@ import dmangames.team4.reap.adapters.TodayListAdapter;
 import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.objects.ActivityBlob;
-import dmangames.team4.reap.objects.DataObject;
 
 /**
  * Created by Andrew on 4/19/2016.
@@ -22,7 +21,7 @@ import dmangames.team4.reap.objects.DataObject;
 @HasInjections
 @Layout(R.layout.fragment_today)
 public class TodayFragment extends ReapFragment {
-    @Bind(R.id.today_activity_list) RecyclerView activityList;
+    @Bind(R.id.rv_today_activity_list) RecyclerView activityList;
 
     @Inject ActivityBlob blob;
 
