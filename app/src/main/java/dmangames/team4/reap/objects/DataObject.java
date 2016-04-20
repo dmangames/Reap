@@ -2,9 +2,16 @@ package dmangames.team4.reap.objects;
 
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Set;
 import java.util.TreeMap;
+
+import dmangames.team4.reap.activities.MainActivity;
 
 /**
  * Created by Andrew on 3/28/2016.
@@ -160,6 +167,61 @@ public class DataObject {
             }
             else{
                 out.getActivity(activityName).addTimeSpent(recentActivities.getActivity(activityName).timeSpent);
+            }
+        }
+
+        return out;
+    }
+
+    public ActivityBlob aggregateHistoryRange(String start, String end){
+        ActivityBlob out = new ActivityBlob();
+
+        DateFormat format = new SimpleDateFormat(MainActivity.DATEFORMAT, Locale.ENGLISH);
+        Date dateObject = new Date();
+        Date startDate = new Date();
+        Date endDate = new Date();
+        try {
+            startDate = format.parse(start);
+            endDate = format.parse(end);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+
+        for (String date:history.keySet()) {
+
+            try {
+                dateObject = format.parse(date);
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            if(!dateObject.before(startDate) && !dateObject.after(endDate)) {
+                ActivityBlob blob = history.get(date);
+                for (String activityName : blob.getKeys()) {
+                    if (!out.checkActivity(activityName)) {
+                        ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconRes());
+                        out.addActivity(temp);
+                        out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
+                    } else {
+                        out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
+                    }
+                }
+            }
+        }
+
+        try {
+            dateObject = format.parse(recentActivities.date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        if(!dateObject.before(startDate) && !dateObject.after(endDate)) {
+            for (String activityName : recentActivities.getKeys()) {
+
+                if (!out.checkActivity(activityName)) {
+                    out.addActivity(recentActivities.getActivity(activityName));
+                } else {
+                    out.getActivity(activityName).addTimeSpent(recentActivities.getActivity(activityName).timeSpent);
+                }
             }
         }
 

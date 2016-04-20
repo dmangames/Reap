@@ -43,6 +43,8 @@ public class MainActivity extends AppCompatActivity
 
     public static final String TAG = "MainActivity";
 
+    public static final String DATEFORMAT = "MM-dd-yyyy";
+
     @Bind(R.id.dv_main_drawer) DrawerView drawer;
     @Bind(R.id.dl_main_drawerlayout) DrawerLayout layout;
     @Bind(R.id.tb_main_toolbar) Toolbar toolbar;
@@ -65,7 +67,7 @@ public class MainActivity extends AppCompatActivity
         switchFragment(fragment, true);
 
         Calendar cal = Calendar.getInstance();
-        SimpleDateFormat format1 = new SimpleDateFormat("MM-dd-yyyy"); //Whatever date format we decide on
+        SimpleDateFormat format1 = new SimpleDateFormat(DATEFORMAT); //Whatever date format we decide on
         String formatted = format1.format(cal.getTime());
 
         if (data == null) {
