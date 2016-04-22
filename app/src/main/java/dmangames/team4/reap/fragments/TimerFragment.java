@@ -464,4 +464,5 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         }
         bus.post(new SwitchFragmentEvent(ChooseActivityFragment.newInstance(), false, true));
     }
+
 }
