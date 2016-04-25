@@ -1,4 +1,4 @@
-<FrameLayout
+<LinearLayout
     android:id="@+id/fl_timer_container"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -8,14 +8,9 @@
     android:orientation="vertical"
     tools:context="dmangames.team4.reap.fragments.TodayFragment">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
-
     <Spinner
         android:id="@+id/spinner_date_range"
-        android:layout_width="150dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:visibility="gone"
         />
@@ -25,6 +20,4 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    </LinearLayout>
-
-</FrameLayout>
+</LinearLayout>
