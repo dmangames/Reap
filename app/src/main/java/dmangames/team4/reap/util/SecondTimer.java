@@ -73,6 +73,7 @@ public class SecondTimer {
     }
 
     public void start() {
+        Timber.d("start");
         if (timer != null)
             stop();
         timer = new Timer();

@@ -3,6 +3,10 @@ package dmangames.team4.reap.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.AnimatorRes;
 import android.support.v4.widget.DrawerLayout;
@@ -20,14 +24,17 @@ import javax.inject.Inject;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.dagger.DaggerInjector;
+import dmangames.team4.reap.events.ActivityObjectChangedEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.HistoryFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
+import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
-import dmangames.team4.reap.dagger.DaggerInjector;
+import dmangames.team4.reap.services.TimerService;
 import dmangames.team4.reap.util.GsonWrapper;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
@@ -49,6 +56,40 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle drawerToggle;
     private boolean singleTop = false;
 
+    public ActivityObject currentActivity; //The currentActivity is set in the TimerFragment
+
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            Timber.d("TimerService broadcast recieved");
+            Bundle bundle = intent.getExtras();
+            if (bundle!=null) {
+                String activityName = bundle.getString("activityName");
+                int timeSpent = bundle.getInt("timeSpent");
+                Timber.d("TimeSpent: " + timeSpent);
+                currentActivity = data.getActivityByName(activityName);
+
+                //If we can't find the name in activityList, try the breakList
+                if(currentActivity == null) {
+                    currentActivity = data.getBreakByName(activityName);
+                }
+
+                currentActivity.addTimeSpent(timeSpent);
+
+                //Send the currentActivity to TimerFragment
+                bus.postSticky(new ActivityObjectChangedEvent(currentActivity));
+
+                //Unregister receiver if exists
+                try {
+                    unregisterReceiver(receiver);
+                }catch (IllegalArgumentException e){
+                    //DO nothing
+                }
+
+            }
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,7 +108,10 @@ public class MainActivity extends AppCompatActivity
 
         drawer.setListener(this);
 
+        currentActivity = null;
+
         switchFragment(TimerFragment.newInstance(), false);
+
     }
 
     @Override
@@ -162,8 +206,13 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override protected void onStart() {
+        Timber.d("onStart");
         super.onStart();
         bus.register(this);
+        Intent intent = new Intent(this, TimerService.class);
+        stopService(intent);
+
+
     }
 
     @Override protected void onStop() {
@@ -171,6 +220,15 @@ public class MainActivity extends AppCompatActivity
         bus.unregister(this);
         data.setRecentActivities(blob());
         GsonWrapper.commitData(data, getApplicationContext());
+
+        //Register Receiver
+        //TODO: I'll need to change the flag used here
+        registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
+        // Start timer service to keep track of time in background
+        Intent intent = new Intent(this, TimerService.class);
+        intent.putExtra("activityName", currentActivity.getActivityName());
+        startService(intent);
+
     }
 
     public interface BackButtonListener {
