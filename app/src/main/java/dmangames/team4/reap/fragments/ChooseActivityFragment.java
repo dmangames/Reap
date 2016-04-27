@@ -29,7 +29,6 @@ import timber.log.Timber;
  * Fragment allowing user to pick current activity
  * Created by stevenzhang on 3/23/16.
  */
-@HasInjections
 @Layout(R.layout.fragment_choose_activity)
 public class ChooseActivityFragment extends ReapFragment
         implements CreateNewActivityListener, ActivityGridListener {

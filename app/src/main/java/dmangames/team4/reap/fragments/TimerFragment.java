@@ -60,7 +60,6 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_UP;
  * @version 3/21/16
  */
 @HasBusEvents
-@HasInjections
 @Layout(R.layout.fragment_timer)
 public class TimerFragment extends ReapFragment implements SecondListener {
     public enum State {

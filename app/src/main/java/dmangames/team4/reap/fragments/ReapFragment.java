@@ -30,7 +30,9 @@ import static java.lang.String.format;
 
 /**
  * Base {@link Fragment Fragment} class for Reap. Handles view binding via ButterKnife. All
- * classes which extend this class require a {@link Layout Layout} annotation.
+ * classes which extend this class require a {@link Layout Layout} annotation. Each class
+ * extending MUST ALSO be added to {@link dmangames.team4.reap.dagger.ReapModule ReapModule}'s
+ * "injects" list (as each fragment has at least a bus available).
  *
  * @author Brian Wang
  * @version 3/21/16
@@ -48,8 +50,7 @@ public class ReapFragment extends Fragment implements BackButtonListener {
 
         View view = inf.inflate(cls.getAnnotation(Layout.class).value(), parent, false);
         ButterKnife.bind(this, view);
-        if (cls.isAnnotationPresent(HasInjections.class))
-            DaggerInjector.inject(this);
+        DaggerInjector.inject(this);
         return view;
     }
 

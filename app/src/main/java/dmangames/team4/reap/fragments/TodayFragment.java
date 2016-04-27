@@ -18,7 +18,6 @@ import dmangames.team4.reap.objects.ActivityBlob;
 /**
  * Created by Andrew on 4/19/2016.
  */
-@HasInjections
 @Layout(R.layout.fragment_today)
 public class TodayFragment extends ReapFragment {
     @Bind(R.id.rv_today_activity_list) RecyclerView activityList;

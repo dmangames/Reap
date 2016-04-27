@@ -29,7 +29,6 @@ import timber.log.Timber;
 /**
  * Created by Andrew on 4/19/2016.
  */
-@HasInjections
 @Layout(R.layout.fragment_today)
 public class HistoryFragment extends ReapFragment {
     @Bind(R.id.spinner_date_range) Spinner dateSpinner;
