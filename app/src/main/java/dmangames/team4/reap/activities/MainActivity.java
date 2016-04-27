@@ -70,17 +70,17 @@ public class MainActivity extends AppCompatActivity
         public void onReceive(Context context, Intent intent) {
             Timber.d("TimerService broadcast received");
             Bundle bundle = intent.getExtras();
-            if (bundle!=null) {
+            if (bundle != null) {
                 String activityName = bundle.getString("activityName");
                 long timeSpent = bundle.getLong("timeSpent");
                 long currentSecs = bundle.getLong("currentSecs");
-                SecondTimer.Type timerType = (SecondTimer.Type)bundle.get("timerType");
+                SecondTimer.Type timerType = (SecondTimer.Type) bundle.get("timerType");
                 boolean pomodoroBreak = bundle.getBoolean("pomodoroBreak");
-                Timber.d("TimeSpent: " + timeSpent);
+                Timber.d("TimeSpent: %d", timeSpent);
                 currentActivity = data.getActivityByName(activityName);
 
                 //If we can't find the name in activityList, try the breakList
-                if(currentActivity == null) {
+                if (currentActivity == null) {
                     currentActivity = data.getBreakByName(activityName);
                 }
 
@@ -95,8 +95,8 @@ public class MainActivity extends AppCompatActivity
                 //Unregister receiver if exists
                 try {
                     unregisterReceiver(receiver);
-                }catch (IllegalArgumentException e){
-                    //DO nothing
+                } catch (IllegalArgumentException e) {
+                    Timber.e(e, "Exception in BroadcastReceiver");
                 }
 
             }
@@ -227,7 +227,7 @@ public class MainActivity extends AppCompatActivity
         Timber.d("onStart");
         super.onStart();
         bus.register(this);
-        if(timerServiceStarted) {
+        if (timerServiceStarted) {
             Intent intent = new Intent(this, TimerService.class);
             stopService(intent);
             timerServiceStarted = false;
