@@ -25,19 +25,15 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.dagger.DaggerInjector;
-import dmangames.team4.reap.events.ActivityObjectChangedEvent;
-import dmangames.team4.reap.events.AddTimerEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.HistoryFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
-import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.services.TimerService;
 import dmangames.team4.reap.util.GsonWrapper;
-import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
@@ -58,40 +54,16 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle drawerToggle;
     private boolean singleTop = false;
 
-    public ActivityObject currentActivity; //The currentActivity is set in the TimerFragment
-    public SecondTimer.Type timerType;
-    public long currentSecs;
-    public boolean pomodoroBreak;
-
     private boolean timerServiceStarted;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             Timber.d("TimerService broadcast received");
-            Bundle bundle = intent.getExtras();
-            if (bundle != null) {
-                String activityName = bundle.getString("activityName");
-                long timeSpent = bundle.getLong("timeSpent");
-                long currentSecs = bundle.getLong("currentSecs");
-                SecondTimer.Type timerType = (SecondTimer.Type) bundle.get("timerType");
-                boolean pomodoroBreak = bundle.getBoolean("pomodoroBreak");
-                Timber.d("TimeSpent: %d", timeSpent);
-                currentActivity = data.getActivityByName(activityName);
-
-                //If we can't find the name in activityList, try the breakList
-                if (currentActivity == null) {
-                    currentActivity = data.getBreakByName(activityName);
-                }
-
-                currentActivity.addTimeSpent(timeSpent);
-
-                //Send the currentActivity to TimerFragment
-                bus.postSticky(new ActivityObjectChangedEvent(currentActivity));
-
-                //Send the new total secs to TimerFragment
-                bus.postSticky(new AddTimerEvent(timeSpent, currentSecs, timerType, pomodoroBreak));
-
+            if (intent.getExtras() != null) {
+                Fragment fragment = getFragmentManager().findFragmentById(R.id.fl_main_container);
+                if (fragment instanceof FragmentEventListener)
+                    ((FragmentEventListener) fragment).unpackFromService(TimerService.class, intent);
                 //Unregister receiver if exists
                 try {
                     unregisterReceiver(receiver);
@@ -122,12 +94,6 @@ public class MainActivity extends AppCompatActivity
         drawer.setListener(this);
 
         timerServiceStarted = false;
-
-        currentActivity = null;
-        timerType = null;
-        currentSecs = 0;
-        pomodoroBreak = false;
-
         switchFragment(TimerFragment.newInstance(), false);
 
     }
@@ -196,14 +162,14 @@ public class MainActivity extends AppCompatActivity
      * This method should be called instead of {@link MainActivity#onBackPressed()}. Emulates a
      * back button pressed, but governs the listener calls.
      *
-     * @param programmatic If set false, this method will call the {@link BackButtonListener}
+     * @param programmatic If set false, this method will call the {@link FragmentEventListener}
      *                     of the current fragment, if the fragment has attached one.
      */
     public void goBack(boolean programmatic) {
         FragmentManager manager = getFragmentManager();
         if (!programmatic) {
             Fragment f = manager.findFragmentById(R.id.fl_main_container);
-            if (f instanceof BackButtonListener && ((BackButtonListener) f).onBackPressed())
+            if (f instanceof FragmentEventListener && ((FragmentEventListener) f).onBackPressed())
                 return;
         }
 
@@ -244,16 +210,14 @@ public class MainActivity extends AppCompatActivity
         GsonWrapper.commitData(data, getApplicationContext());
 
         if (!timerServiceStarted) {
-
             //Register Receiver
             //TODO: I'll need to change the flag used here
             registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
             // Start timer service to keep track of time in background
             Intent intent = new Intent(this, TimerService.class);
-            intent.putExtra("activityName", currentActivity.getActivityName());
-            intent.putExtra("timerType", timerType);
-            intent.putExtra("currentSecs", currentSecs);
-            intent.putExtra("pomodoroBreak", pomodoroBreak);
+            Fragment f = getFragmentManager().findFragmentById(R.id.fl_main_container);
+            if (f instanceof FragmentEventListener)
+                ((FragmentEventListener) f).packToService(TimerService.class, intent);
             startService(intent);
 
             timerServiceStarted = true;
@@ -274,12 +238,14 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    public interface BackButtonListener {
+    public interface FragmentEventListener {
         /**
          * Called if {@link MainActivity#goBack(boolean)} is called with false.
          *
          * @return If the back event has been consumed.
          */
         boolean onBackPressed();
+        void packToService(Class service, Intent packIntent);
+        void unpackFromService(Class service, Intent restoreIntent);
     }
 }

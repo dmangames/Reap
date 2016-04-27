@@ -6,6 +6,8 @@ import dmangames.team4.reap.R;
  * Created by brian on 3/25/16.
  */
 public class ActivityObject {
+    public static final String KEY_ACTIVITYOBJ_NAME = "activityObject.name";
+    public static final String KEY_ACTIVITYOBJ_SPENT = "activityObject.timeSpent";
 
     String activityName;
     long timeSpent;

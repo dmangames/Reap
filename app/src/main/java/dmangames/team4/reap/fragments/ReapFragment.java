@@ -4,6 +4,7 @@ import android.animation.Animator;
 import android.animation.ObjectAnimator;
 import android.app.Activity;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Point;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -19,9 +20,8 @@ import javax.inject.Inject;
 import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
-import dmangames.team4.reap.activities.MainActivity.BackButtonListener;
+import dmangames.team4.reap.activities.MainActivity.FragmentEventListener;
 import dmangames.team4.reap.annotations.HasBusEvents;
-import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.dagger.DaggerInjector;
 import timber.log.Timber;
@@ -37,7 +37,7 @@ import static java.lang.String.format;
  * @author Brian Wang
  * @version 3/21/16
  */
-public class ReapFragment extends Fragment implements BackButtonListener {
+public class ReapFragment extends Fragment implements FragmentEventListener {
     @Inject EventBus bus;
 
     @Override
@@ -111,5 +111,13 @@ public class ReapFragment extends Fragment implements BackButtonListener {
 
     @Override public boolean onBackPressed() {
         return false;
+    }
+
+    @Override public void packToService(Class service, Intent packIntent) {
+
+    }
+
+    @Override public void unpackFromService(Class service, Intent restoreIntent) {
+
     }
 }
