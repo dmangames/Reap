@@ -1,6 +1,7 @@
 package dmangames.team4.reap.fragments;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -29,6 +30,7 @@ import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.enums.Time;
 import dmangames.team4.reap.events.ActivityObjectChangedEvent;
 import dmangames.team4.reap.events.ActivityObjectDeletedEvent;
+import dmangames.team4.reap.events.AddTimerEvent;
 import dmangames.team4.reap.events.ChooseActivityObjectEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.objects.ActivityBlob;
@@ -216,6 +218,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                     timer.setup(COUNT_UP, Time.COUNT_UP_SECS);
                 else if (state == POMODORO) {
                     timer.setup(COUNT_DOWN, Time.POMODORO_WORK_SECS);
+                    timerView.setTextColor(Color.RED);
                     pomodoroBreak = false;
                 }
                 reconstructFromState();
@@ -254,6 +257,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             case NO_ACTIVITY:
                 timerView.setText(getString(R.string.no_timer));
                 totalTimeView.setText(getString(R.string.no_timer));
+                timerView.setTextColor(Color.BLACK);
                 iconView.setImageResource(R.drawable.no_activity_icon);
 
                 pauseButton.hide();
@@ -263,6 +267,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             case CHOOSE_TIMER:
                 timerView.setText(getString(R.string.no_timer));
                 totalTimeView.setText(getString(R.string.no_timer));
+                timerView.setTextColor(Color.BLACK);
 
                 pauseButton.hide();
                 jarView.setVisibility(GONE);
@@ -270,15 +275,17 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 break;
             case POMODORO:
                 resumeSecondTimer();
-
                 jarView.setVisibility(VISIBLE);
                 timerChooser.setVisibility(GONE);
+                timerView.setTextColor(Color.RED);
+                ((MainActivity)getActivity()).timerType = COUNT_DOWN;
                 break;
             case HOUR:
                 resumeSecondTimer();
 
                 jarView.setVisibility(VISIBLE);
                 timerChooser.setVisibility(GONE);
+                ((MainActivity)getActivity()).timerType = COUNT_UP;
                 break;
             default:
                 Timber.e("Unknown state!");
@@ -296,11 +303,13 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         data.getRecentActivities().updateActivity(activityObject);
     }
 
-    @Override public void onStop() {
-        super.onStop();
+    @Override
+    public void onPause() {
+        super.onPause();
+        ((MainActivity)getActivity()).currentSecs = timer.getCurrentSeconds();
         saveSecondTimer();
         stopSecondTimer();
-        Timber.d("Timer Fragment stopped");
+        Timber.d("Timer Fragment paused");
     }
 
     @Override public void onResume() {
@@ -365,9 +374,24 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         reconstructFromState();
     }
 
+    @Subscribe(sticky = true) public void onAddTimerData(AddTimerEvent event) {
+        bus.removeStickyEvent(event);
+        if(event.timerType == COUNT_DOWN)
+            if(!event.pomodoroBreak)
+                timer.setup(event.timerType, Time.POMODORO_WORK_SECS);
+            else
+                timer.setup(event.timerType, Time.POMODORO_BREAK_SECS);
+        else
+            timer.setup(event.timerType, Time.COUNT_UP_SECS);
+
+        timer.setCurrentSeconds(event.currentSecs);
+
+    }
+
     @Override public void onTimerTick(long secs) {
         timerView.setText(String.format("%02d:%02d", secs / 60, secs % 60));
-        activityObject.addTimeSpent(1);
+        if(!pomodoroBreak)
+            activityObject.addTimeSpent(1);
         long timeSpent = activityObject.getTimeSpent();
         totalTimeView.setText(String.format("%02d:%02d", timeSpent / 60, timeSpent % 60));
 
@@ -383,10 +407,15 @@ public class TimerFragment extends ReapFragment implements SecondListener {
                 saveSecondTimer();
 
             pomodoroBreak = !pomodoroBreak;
-            if (pomodoroBreak)
+            ((MainActivity)getActivity()).pomodoroBreak = pomodoroBreak;
+            if (pomodoroBreak) {
                 timer.setTotalSeconds(Time.POMODORO_BREAK_SECS);
-            else
+                timerView.setTextColor(Color.GREEN);
+            }
+            else {
                 timer.setTotalSeconds(Time.POMODORO_WORK_SECS);
+                timerView.setTextColor(Color.RED);
+            }
         } else
             saveSecondTimer();
 
@@ -423,6 +452,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         fadeOutTimerChooser();
 
         timer.setup(COUNT_DOWN, Time.POMODORO_WORK_SECS);
+        ((MainActivity)getActivity()).timerType = COUNT_DOWN;
+
+        timerView.setTextColor(Color.RED);
         restartSecondTimer();
     }
 
@@ -433,6 +465,9 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         fadeOutTimerChooser();
 
         timer.setup(COUNT_UP, Time.COUNT_UP_SECS);
+        ((MainActivity)getActivity()).timerType = COUNT_UP;
+
+        timerView.setTextColor(Color.BLACK);
         restartSecondTimer();
     }
 

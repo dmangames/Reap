@@ -97,6 +97,12 @@ public class SecondTimer {
         this.current = current;
     }
 
+    public long getCurrentSeconds() {
+        return current;
+    }
+
+    public void addToCurrentSeconds(long add) { this.current += add; }
+
     public long getSecondsElapsed() {
         return type == COUNT_UP ? current : total - current;
     }

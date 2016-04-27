@@ -26,6 +26,7 @@ import butterknife.ButterKnife;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.dagger.DaggerInjector;
 import dmangames.team4.reap.events.ActivityObjectChangedEvent;
+import dmangames.team4.reap.events.AddTimerEvent;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.HistoryFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
@@ -36,6 +37,7 @@ import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.services.TimerService;
 import dmangames.team4.reap.util.GsonWrapper;
+import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
@@ -57,15 +59,23 @@ public class MainActivity extends AppCompatActivity
     private boolean singleTop = false;
 
     public ActivityObject currentActivity; //The currentActivity is set in the TimerFragment
+    public SecondTimer.Type timerType;
+    public long currentSecs;
+    public boolean pomodoroBreak;
+
+    private boolean timerServiceStarted;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            Timber.d("TimerService broadcast recieved");
+            Timber.d("TimerService broadcast received");
             Bundle bundle = intent.getExtras();
             if (bundle!=null) {
                 String activityName = bundle.getString("activityName");
-                int timeSpent = bundle.getInt("timeSpent");
+                long timeSpent = bundle.getLong("timeSpent");
+                long currentSecs = bundle.getLong("currentSecs");
+                SecondTimer.Type timerType = (SecondTimer.Type)bundle.get("timerType");
+                boolean pomodoroBreak = bundle.getBoolean("pomodoroBreak");
                 Timber.d("TimeSpent: " + timeSpent);
                 currentActivity = data.getActivityByName(activityName);
 
@@ -78,6 +88,9 @@ public class MainActivity extends AppCompatActivity
 
                 //Send the currentActivity to TimerFragment
                 bus.postSticky(new ActivityObjectChangedEvent(currentActivity));
+
+                //Send the new total secs to TimerFragment
+                bus.postSticky(new AddTimerEvent(timeSpent, currentSecs, timerType, pomodoroBreak));
 
                 //Unregister receiver if exists
                 try {
@@ -108,7 +121,12 @@ public class MainActivity extends AppCompatActivity
 
         drawer.setListener(this);
 
+        timerServiceStarted = false;
+
         currentActivity = null;
+        timerType = null;
+        currentSecs = 0;
+        pomodoroBreak = false;
 
         switchFragment(TimerFragment.newInstance(), false);
 
@@ -209,26 +227,51 @@ public class MainActivity extends AppCompatActivity
         Timber.d("onStart");
         super.onStart();
         bus.register(this);
-        Intent intent = new Intent(this, TimerService.class);
-        stopService(intent);
+        if(timerServiceStarted) {
+            Intent intent = new Intent(this, TimerService.class);
+            stopService(intent);
+            timerServiceStarted = false;
+        }
 
 
     }
 
     @Override protected void onStop() {
+        Timber.d("onStop");
         super.onStop();
         bus.unregister(this);
         data.setRecentActivities(blob());
         GsonWrapper.commitData(data, getApplicationContext());
 
-        //Register Receiver
-        //TODO: I'll need to change the flag used here
-        registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
-        // Start timer service to keep track of time in background
-        Intent intent = new Intent(this, TimerService.class);
-        intent.putExtra("activityName", currentActivity.getActivityName());
-        startService(intent);
+        if (!timerServiceStarted) {
 
+            //Register Receiver
+            //TODO: I'll need to change the flag used here
+            registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
+            // Start timer service to keep track of time in background
+            Intent intent = new Intent(this, TimerService.class);
+            intent.putExtra("activityName", currentActivity.getActivityName());
+            intent.putExtra("timerType", timerType);
+            intent.putExtra("currentSecs", currentSecs);
+            intent.putExtra("pomodoroBreak", pomodoroBreak);
+            startService(intent);
+
+            timerServiceStarted = true;
+        }
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        Timber.d("onDestroy");
+        //Unregister receiver if exists
+        try {
+            unregisterReceiver(receiver);
+        } catch (IllegalArgumentException e) {
+            //DO nothing
+        }
+
+        super.onDestroy();
     }
 
     public interface BackButtonListener {
