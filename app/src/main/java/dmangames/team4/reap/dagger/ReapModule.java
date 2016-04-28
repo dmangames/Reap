@@ -3,6 +3,7 @@ package dmangames.team4.reap.dagger;
 import android.content.Context;
 
 import com.google.gson.Gson;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -19,11 +20,13 @@ import dmangames.team4.reap.adapters.BreakGridAdapter;
 import dmangames.team4.reap.adapters.ReapAdapter;
 import dmangames.team4.reap.fragments.ChooseActivityFragment;
 import dmangames.team4.reap.fragments.HistoryFragment;
+import dmangames.team4.reap.fragments.PixelPortraitsFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.DataObject;
+import dmangames.team4.reap.objects.PixelPortrait;
 import dmangames.team4.reap.util.GsonWrapper;
 import timber.log.Timber;
 
@@ -39,6 +42,7 @@ import timber.log.Timber;
                 ReapFragment.class,
                 ChooseActivityFragment.class,
                 HistoryFragment.class,
+                PixelPortraitsFragment.class,
                 TimerFragment.class,
                 TodayFragment.class,
 
@@ -46,6 +50,9 @@ import timber.log.Timber;
                 ReapAdapter.class,
                 ActivityGridAdapter.class,
                 BreakGridAdapter.class,
+
+                // Objects
+                PixelPortrait.class,
         }
 )
 public class ReapModule {

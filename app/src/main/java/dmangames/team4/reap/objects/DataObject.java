@@ -22,6 +22,7 @@ public class DataObject {
     ActivityBlob recentActivities;
     TreeMap<String, ActivityObject> activityList = new TreeMap<>();
     TreeMap<String, ActivityObject> breakList = new TreeMap<>();
+    TreeMap<String, PixelPortrait> portraits = new TreeMap<>();
 
     public DataObject(String name, String date) {
         this.recentDate = date;

@@ -2,6 +2,8 @@ package dmangames.team4.reap;
 
 import android.app.Application;
 
+import com.squareup.picasso.Picasso;
+
 import dmangames.team4.reap.dagger.DaggerInjector;
 import timber.log.Timber;
 
@@ -16,5 +18,8 @@ public class ReapApplication extends Application {
 
         if (BuildConfig.DEBUG)
             Timber.plant(new Timber.DebugTree());
+
+        // Initialize default Picasso instance.
+        Picasso.with(this);
     }
 }
