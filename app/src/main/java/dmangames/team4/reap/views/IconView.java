@@ -37,7 +37,6 @@ public class IconView extends View {
     }
 
     public void changeIcon(int iconID){
-//        mIcon = ResourcesCompat.getDrawable(getResources(), iconID, null);
         mIcon = BitmapFactory.decodeResource(getResources(), iconID);
         invalidate();
     }
@@ -53,7 +52,6 @@ public class IconView extends View {
             throw new RuntimeException("Must declare numIcons");
 
         if (a.hasValue(R.styleable.IconView_iconDrawable)) {
-//            mIcon = a.getDrawable(R.styleable.IconView_iconDrawable);
             mIcon = BitmapFactory.decodeResource(getResources(),R.styleable.IconView_iconDrawable);
         }
         else
@@ -140,30 +138,7 @@ public class IconView extends View {
 
         }
 
-//
-//        if (!xMode&& mIcon != null) {
-//            for(int i = 0; i < num; i ++){
-//                mIcon.setBounds(paddingLeft + (i*scaledWidth) + (i*spacing), paddingTop,
-//                        ((i+1)*scaledWidth) + paddingRight + (i*spacing), scaledHeight + paddingBottom);
-//                mIcon.draw(canvas);
-//            }
-//        }
-//        if(xMode&& mIcon != null){
-//            mIcon.setBounds(paddingLeft, paddingTop,
-//                    scaledWidth + paddingLeft, scaledHeight + paddingTop);
-//            mIcon.draw(canvas);
-//            canvas.drawText("x"+mNumIcons,textX, textY,
-//                    mTextPaint);
-//        }
     }
-//
-//    public Drawable getIcon() {
-//        return mIcon;
-//    }
-//
-//    public void setIcon(Drawable icon) {
-//        mIcon = icon;
-//    }
 
     public float getNumIcons() {
         return mNumIcons;
