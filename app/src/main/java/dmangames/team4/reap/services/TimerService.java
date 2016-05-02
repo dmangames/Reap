@@ -3,6 +3,7 @@ package dmangames.team4.reap.services;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -31,10 +32,13 @@ public class TimerService extends Service implements SecondListener {
     private boolean invalidated;
 
     private static final int NOTIFICATION = 1;
+    private static final int COMMON_NOTIFICATION = 2;
+
     public static final String CLOSE_ACTION = "close";
     public static final String OPEN_ACTION = "open";
     private NotificationManager mNotificationManager;
     private final NotificationCompat.Builder mNotificationBuilder = new NotificationCompat.Builder(this);
+    private final NotificationCompat.Builder mCommonNotificationBuilder = buildNotificationCommon(this);
 
     private long timeSpent;
 
@@ -68,7 +72,8 @@ public class TimerService extends Service implements SecondListener {
         secondTimer.unpack(intent);
         secondTimer.start();
 
-        showPersistantNotification();
+        buildPersistantNotification();
+        showPersistantNotification(NOTIFICATION);
 
         return START_REDELIVER_INTENT;
     }
@@ -92,7 +97,7 @@ public class TimerService extends Service implements SecondListener {
         if (mNotificationManager == null) {
             mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         }
-        mNotificationManager.cancel(NOTIFICATION);
+        mNotificationManager.cancelAll();
 
         Intent intent = new Intent(NOTIFICATION_SERVICE);
         intent.putExtra(KEY_ACTIVITYOBJ_NAME, activityName);
@@ -118,10 +123,29 @@ public class TimerService extends Service implements SecondListener {
         else {
             if (secondTimer.getType() == COUNT_DOWN) {
                 pomodoroBreak = !pomodoroBreak;
-                if (pomodoroBreak)
+                if (pomodoroBreak) {
                     secondTimer.setTotalSeconds(Time.POMODORO_BREAK_SECS);
-                else
+                    mCommonNotificationBuilder.setSmallIcon(R.drawable.tomato);
+                    mCommonNotificationBuilder.setContentTitle("Pomodoro Break Started!");
+                    mCommonNotificationBuilder.setContentText("Take a break for " + Time.POMODORO_BREAK_SECS / 60 + " minutes!");
+                    mCommonNotificationBuilder.setWhen(System.currentTimeMillis());
+                    showCommonNotification(COMMON_NOTIFICATION);
+                }
+                else {
                     secondTimer.setTotalSeconds(Time.POMODORO_WORK_SECS);
+                    mCommonNotificationBuilder.setSmallIcon(R.drawable.tomato);
+                    mCommonNotificationBuilder.setContentTitle("Pomodoro Break Ended!");
+                    mCommonNotificationBuilder.setContentText("Back to work!");
+                    mCommonNotificationBuilder.setWhen(System.currentTimeMillis());
+                    showCommonNotification(COMMON_NOTIFICATION);
+                }
+            }
+            else{
+                mCommonNotificationBuilder.setSmallIcon(R.drawable.stopwatch);
+                mCommonNotificationBuilder.setContentTitle("Congrats");
+                mCommonNotificationBuilder.setContentText("You worked for 1 hour!");
+                mCommonNotificationBuilder.setWhen(System.currentTimeMillis());
+                showCommonNotification(COMMON_NOTIFICATION);
             }
 
             secondTimer.reset();
@@ -129,7 +153,7 @@ public class TimerService extends Service implements SecondListener {
         }
     }
 
-    private void showPersistantNotification(){
+    private void buildPersistantNotification(){
         if (mNotificationManager == null) {
             mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         }
@@ -157,11 +181,33 @@ public class TimerService extends Service implements SecondListener {
                 .setOngoing(true);
 
         mNotificationBuilder
-                .setTicker(getText(R.string.service_connected))
-                .setContentText(getText(R.string.service_connected));
-
+                .setTicker("Current Task: " + activityName)
+                .setContentText("Current Task: " + activityName);
+    }
+    private void showPersistantNotification(int id) {
         if (mNotificationManager != null) {
-            mNotificationManager.notify(NOTIFICATION, mNotificationBuilder.build());
+            mNotificationManager.notify(id, mNotificationBuilder.build());
         }
+    }
+
+    private void showCommonNotification(int id) {
+        if (mNotificationManager != null) {
+            mNotificationManager.notify(id, mCommonNotificationBuilder.build());
+        }
+    }
+
+    private static NotificationCompat.Builder buildNotificationCommon(Context _context) {
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(_context);
+
+        builder.setWhen(System.currentTimeMillis())
+                .setVisibility(NotificationCompat.VISIBILITY_PRIVATE);
+
+        //Vibration
+        builder.setVibrate(new long[]{0, 1000, 1000, 1000, 1000 });
+
+        //Ton
+        //builder.setSound(Uri.parse("uri://sadfasdfasdf.mp3"));
+
+        return builder;
     }
 }
