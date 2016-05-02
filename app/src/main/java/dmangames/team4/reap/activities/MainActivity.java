@@ -3,11 +3,15 @@ package dmangames.team4.reap.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
+import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.support.annotation.AnimatorRes;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -31,8 +35,10 @@ import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
 import dmangames.team4.reap.objects.ActivityBlob;
+import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.services.TimerService;
+import dmangames.team4.reap.services.TimerService.TimerBinder;
 import dmangames.team4.reap.util.GsonWrapper;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
@@ -42,7 +48,7 @@ import timber.log.Timber;
 import static android.widget.Toast.LENGTH_SHORT;
 
 public class MainActivity extends AppCompatActivity
-        implements DrawerListener {
+        implements DrawerListener, ServiceConnection {
     @Bind(R.id.dv_main_drawer) DrawerView drawer;
     @Bind(R.id.dl_main_drawerlayout) DrawerLayout layout;
     @Bind(R.id.tb_main_toolbar) Toolbar toolbar;
@@ -53,6 +59,8 @@ public class MainActivity extends AppCompatActivity
 
     private ActionBarDrawerToggle drawerToggle;
     private boolean singleTop = false;
+    private boolean serviceBound = false;
+    private TimerBinder timerBinder;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -68,7 +76,6 @@ public class MainActivity extends AppCompatActivity
                 } catch (IllegalArgumentException e) {
                     Timber.e(e, "Exception in BroadcastReceiver");
                 }
-
             }
         }
     };
@@ -196,16 +203,16 @@ public class MainActivity extends AppCompatActivity
         data.setRecentActivities(blob());
         GsonWrapper.commitData(data, getApplicationContext());
 
-            //Register Receiver
-            //TODO: I'll need to change the flag used here
-            registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
-            // Start timer service to keep track of time in background
-            Intent intent = new Intent(this, TimerService.class);
-            Fragment f = getFragmentManager().findFragmentById(R.id.fl_main_container);
-            if (f instanceof FragmentEventListener)
-                ((FragmentEventListener) f).packToService(TimerService.class, intent);
-            startService(intent);
-
+        //Register Receiver
+        //TODO: I'll need to change the flag used here
+        registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
+        // Start timer service to keep track of time in background
+        Intent intent = new Intent(this, TimerService.class);
+        Fragment f = getFragmentManager().findFragmentById(R.id.fl_main_container);
+        if (f instanceof FragmentEventListener)
+            ((FragmentEventListener) f).packToService(TimerService.class, intent);
+        startService(intent);
+        bindService(intent, this, Service.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -215,7 +222,7 @@ public class MainActivity extends AppCompatActivity
         try {
             unregisterReceiver(receiver);
         } catch (IllegalArgumentException e) {
-            //DO nothing
+            Timber.e(e, "Nonfatal error in onDestroy!");
         }
 
         super.onDestroy();
@@ -228,7 +235,9 @@ public class MainActivity extends AppCompatActivity
          * @return If the back event has been consumed.
          */
         boolean onBackPressed();
+
         void packToService(Class service, Intent packIntent);
+
         void unpackFromService(Class service, Intent restoreIntent);
     }
 
@@ -248,7 +257,24 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    @Override public void onServiceConnected(ComponentName name, IBinder service) {
+        timerBinder = (TimerBinder) service;
+        serviceBound = true;
+    }
+
+    @Override public void onServiceDisconnected(ComponentName name) {
+        serviceBound = false;
+        timerBinder = null;
+    }
+
     private void exit() {
+        ActivityObject object = data.getActivityByName(timerBinder.getActivityName());
+        if (object == null)
+            object = data.getBreakByName(timerBinder.getActivityName());
+        object.addTimeSpent(timerBinder.getTimeSpent());
+
+        unbindService(this);
+        onServiceDisconnected(null);
         stopService(new Intent(this, TimerService.class));
         finish();
     }

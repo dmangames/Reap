@@ -5,6 +5,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
@@ -25,6 +26,15 @@ import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
  * Created by stevenzhang on 4/15/16.
  */
 public class TimerService extends Service implements SecondListener {
+    public class TimerBinder extends Binder {
+        public long getTimeSpent() {
+            return timeSpent;
+        }
+
+        public String getActivityName() {
+            return activityName;
+        }
+    }
 
     private String activityName;
     private SecondTimer secondTimer;
@@ -50,7 +60,7 @@ public class TimerService extends Service implements SecondListener {
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
-        return null;
+        return new TimerBinder();
     }
 
     @Override
@@ -159,7 +169,7 @@ public class TimerService extends Service implements SecondListener {
         }
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class)
-                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP),0);
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
 
         PendingIntent pendingCloseIntent = PendingIntent.getActivity(this, 0,
                 new Intent(this, MainActivity.class)
@@ -174,15 +184,13 @@ public class TimerService extends Service implements SecondListener {
                 .setContentTitle(getText(R.string.app_name))
                 .setWhen(System.currentTimeMillis())
                 .setContentIntent(pendingIntent)
-                .addAction(android.R.drawable.ic_menu_view,
+                .addAction(R.drawable.ic_open,
                         getString(R.string.action_open), pendingIntent)
-                .addAction(android.R.drawable.ic_menu_close_clear_cancel,
+                .addAction(R.drawable.ic_close,
                         getString(R.string.action_exit), pendingCloseIntent)
-                .setOngoing(true);
-
-        mNotificationBuilder
-                .setTicker("Current Task: " + activityName)
-                .setContentText("Current Task: " + activityName);
+                .setOngoing(true)
+                .setTicker(getText(R.string.service_connected))
+                .setContentText(getText(R.string.service_connected));
     }
     private void showPersistantNotification(int id) {
         if (mNotificationManager != null) {
