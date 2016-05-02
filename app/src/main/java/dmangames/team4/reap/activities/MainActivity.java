@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity
     private ActionBarDrawerToggle drawerToggle;
     private boolean singleTop = false;
 
-    private boolean timerServiceStarted;
-
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -93,7 +91,6 @@ public class MainActivity extends AppCompatActivity
 
         drawer.setListener(this);
 
-        timerServiceStarted = false;
         switchFragment(TimerFragment.newInstance(), false);
 
     }
@@ -193,23 +190,18 @@ public class MainActivity extends AppCompatActivity
         Timber.d("onStart");
         super.onStart();
         bus.register(this);
-        if (timerServiceStarted) {
-            Intent intent = new Intent(this, TimerService.class);
-            stopService(intent);
-            timerServiceStarted = false;
-        }
-
-
+        Intent intent = new Intent(this, TimerService.class);
+        stopService(intent);
+        Timber.d("onStartEnd");
     }
 
-    @Override protected void onStop() {
-        Timber.d("onStop");
-        super.onStop();
+    @Override
+    protected void onPause() {
+        super.onPause();
         bus.unregister(this);
         data.setRecentActivities(blob());
         GsonWrapper.commitData(data, getApplicationContext());
 
-        if (!timerServiceStarted) {
             //Register Receiver
             //TODO: I'll need to change the flag used here
             registerReceiver(receiver, new IntentFilter(NOTIFICATION_SERVICE));
@@ -219,9 +211,6 @@ public class MainActivity extends AppCompatActivity
             if (f instanceof FragmentEventListener)
                 ((FragmentEventListener) f).packToService(TimerService.class, intent);
             startService(intent);
-
-            timerServiceStarted = true;
-        }
 
     }
 
@@ -247,5 +236,26 @@ public class MainActivity extends AppCompatActivity
         boolean onBackPressed();
         void packToService(Class service, Intent packIntent);
         void unpackFromService(Class service, Intent restoreIntent);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        String action = intent.getAction();
+        if (action == null) {
+            return;
+        }
+        switch (action) {
+            case TimerService.CLOSE_ACTION:
+                exit();
+                break;
+            case TimerService.OPEN_ACTION:
+                break;
+        }
+    }
+
+    private void exit() {
+        stopService(new Intent(this, TimerService.class));
+        finish();
     }
 }

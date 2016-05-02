@@ -1,10 +1,15 @@
 package dmangames.team4.reap.services;
 
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.support.v7.app.NotificationCompat;
 
+import dmangames.team4.reap.R;
+import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.enums.Time;
 import dmangames.team4.reap.util.SecondTimer;
 import dmangames.team4.reap.util.SecondTimer.SecondListener;
@@ -24,6 +29,14 @@ public class TimerService extends Service implements SecondListener {
     private SecondTimer secondTimer;
     private boolean pomodoroBreak;
     private boolean invalidated;
+
+    private static final int NOTIFICATION = 1;
+    public static final String CLOSE_ACTION = "close";
+    public static final String OPEN_ACTION = "open";
+    private NotificationManager mNotificationManager;
+    private final NotificationCompat.Builder mNotificationBuilder = new NotificationCompat.Builder(this);
+
+    private long timeSpent;
 
     @Override
     public void onCreate() {
@@ -47,6 +60,7 @@ public class TimerService extends Service implements SecondListener {
             return START_REDELIVER_INTENT;
         }
 
+        timeSpent = 0;
         invalidated = false;
         activityName = intent.getStringExtra(KEY_ACTIVITYOBJ_NAME);
         pomodoroBreak = intent.getBooleanExtra(KEY_TIMER_BREAK, false);
@@ -54,13 +68,15 @@ public class TimerService extends Service implements SecondListener {
         secondTimer.unpack(intent);
         secondTimer.start();
 
+        showPersistantNotification();
+
         return START_REDELIVER_INTENT;
     }
 
     @Override
     public boolean stopService(Intent name) {
         Timber.d("stopService");
-        secondTimer.stop();
+
         return super.stopService(name);
     }
 
@@ -71,17 +87,26 @@ public class TimerService extends Service implements SecondListener {
         super.onDestroy();
         if (invalidated)
             return;
+
+        secondTimer.stop();
+        if (mNotificationManager == null) {
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        }
+        mNotificationManager.cancel(NOTIFICATION);
+
         Intent intent = new Intent(NOTIFICATION_SERVICE);
         intent.putExtra(KEY_ACTIVITYOBJ_NAME, activityName);
         intent.putExtra(KEY_ACTIVITYOBJ_SPENT, secondTimer.getSecondsElapsed());
         intent.putExtra(KEY_TIMER_BREAK, pomodoroBreak);
         secondTimer.pack(intent);
-        Timber.d("TimeSpent: %d", secondTimer.getSecondsElapsed());
+        Timber.d("TimeSpent: %d", timeSpent);
         sendBroadcast(intent);
+
     }
 
     @Override
     public void onTimerTick(long secs) {
+        timeSpent++;
     }
 
     @Override
@@ -101,6 +126,42 @@ public class TimerService extends Service implements SecondListener {
 
             secondTimer.reset();
             secondTimer.start();
+        }
+    }
+
+    private void showPersistantNotification(){
+        if (mNotificationManager == null) {
+            mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+        }
+        PendingIntent pendingIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class)
+                    .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP),0);
+
+        PendingIntent pendingCloseIntent = PendingIntent.getActivity(this, 0,
+                new Intent(this, MainActivity.class)
+                        .setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP)
+                        .setAction(CLOSE_ACTION),
+                0);
+
+        mNotificationBuilder
+                .setSmallIcon(R.drawable.ic_launcher)
+                .setCategory(NotificationCompat.CATEGORY_SERVICE)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
+                .setContentTitle(getText(R.string.app_name))
+                .setWhen(System.currentTimeMillis())
+                .setContentIntent(pendingIntent)
+                .addAction(android.R.drawable.ic_menu_view,
+                        getString(R.string.action_open), pendingIntent)
+                .addAction(android.R.drawable.ic_menu_close_clear_cancel,
+                        getString(R.string.action_exit), pendingCloseIntent)
+                .setOngoing(true);
+
+        mNotificationBuilder
+                .setTicker(getText(R.string.service_connected))
+                .setContentText(getText(R.string.service_connected));
+
+        if (mNotificationManager != null) {
+            mNotificationManager.notify(NOTIFICATION, mNotificationBuilder.build());
         }
     }
 }
