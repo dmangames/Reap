@@ -25,9 +25,7 @@ public class DrawerView extends FrameLayout {
     public enum Option {
         TODAY(R.string.today),
         HISTORY(R.string.history),
-        MILESTONES(R.string.milestones),
-        FRIENDS(R.string.friends),
-        EXTRAS(R.string.extras);
+        PIXEL_PORTRAITS(R.string.pixel_portraits);
 
         public final int id;
 

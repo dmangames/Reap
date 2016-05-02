@@ -104,13 +104,7 @@ public class MainActivity extends AppCompatActivity
             case HISTORY:
                 bus.post(new SwitchFragmentEvent(HistoryFragment.newInstance(), true, true));
                 break;
-            case MILESTONES:
-                Toast.makeText(this, "To be implemented", LENGTH_SHORT).show();
-                break;
-            case FRIENDS:
-                Toast.makeText(this, "To be implemented", LENGTH_SHORT).show();
-                break;
-            case EXTRAS:
+            case PIXEL_PORTRAITS:
                 Toast.makeText(this, "To be implemented", LENGTH_SHORT).show();
                 break;
             default:

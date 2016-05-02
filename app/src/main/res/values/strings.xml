@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">Reap</string>
     <string name="today">Today</string>
-    <string name="extras">Extras</string>
-    <string name="friends">Friends</string>
-    <string name="milestones">Milestones</string>
+    <string name="pixel_portraits">Pixel Portraits</string>
     <string name="history">History</string>
     <string name="icon_content_description">Central icon</string>
     <string name="no_timer">--:--</string>
