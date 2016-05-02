@@ -3,15 +3,11 @@ package dmangames.team4.reap.activities;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
-import android.app.Service;
 import android.content.BroadcastReceiver;
-import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.ServiceConnection;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.annotation.AnimatorRes;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -38,7 +34,6 @@ import dmangames.team4.reap.objects.ActivityBlob;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.services.TimerService;
-import dmangames.team4.reap.services.TimerService.TimerBinder;
 import dmangames.team4.reap.util.GsonWrapper;
 import dmangames.team4.reap.views.DrawerView;
 import dmangames.team4.reap.views.DrawerView.DrawerListener;
@@ -46,9 +41,11 @@ import dmangames.team4.reap.views.DrawerView.Option;
 import timber.log.Timber;
 
 import static android.widget.Toast.LENGTH_SHORT;
+import static dmangames.team4.reap.objects.ActivityObject.KEY_ACTIVITYOBJ_NAME;
+import static dmangames.team4.reap.objects.ActivityObject.KEY_ACTIVITYOBJ_SPENT;
 
 public class MainActivity extends AppCompatActivity
-        implements DrawerListener, ServiceConnection {
+        implements DrawerListener {
     @Bind(R.id.dv_main_drawer) DrawerView drawer;
     @Bind(R.id.dl_main_drawerlayout) DrawerLayout layout;
     @Bind(R.id.tb_main_toolbar) Toolbar toolbar;
@@ -59,8 +56,6 @@ public class MainActivity extends AppCompatActivity
 
     private ActionBarDrawerToggle drawerToggle;
     private boolean singleTop = false;
-    private boolean serviceBound = false;
-    private TimerBinder timerBinder;
 
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
@@ -70,6 +65,14 @@ public class MainActivity extends AppCompatActivity
                 Fragment fragment = getFragmentManager().findFragmentById(R.id.fl_main_container);
                 if (fragment instanceof FragmentEventListener)
                     ((FragmentEventListener) fragment).unpackFromService(TimerService.class, intent);
+                else {
+                    String name = intent.getStringExtra(KEY_ACTIVITYOBJ_NAME);
+                    ActivityObject object = data.getActivityByName(name);
+                    if (object == null)
+                        object = data.getBreakByName(name);
+                    object.addTimeSpent(intent.getLongExtra(KEY_ACTIVITYOBJ_SPENT, 0));
+                }
+
                 //Unregister receiver if exists
                 try {
                     unregisterReceiver(receiver);
@@ -212,7 +215,6 @@ public class MainActivity extends AppCompatActivity
         if (f instanceof FragmentEventListener)
             ((FragmentEventListener) f).packToService(TimerService.class, intent);
         startService(intent);
-        bindService(intent, this, Service.BIND_AUTO_CREATE);
     }
 
     @Override
@@ -257,24 +259,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    @Override public void onServiceConnected(ComponentName name, IBinder service) {
-        timerBinder = (TimerBinder) service;
-        serviceBound = true;
-    }
-
-    @Override public void onServiceDisconnected(ComponentName name) {
-        serviceBound = false;
-        timerBinder = null;
-    }
-
     private void exit() {
-        ActivityObject object = data.getActivityByName(timerBinder.getActivityName());
-        if (object == null)
-            object = data.getBreakByName(timerBinder.getActivityName());
-        object.addTimeSpent(timerBinder.getTimeSpent());
-
-        unbindService(this);
-        onServiceDisconnected(null);
         stopService(new Intent(this, TimerService.class));
         finish();
     }
