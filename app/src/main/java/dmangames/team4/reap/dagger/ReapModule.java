@@ -17,6 +17,7 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.adapters.ActivityGridAdapter;
 import dmangames.team4.reap.adapters.BreakGridAdapter;
+import dmangames.team4.reap.adapters.PixelPortraitsAdapter;
 import dmangames.team4.reap.adapters.ReapAdapter;
 import dmangames.team4.reap.fragments.ChooseActivityFragment;
 import dmangames.team4.reap.fragments.HistoryFragment;
@@ -50,6 +51,7 @@ import timber.log.Timber;
                 ReapAdapter.class,
                 ActivityGridAdapter.class,
                 BreakGridAdapter.class,
+                PixelPortraitsAdapter.class,
 
                 // Objects
                 PixelPortrait.class,

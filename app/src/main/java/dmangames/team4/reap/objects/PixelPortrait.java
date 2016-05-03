@@ -2,15 +2,13 @@ package dmangames.team4.reap.objects;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RectF;
-import android.graphics.drawable.Drawable;
+import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -25,8 +23,8 @@ import timber.log.Timber;
 /**
  * Created by Brian on 4/28/2016.
  */
-public class PixelPortrait implements Target {
-    private static final long HOUR_SECS = TimeUnit.HOURS.toSeconds(1);
+public class PixelPortrait {
+    private static final long HOUR_SECS = TimeUnit.MINUTES.toSeconds(1);
 
     private String activityName;
 
@@ -36,14 +34,25 @@ public class PixelPortrait implements Target {
     private transient File file;
     // We don't want this bitmap serialized by GSON. We'll let Picasso handle it.
     private transient Bitmap portrait;
+    private transient boolean updated;
 
     public PixelPortrait(Context context, String activityName) {
         this.activityName = activityName;
         DaggerInjector.inject(this);
-        file = new File(context.getFilesDir(), activityName + ".bmp");
+        file = new File(context.getFilesDir(), activityName + ".png");
+        updated = false;
     }
 
-    public void createPortrait() {
+    public void loadInto(Context context, ImageView view) {
+        if (!updated) {
+            createPortrait();
+            updated = true;
+        }
+        int min = Math.min(view.getWidth(), view.getHeight());
+        Picasso.with(context).load(file).resize(min, min).centerInside().into(view);
+    }
+
+    private void createPortrait() {
         portrait = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         update();
     }
@@ -51,13 +60,13 @@ public class PixelPortrait implements Target {
     /**
      * Updates the pixel portrait from its
      */
-    public void update() {
+    private void update() {
         ActivityObject activity = data.getActivityByName(activityName);
         Canvas canvas = new Canvas(portrait);
         Paint paint = new Paint();
         // TODO paint.setColor
         paint.setColor(Color.BLUE);
-        paint.setStrokeWidth(0);
+        paint.setStrokeWidth(1);
 
         int lines = (int) (activity.getTimeSpent() / (100 * HOUR_SECS));
         int dots = (int) (activity.getTimeSpent() / HOUR_SECS) % 100;
@@ -67,7 +76,7 @@ public class PixelPortrait implements Target {
         save();
     }
 
-    public void save() {
+    private void save() {
         FileOutputStream out = null;
         try {
             out = new FileOutputStream(file);
@@ -80,33 +89,16 @@ public class PixelPortrait implements Target {
                 if (out != null) {
                     out.close();
                 }
+                portrait.recycle();
+                portrait = null;
             } catch (IOException e) {
                 Timber.e(e, "Exception in save!");
             }
         }
     }
 
-    public Bitmap getPortrait() {
-        return portrait;
-    }
-
     public void cleanUp() {
         if (file != null && file.exists())
             file.delete();
-    }
-
-    @Override
-    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-        this.portrait = bitmap;
-    }
-
-    @Override
-    public void onBitmapFailed(Drawable errorDrawable) {
-    }
-
-    @Override
-    public void onPrepareLoad(Drawable placeHolderDrawable) {
-        if (!file.exists())
-            createPortrait();
     }
 }

@@ -8,16 +8,12 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
-import android.support.v4.content.res.ResourcesCompat;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
-import java.io.BufferedInputStream;
-import java.io.IOException;
 
 import dmangames.team4.reap.R;
 import timber.log.Timber;
@@ -43,7 +39,7 @@ public class IconView extends View implements Target {
         init(attrs, defStyle);
     }
 
-    public void changeIcon(String iconURL){
+    public void changeIcon(String iconURL) {
         Picasso.with(getContext()).load(iconURL).into(this);
     }
 
@@ -52,15 +48,14 @@ public class IconView extends View implements Target {
         final TypedArray a = getContext().obtainStyledAttributes(
                 attrs, R.styleable.IconView, defStyle, 0);
 
-        if(a.hasValue(R.styleable.IconView_numIcons))
+        if (a.hasValue(R.styleable.IconView_numIcons))
             mNumIcons = a.getFloat(R.styleable.IconView_numIcons, 1);
         else
             throw new RuntimeException("Must declare numIcons");
 
         if (a.hasValue(R.styleable.IconView_iconDrawable)) {
-            mIcon = BitmapFactory.decodeResource(getResources(),R.styleable.IconView_iconDrawable);
-        }
-        else
+            mIcon = BitmapFactory.decodeResource(getResources(), R.styleable.IconView_iconDrawable);
+        } else
             throw new RuntimeException("Must declare iconDrawable");
 
         a.recycle();
@@ -76,6 +71,9 @@ public class IconView extends View implements Target {
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
 
+        if (mIcon == null)
+            return;
+
         int paddingLeft = getPaddingLeft();
         int paddingTop = getPaddingTop();
         int paddingRight = getPaddingRight();
@@ -88,41 +86,41 @@ public class IconView extends View implements Target {
         int height = mIcon.getHeight();
 
 
-        double scale = (double)contentHeight / height;
-        int scaledHeight = (int)Math.floor(height * scale);
-        int scaledWidth = (int)Math.floor(width * scale);
+        double scale = (double) contentHeight / height;
+        int scaledHeight = (int) Math.floor(height * scale);
+        int scaledWidth = (int) Math.floor(width * scale);
         int spacing = 40;
 
 
         // Number of icons that will fit on the screen
-        int num = getWidth()/(scaledWidth+spacing);
+        int num = getWidth() / (scaledWidth + spacing);
         // If there are too many icons to fit on the screen, go into xmode
         boolean xMode = false;
-        if(num<mNumIcons)
+        if (num < mNumIcons)
             xMode = true;
 
-        num = (int)Math.floor(mNumIcons);
+        num = (int) Math.floor(mNumIcons);
 
         Rect dst = new Rect();
         Rect src = new Rect();
 
         float fraction = mNumIcons - num;
 
-        if (!xMode&& mIcon != null) {
-            for(int i = 0; i < num; i ++){
-                dst.set(paddingLeft + (i*scaledWidth) + (i*spacing), paddingTop,
-                        ((i+1)*scaledWidth) + paddingRight + (i*spacing), scaledHeight + paddingBottom);
+        if (!xMode && mIcon != null) {
+            for (int i = 0; i < num; i++) {
+                dst.set(paddingLeft + (i * scaledWidth) + (i * spacing), paddingTop,
+                        ((i + 1) * scaledWidth) + paddingRight + (i * spacing), scaledHeight + paddingBottom);
                 canvas.drawBitmap(mIcon, null, dst, null);
             }
-            if(getWidth()/(scaledWidth+spacing)>num) {
-                dst.set(paddingLeft + (num*scaledWidth) + (num*spacing), paddingTop,
-                        ((num)*scaledWidth) + paddingRight + (num*spacing) + (int)Math.floor(fraction*scaledWidth), scaledHeight + paddingBottom);
-                src.set(0,0,(int)Math.floor(fraction*mIcon.getWidth()), mIcon.getHeight());
+            if (getWidth() / (scaledWidth + spacing) > num) {
+                dst.set(paddingLeft + (num * scaledWidth) + (num * spacing), paddingTop,
+                        ((num) * scaledWidth) + paddingRight + (num * spacing) + (int) Math.floor(fraction * scaledWidth), scaledHeight + paddingBottom);
+                src.set(0, 0, (int) Math.floor(fraction * mIcon.getWidth()), mIcon.getHeight());
                 canvas.drawBitmap(mIcon, src, dst, null);
             }
 
         }
-        if(xMode && mIcon != null){
+        if (xMode && mIcon != null) {
             mTextPaint.setTextSize(scaledHeight / 3);
             int textY = paddingTop + scaledHeight * 3 / 4;
             int textX = scaledWidth + paddingLeft + spacing;
@@ -130,13 +128,13 @@ public class IconView extends View implements Target {
             dst.set(paddingLeft, paddingTop,
                     scaledWidth + paddingRight, scaledHeight + paddingBottom);
             canvas.drawBitmap(mIcon, null, dst, null);
-            String text = "x"+(int)Math.floor(mNumIcons);
+            String text = "x" + (int) Math.floor(mNumIcons);
             canvas.drawText(text, textX, textY,
                     mTextPaint);
 
             Rect textBound = new Rect();
             mTextPaint.getTextBounds(text, 0, text.length(), textBound);
-            if(textX+textBound.right+scaledWidth+spacing<contentWidth) {
+            if (textX + textBound.right + scaledWidth + spacing < contentWidth) {
                 dst.set(textX + textBound.right + spacing, paddingTop, textX + spacing + textBound.right + (int) Math.floor(fraction * scaledWidth), scaledHeight + paddingBottom);
                 src.set(0, 0, (int) Math.floor(fraction * mIcon.getWidth()), mIcon.getHeight());
                 canvas.drawBitmap(mIcon, src, dst, null);
