@@ -14,13 +14,15 @@ import android.util.AttributeSet;
 import android.view.View;
 
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
 
+import java.io.BufferedInputStream;
 import java.io.IOException;
 
 import dmangames.team4.reap.R;
 import timber.log.Timber;
 
-public class IconView extends View {
+public class IconView extends View implements Target {
     private float mNumIcons;
     private Bitmap mIcon;
 
@@ -42,12 +44,7 @@ public class IconView extends View {
     }
 
     public void changeIcon(String iconURL){
-        try {
-            mIcon = Picasso.with(getContext()).load(iconURL).get();
-        } catch (IOException e) {
-            Timber.e(e, "Error in changeIcon!");
-        }
-        invalidate();
+        Picasso.with(getContext()).load(iconURL).into(this);
     }
 
     private void init(AttributeSet attrs, int defStyle) {
@@ -158,4 +155,16 @@ public class IconView extends View {
         invalidate();
     }
 
+    @Override public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+        mIcon = bitmap;
+        invalidate();
+    }
+
+    @Override public void onBitmapFailed(Drawable errorDrawable) {
+        Timber.e("Can't find image!");
+    }
+
+    @Override public void onPrepareLoad(Drawable placeHolderDrawable) {
+
+    }
 }

@@ -14,7 +14,6 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -27,6 +26,7 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.dagger.DaggerInjector;
 import dmangames.team4.reap.events.SwitchFragmentEvent;
 import dmangames.team4.reap.fragments.HistoryFragment;
+import dmangames.team4.reap.fragments.PixelPortraitsFragment;
 import dmangames.team4.reap.fragments.ReapFragment;
 import dmangames.team4.reap.fragments.TimerFragment;
 import dmangames.team4.reap.fragments.TodayFragment;
@@ -40,7 +40,6 @@ import dmangames.team4.reap.views.DrawerView.DrawerListener;
 import dmangames.team4.reap.views.DrawerView.Option;
 import timber.log.Timber;
 
-import static android.widget.Toast.LENGTH_SHORT;
 import static dmangames.team4.reap.objects.ActivityObject.KEY_ACTIVITYOBJ_NAME;
 import static dmangames.team4.reap.objects.ActivityObject.KEY_ACTIVITYOBJ_SPENT;
 
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity
                 bus.post(new SwitchFragmentEvent(HistoryFragment.newInstance(), true, true));
                 break;
             case PIXEL_PORTRAITS:
-                Toast.makeText(this, "To be implemented", LENGTH_SHORT).show();
+                bus.post(new SwitchFragmentEvent(PixelPortraitsFragment.newInstance(), true, true));
                 break;
             default:
                 Timber.e("Unknown option in switchTo");
@@ -220,7 +219,8 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onDestroy() {
         Timber.d("onDestroy");
-        //Unregister receiver if exists
+        //Unregister receiver and stop service if exists
+        stopService(new Intent(this, TimerService.class));
         try {
             unregisterReceiver(receiver);
         } catch (IllegalArgumentException e) {
@@ -228,19 +228,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         super.onDestroy();
-    }
-
-    public interface FragmentEventListener {
-        /**
-         * Called if {@link MainActivity#goBack(boolean)} is called with false.
-         *
-         * @return If the back event has been consumed.
-         */
-        boolean onBackPressed();
-
-        void packToService(Class service, Intent packIntent);
-
-        void unpackFromService(Class service, Intent restoreIntent);
     }
 
     @Override
@@ -262,5 +249,18 @@ public class MainActivity extends AppCompatActivity
     private void exit() {
         stopService(new Intent(this, TimerService.class));
         finish();
+    }
+
+    public interface FragmentEventListener {
+        /**
+         * Called if {@link MainActivity#goBack(boolean)} is called with false.
+         *
+         * @return If the back event has been consumed.
+         */
+        boolean onBackPressed();
+
+        void packToService(Class service, Intent packIntent);
+
+        void unpackFromService(Class service, Intent restoreIntent);
     }
 }

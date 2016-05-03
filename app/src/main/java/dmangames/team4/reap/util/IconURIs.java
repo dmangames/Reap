@@ -13,14 +13,16 @@ import static android.content.ContentResolver.SCHEME_ANDROID_RESOURCE;
  * Created by brian on 5/2/16.
  */
 public class IconURIs {
-    private static final String URI_SCHEME = SCHEME_ANDROID_RESOURCE + "://drawable/";
+    private static final String URI_SCHEME = SCHEME_ANDROID_RESOURCE + "://";
 
     private static IconURIs instance;
 
     private final Context context;
+    private final String fullUrl;
 
     private IconURIs(Context context) {
         this.context = context;
+        fullUrl = URI_SCHEME + context.getPackageName() + "/drawable/";
     }
 
     public static void newInstance(Context context) {
@@ -28,6 +30,6 @@ public class IconURIs {
     }
 
     public static String get(@DrawableRes int iconRes) {
-        return URI_SCHEME + instance.context.getResources().getResourceEntryName(iconRes);
+        return instance.fullUrl + instance.context.getResources().getResourceEntryName(iconRes);
     }
 }
