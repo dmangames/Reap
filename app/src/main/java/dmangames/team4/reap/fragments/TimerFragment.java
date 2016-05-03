@@ -90,6 +90,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         @Bind(R.id.ol_timer_break) View overlayContainer;
         @Bind(R.id.rv_boverlay_icons) RecyclerView grid;
         @Bind(R.id.iv_timer_blur_container) ImageView blurContainer;
+        @Bind(R.id.fab_boverlay_switch) FloatingActionButton switchActivity;
 
         BreakGridAdapter adapter;
 
@@ -99,6 +100,8 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             adapter = new BreakGridAdapter(context, this);
             grid.setLayoutManager(new GridLayoutManager(context, 3));
             grid.setAdapter(adapter);
+
+            switchActivity.setVisibility(isBreak ? GONE : VISIBLE);
         }
 
         public void fadeIn() {
@@ -141,6 +144,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
             overlayContainer.setVisibility(GONE);
             blurContainer.setVisibility(GONE);
             blurContainer.setImageDrawable(null);
+        }
+
+        @OnClick(R.id.fab_boverlay_switch) void switchActivity() {
+            chooseActivity();
         }
     }
 
