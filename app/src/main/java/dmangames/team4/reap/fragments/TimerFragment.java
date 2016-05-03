@@ -3,6 +3,7 @@ package dmangames.team4.reap.fragments;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -248,13 +249,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         animating = false;
 
         if (activityObject != null) {
-            int iconRes = activityObject.getIconRes();
-            if (iconRes == 0)
-                iconRes = R.drawable.no_activity_icon;
+            String iconURL = activityObject.getIconURL();
             numJars = (float) activityObject.getTimeSpent() / 60;
-            jarView.changeIcon(iconRes);
+            jarView.changeIcon(iconURL);
             jarView.setNumIcons(numJars);
-            iconView.setImageResource(iconRes);
+            iconView.setImageURI(Uri.parse(iconURL));
         }
 
         if (isBreak)
@@ -349,7 +348,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if (recent.checkActivity(activityName))
             setActivityObject(recent.getActivity(activityName));
         else {
-            setActivityObject(new ActivityObject(activityName, event.object.getIconRes()));
+            setActivityObject(new ActivityObject(activityName, event.object.getIconURL()));
             recent.addActivity(activityObject);
         }
 

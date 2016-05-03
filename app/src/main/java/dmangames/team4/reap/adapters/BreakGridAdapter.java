@@ -1,6 +1,7 @@
 package dmangames.team4.reap.adapters;
 
 import android.content.Context;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -36,7 +37,7 @@ public class BreakGridAdapter extends ReapAdapter<BreakGridAdapter.BreakHolder> 
 
         public void setBreakActivityObject(ActivityObject activityObject) {
             this.activityObject = activityObject;
-            this.icon.setImageResource(activityObject.getIconRes());
+            this.icon.setImageURI(Uri.parse(activityObject.getIconURL()));
         }
 
         @OnClick(R.id.iv_iconitem_icon) void onClick() {

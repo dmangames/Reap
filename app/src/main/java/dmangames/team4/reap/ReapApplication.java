@@ -5,6 +5,7 @@ import android.app.Application;
 import com.squareup.picasso.Picasso;
 
 import dmangames.team4.reap.dagger.DaggerInjector;
+import dmangames.team4.reap.util.IconURIs;
 import timber.log.Timber;
 
 /**
@@ -15,6 +16,7 @@ public class ReapApplication extends Application {
     @Override public void onCreate() {
         super.onCreate();
         DaggerInjector.newInstance(this);
+        IconURIs.newInstance(this);
 
         if (BuildConfig.DEBUG)
             Timber.plant(new Timber.DebugTree());

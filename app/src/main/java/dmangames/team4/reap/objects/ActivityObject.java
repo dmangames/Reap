@@ -1,6 +1,9 @@
 package dmangames.team4.reap.objects;
 
+import android.support.annotation.DrawableRes;
+
 import dmangames.team4.reap.R;
+import dmangames.team4.reap.util.IconURIs;
 
 /**
  * Created by brian on 3/25/16.
@@ -13,13 +16,16 @@ public class ActivityObject {
     long timeSpent;
     int color;
 
-    int iconRes;
     String iconURL;
 
-    public ActivityObject(String name, int iconRes){
+    public ActivityObject(String name, @DrawableRes int iconRes) {
+        this(name, iconRes == 0 ? IconURIs.get(R.drawable.no_activity_icon) : IconURIs.get(iconRes));
+    }
+
+    public ActivityObject(String name, String iconURL) {
         activityName = name;
-        this.iconRes = iconRes == 0 ? R.drawable.no_activity_icon : iconRes;
         timeSpent = 0;
+        this.iconURL = iconURL;
     }
 
     @Override public boolean equals(Object o) {
@@ -43,22 +49,20 @@ public class ActivityObject {
         return activityName;
     }
 
-    public void addTimeSpent(double additionalTimeSpent) {this.timeSpent += additionalTimeSpent; }
+    public void addTimeSpent(double additionalTimeSpent) {
+        this.timeSpent += additionalTimeSpent;
+    }
 
     public int getColor() {
         return color;
     }
 
+    public void setIconURLFromRes(@DrawableRes int iconRes) {
+        iconURL = iconRes == 0 ? IconURIs.get(R.drawable.no_activity_icon) : IconURIs.get(iconRes);
+    }
+
     public void setColor(int color) {
         this.color = color;
-    }
-
-    public int getIconRes() {
-        return iconRes;
-    }
-
-    public void setIconRes(int iconRes) {
-        this.iconRes = iconRes;
     }
 
     public String getIconURL() {

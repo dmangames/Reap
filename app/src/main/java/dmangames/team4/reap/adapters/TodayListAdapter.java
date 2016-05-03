@@ -38,7 +38,7 @@ public class TodayListAdapter extends ReapAdapter<TodayListAdapter.TodayViewHold
         public void setActivityObject(ActivityObject object) {
             this.activity = object;
 
-            iconView.changeIcon(object.getIconRes());
+            iconView.changeIcon(object.getIconURL());
             float numJars = (float) object.getTimeSpent() / 60;
             iconView.setNumIcons(numJars);
             iconView.invalidate();

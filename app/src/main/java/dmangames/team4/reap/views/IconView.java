@@ -13,7 +13,12 @@ import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.view.View;
 
+import com.squareup.picasso.Picasso;
+
+import java.io.IOException;
+
 import dmangames.team4.reap.R;
+import timber.log.Timber;
 
 public class IconView extends View {
     private float mNumIcons;
@@ -36,8 +41,12 @@ public class IconView extends View {
         init(attrs, defStyle);
     }
 
-    public void changeIcon(int iconID){
-        mIcon = BitmapFactory.decodeResource(getResources(), iconID);
+    public void changeIcon(String iconURL){
+        try {
+            mIcon = Picasso.with(getContext()).load(iconURL).get();
+        } catch (IOException e) {
+            Timber.e(e, "Error in changeIcon!");
+        }
         invalidate();
     }
 

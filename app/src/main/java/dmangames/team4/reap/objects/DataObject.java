@@ -87,12 +87,12 @@ public class DataObject {
 
         ActivityObject obj = activityList.remove(oldName);
         obj.setActivityName(newName);
-        obj.setIconRes(iconID);
+        obj.setIconURLFromRes(iconID);
         activityList.put(newName, obj);
 
         obj = recentActivities.removeActivity(oldName);
         obj.setActivityName(newName);
-        obj.setIconRes(iconID);
+        obj.setIconURLFromRes(iconID);
         recentActivities.updateActivity(obj);
     }
 
@@ -152,7 +152,7 @@ public class DataObject {
             ActivityBlob blob = history.get(date);
             for (String activityName : blob.getKeys()) {
                 if (!out.checkActivity(activityName)) {
-                    ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconRes());
+                    ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconURL());
                     out.addActivity(temp);
                     out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
                 } else {
@@ -200,7 +200,7 @@ public class DataObject {
                 ActivityBlob blob = history.get(date);
                 for (String activityName : blob.getKeys()) {
                     if (!out.checkActivity(activityName)) {
-                        ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconRes());
+                        ActivityObject temp = new ActivityObject(activityName, blob.getActivity(activityName).getIconURL());
                         out.addActivity(temp);
                         out.getActivity(activityName).addTimeSpent(blob.getActivity(activityName).timeSpent);
                     } else {

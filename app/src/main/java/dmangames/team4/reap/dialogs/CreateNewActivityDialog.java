@@ -3,6 +3,7 @@ package dmangames.team4.reap.dialogs;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.support.annotation.DrawableRes;
 import android.view.KeyEvent;
 import android.widget.EditText;
@@ -67,7 +68,7 @@ public class CreateNewActivityDialog extends ReapDialog implements ChooseIconLis
                                    ActivityObject activity) {
         this(context, listener);
 
-        icon.setImageResource(activity.getIconRes());
+        icon.setImageURI(Uri.parse(activity.getIconURL()));
         activity_name.setText(activity.getActivityName());
     }
 

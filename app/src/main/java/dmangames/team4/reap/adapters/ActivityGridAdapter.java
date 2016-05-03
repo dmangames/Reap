@@ -3,6 +3,7 @@ package dmangames.team4.reap.adapters;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.Uri;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
@@ -47,7 +48,7 @@ public class ActivityGridAdapter extends ReapAdapter<ActivityGridAdapter.Activit
         public void setActivityObject(ActivityObject object) {
             this.activity = object;
 
-            icon.setImageResource(object.getIconRes());
+            icon.setImageURI(Uri.parse(object.getIconURL()));
             name.setText(object.getActivityName());
         }
 
