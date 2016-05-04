@@ -11,6 +11,7 @@ import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
 import java.text.DateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -33,6 +34,7 @@ import timber.log.Timber;
 @Layout(R.layout.fragment_today)
 public class HistoryFragment extends ReapFragment {
     @Bind(R.id.spinner_date_range) Spinner dateSpinner;
+    @Bind(R.id.spinner_specific_date) Spinner specificDateSpinner;
     @Bind(R.id.rv_today_activity_list) RecyclerView activityList;
     @Bind(R.id.tv_today_title) TextView title;
 
@@ -40,8 +42,9 @@ public class HistoryFragment extends ReapFragment {
 
     private TodayListAdapter JarListadapter;
     private ArrayAdapter<String> spinnerAdapter;
+    private ArrayAdapter<String> specificDateSpinnerAdapter;
 
-    private static final String[] dateRanges = {"Today", "Week", "Month", "Year"};
+    private static final String[] dateRanges = {"Today", "Week", "Month", "Year", "Specific Date"};
 //
 //    private static final Map<String, Integer> rangeValues = new HashMap<String, Integer>() {{
 //        put("Today", 0);
@@ -79,6 +82,7 @@ public class HistoryFragment extends ReapFragment {
 
                 String start;
                 Calendar cal = Calendar.getInstance();
+                boolean specific = false;
 
                 switch((String)dateSpinner.getSelectedItem()){
                     case "Today":
@@ -92,13 +96,27 @@ public class HistoryFragment extends ReapFragment {
                     case "Year":
                         cal.add(Calendar.YEAR, -1);
                         break;
+                    case "Specific Date":
+                        String[] specificDates = (String[]) data.getHistory().keySet().toArray(new String[data.getHistory().size()]);
+                        Arrays.sort(specificDates);
+                        specificDateSpinnerAdapter = new ArrayAdapter<String>(activity, R.layout.simple_spinner_item, specificDates);
+                        specificDateSpinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
+                        specificDateSpinner.setAdapter(specificDateSpinnerAdapter);
+                        specificDateSpinner.setVisibility(View.VISIBLE);
+                        activityList.setVisibility(View.GONE);
+                        specific = true;
+                        break;
+
                 }
 
-                start = DataObject.DATEFORMAT.format(cal.getTime());
-                JarListadapter = new TodayListAdapter(activity, data.aggregateHistoryRange(start,today));
-                activityList.setAdapter(JarListadapter);
-
-                Timber.d("date range: "+start + " - " + today);
+                if(!specific) {
+                    start = DataObject.DATEFORMAT.format(cal.getTime());
+                    JarListadapter = new TodayListAdapter(activity, data.aggregateHistoryRange(start, today));
+                    activityList.setAdapter(JarListadapter);
+                    activityList.setVisibility(View.VISIBLE);
+                    specificDateSpinner.setVisibility(View.GONE);
+                    Timber.d("date range: " + start + " - " + today);
+                }
 
             }
 
@@ -107,6 +125,23 @@ public class HistoryFragment extends ReapFragment {
                 dateSpinner.setSelection(0);
             }
 
+        });
+
+        specificDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String start = (String)specificDateSpinner.getSelectedItem();
+                JarListadapter = new TodayListAdapter(activity, data.aggregateHistoryRange(start, start));
+                activityList.setAdapter(JarListadapter);
+                activityList.setVisibility(View.VISIBLE);
+                Timber.d("date range: " + start + " - " + today);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
         });
 
     }

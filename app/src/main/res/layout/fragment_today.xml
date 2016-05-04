@@ -19,6 +19,14 @@
         android:padding="4dp"
         android:visibility="gone" />
 
+    <Spinner
+        android:id="@+id/spinner_specific_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="4dp"
+        android:visibility="gone"
+        />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_today_activity_list"
         android:layout_width="match_parent"
