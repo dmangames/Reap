@@ -24,6 +24,7 @@ import timber.log.Timber;
 import static android.media.RingtoneManager.TYPE_NOTIFICATION;
 import static android.support.v7.app.NotificationCompat.VISIBILITY_PRIVATE;
 import static dmangames.team4.reap.fragments.TimerFragment.KEY_TIMER_BREAK;
+import static dmangames.team4.reap.fragments.TimerFragment.KEY_TIMER_BREAK_ACTIVITY;
 import static dmangames.team4.reap.objects.ActivityObject.KEY_ACTIVITYOBJ_NAME;
 import static dmangames.team4.reap.objects.ActivityObject.KEY_ACTIVITYOBJ_SPENT;
 import static dmangames.team4.reap.util.SecondTimer.Type.COUNT_DOWN;
@@ -36,6 +37,7 @@ public class TimerService extends Service implements SecondListener {
     private SecondTimer secondTimer;
     private boolean pomodoroBreak;
     private boolean invalidated;
+    private boolean isBreakActivity;
 
     private static final int NOTIFICATION = 1;
     private static final int COMMON_NOTIFICATION = 2;
@@ -48,6 +50,8 @@ public class TimerService extends Service implements SecondListener {
 
     private long timeSpent;
     private long breakMins;
+    private long workMins;
+    private long hoursSpent;
 
     @Override
     public void onCreate() {
@@ -72,10 +76,13 @@ public class TimerService extends Service implements SecondListener {
         }
 
         timeSpent = 0;
+        hoursSpent = 0;
         breakMins = TimeUnit.SECONDS.toMinutes(Time.POMODORO_BREAK_SECS);
+        workMins = TimeUnit.SECONDS.toMinutes(Time.POMODORO_WORK_SECS);
         invalidated = false;
         activityName = intent.getStringExtra(KEY_ACTIVITYOBJ_NAME);
         pomodoroBreak = intent.getBooleanExtra(KEY_TIMER_BREAK, false);
+        isBreakActivity = intent.getBooleanExtra(KEY_TIMER_BREAK_ACTIVITY, false);
         secondTimer = new SecondTimer(this);
         secondTimer.unpack(intent);
         secondTimer.start();
@@ -141,10 +148,15 @@ public class TimerService extends Service implements SecondListener {
                 } else {
                     secondTimer.setTotalSeconds(Time.POMODORO_WORK_SECS);
                     showCommonNotification(R.drawable.tomato,
-                            "Pomodoro Break Ended!", "Back to work!");
+                            "Pomodoro Break Ended!", String.format(Locale.US, "Back to work for %d minutes!", workMins));
                 }
-            } else
-                showCommonNotification(R.drawable.stopwatch, "Congrats", "You worked for 1 hour!");
+            } else{
+                hoursSpent++;
+                if(!isBreakActivity)
+                    showCommonNotification(R.drawable.stopwatch, "Congrats", String.format(Locale.US, "You worked for %d hour(s)!", hoursSpent));
+                else
+                    showCommonNotification(R.drawable.game, "Shouldn't you be working?", String.format(Locale.US, "You've been taking a break for %d hour(s).", hoursSpent));
+            }
 
             secondTimer.reset();
             secondTimer.start();

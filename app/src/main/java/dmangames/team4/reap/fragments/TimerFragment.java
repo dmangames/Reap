@@ -155,6 +155,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
     public static final String KEY_TIMER_STATE = "timer.state";
     public static final String KEY_TIMER_ACTIVITY = "timer.activity";
     public static final String KEY_TIMER_BREAK = "timer.break";
+    public static final String KEY_TIMER_BREAK_ACTIVITY = "timer.isBreak";
 
     @Bind(R.id.tv_timer_timer) TextView timerView;
     @Bind(R.id.iv_timer_icon) TimerIndicatorView iconView;
@@ -425,6 +426,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
         packIntent.putExtra(KEY_ACTIVITYOBJ_NAME, activityObject.getActivityName());
         packIntent.putExtra(KEY_TIMER_BREAK, pomodoroBreak);
+        packIntent.putExtra(KEY_TIMER_BREAK_ACTIVITY, isBreak);
         timer.pack(packIntent);
     }
 
