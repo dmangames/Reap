@@ -7,15 +7,13 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.widget.TextView;
 
-import java.text.DateFormat;
+import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import javax.inject.Inject;
 
@@ -23,10 +21,11 @@ import butterknife.Bind;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.adapters.TodayListAdapter;
-import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
 import dmangames.team4.reap.objects.DataObject;
 import timber.log.Timber;
+
+import static dmangames.team4.reap.objects.DataObject.DATEFORMAT;
 
 /**
  * Created by Andrew on 4/19/2016.
@@ -66,7 +65,7 @@ public class HistoryFragment extends ReapFragment {
 
         final MainActivity activity = (MainActivity) getActivity();
 
-        final String today = DataObject.DATEFORMAT.format(new Date());
+        final String today = DATEFORMAT.format(new Date());
 
         activityList.setLayoutManager(new LinearLayoutManager(activity));
         title.setText(R.string.history);
@@ -84,7 +83,7 @@ public class HistoryFragment extends ReapFragment {
                 Calendar cal = Calendar.getInstance();
                 boolean specific = false;
 
-                switch((String)dateSpinner.getSelectedItem()){
+                switch ((String) dateSpinner.getSelectedItem()) {
                     case "Today":
                         break;
                     case "Week":
@@ -97,9 +96,18 @@ public class HistoryFragment extends ReapFragment {
                         cal.add(Calendar.YEAR, -1);
                         break;
                     case "Specific Date":
-                        String[] specificDates = (String[]) data.getHistory().keySet().toArray(new String[data.getHistory().size()]);
-                        Arrays.sort(specificDates);
-                        specificDateSpinnerAdapter = new ArrayAdapter<String>(activity, R.layout.simple_spinner_item, specificDates);
+                        String[] specificDates = data.getHistory().keySet().toArray(new String[data.getHistory().size()]);
+                        Arrays.sort(specificDates, new Comparator<String>() {
+                            @Override public int compare(String lhs, String rhs) {
+                                try {
+                                    return DATEFORMAT.parse(lhs).compareTo(DATEFORMAT.parse(rhs));
+                                } catch (ParseException e) {
+                                    Timber.e(e, "Parse exception while sorting array!");
+                                }
+                                return 0;
+                            }
+                        });
+                        specificDateSpinnerAdapter = new ArrayAdapter<>(activity, R.layout.simple_spinner_item, specificDates);
                         specificDateSpinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);
                         specificDateSpinner.setAdapter(specificDateSpinnerAdapter);
                         specificDateSpinner.setVisibility(View.VISIBLE);
@@ -109,8 +117,8 @@ public class HistoryFragment extends ReapFragment {
 
                 }
 
-                if(!specific) {
-                    start = DataObject.DATEFORMAT.format(cal.getTime());
+                if (!specific) {
+                    start = DATEFORMAT.format(cal.getTime());
                     JarListadapter = new TodayListAdapter(activity, data.aggregateHistoryRange(start, today));
                     activityList.setAdapter(JarListadapter);
                     activityList.setVisibility(View.VISIBLE);
@@ -127,11 +135,11 @@ public class HistoryFragment extends ReapFragment {
 
         });
 
-        specificDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener(){
+        specificDateSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                String start = (String)specificDateSpinner.getSelectedItem();
+                String start = (String) specificDateSpinner.getSelectedItem();
                 JarListadapter = new TodayListAdapter(activity, data.aggregateHistoryRange(start, start));
                 activityList.setAdapter(JarListadapter);
                 activityList.setVisibility(View.VISIBLE);
