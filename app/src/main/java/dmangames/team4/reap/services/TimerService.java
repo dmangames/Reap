@@ -6,7 +6,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
-import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.DrawableRes;
 import android.support.annotation.Nullable;
@@ -179,8 +178,8 @@ public class TimerService extends Service implements SecondListener {
                 .addAction(R.drawable.ic_close,
                         getString(R.string.action_exit), pendingCloseIntent)
                 .setOngoing(true)
-                .setTicker(getText(R.string.service_connected))
-                .setContentText(getText(R.string.service_connected));
+                .setTicker("Current Activity: " + activityName)
+                .setContentText("Current Activity: " + activityName);
     }
 
     private void showPersistantNotification(int id) {
