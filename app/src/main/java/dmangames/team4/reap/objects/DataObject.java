@@ -128,6 +128,14 @@ public class DataObject {
         return history.get(date);
     }
 
+    public boolean blobExists(String date) {
+        return history.containsKey(date);
+    }
+
+    public void createBlob(String date) {
+        history.put(date, new ActivityBlob(date));
+    }
+
     public Set<String> getKeys() {
         return activityList.keySet();
     }

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center">
+
+    <Spinner
+        android:id="@+id/sp_edittime_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        />
+
+    <EditText
+        android:id="@+id/et_edittime_hours"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/hours"
+        android:inputType="numberDecimal"
+        android:maxLength="4"
+        />
+
+    <TextView
+        android:id="@+id/tv_edittime_colon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/colon"
+        android:textColor="@android:color/black"/>
+
+    <EditText
+        android:id="@+id/et_edittime_mins"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="@string/minutes"
+        android:inputType="numberDecimal"
+        android:maxLength="2"/>
+</LinearLayout>

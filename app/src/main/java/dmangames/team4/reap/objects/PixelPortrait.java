@@ -20,6 +20,9 @@ import javax.inject.Inject;
 import dmangames.team4.reap.dagger.DaggerInjector;
 import timber.log.Timber;
 
+import static com.squareup.picasso.MemoryPolicy.NO_CACHE;
+import static com.squareup.picasso.MemoryPolicy.NO_STORE;
+
 /**
  * Created by Brian on 4/28/2016.
  */
@@ -34,26 +37,22 @@ public class PixelPortrait {
     private transient File file;
     // We don't want this bitmap serialized by GSON. We'll let Picasso handle it.
     private transient Bitmap portrait;
-    private transient boolean updated;
 
     public PixelPortrait(Context context, String activityName) {
         this.activityName = activityName;
         DaggerInjector.inject(this);
         file = new File(context.getFilesDir(), activityName + ".png");
-        updated = false;
     }
 
     public void loadInto(Context context, ImageView view) {
-        if (!updated) {
-            createPortrait();
-            updated = true;
-        }
+        createPortrait();
         int min = Math.min(view.getWidth(), view.getHeight());
-        Picasso.with(context).load(file).resize(min, min).centerInside().into(view);
+        Picasso.with(context).load(file).memoryPolicy(NO_CACHE, NO_STORE).resize(min, min).centerInside().into(view);
     }
 
     private void createPortrait() {
-        portrait = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
+        if (portrait == null)
+            portrait = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
         update();
     }
 
@@ -70,13 +69,15 @@ public class PixelPortrait {
         paint.setColor(Color.BLUE);
         paint.setStrokeWidth(1);
 
-        int lines = (int) (activity.getTimeSpent() / (100 * HOUR_SECS));
-        int dots = (int) (activity.getTimeSpent() / HOUR_SECS) % 100;
+        long timeSpent = activity.getTimeSpent();
+        Timber.d("Drawing pixel portrait with time spent %,d", timeSpent);
+        int lines = (int) (timeSpent / (100 * HOUR_SECS));
+        int dots = (int) (timeSpent / HOUR_SECS) % 100;
 
         if (lines == 0)
             canvas.drawLine(0, 0, dots, 0, paint);
         else {
-            canvas.drawLine(0, lines + 1, dots, lines + 1, paint);
+            canvas.drawLine(0, lines, dots, lines, paint);
             canvas.drawRect(new RectF(0, 0, portrait.getWidth(), lines), paint);
         }
 

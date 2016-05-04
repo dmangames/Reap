@@ -11,7 +11,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Specifies whether a
- * {@link dmangames.team4.reap.adapters.ReapAdapter ReapAdapter} has injectable members. This will
+ * {@link dmangames.team4.reap.adapters.ReapAdapter ReapAdapter} or a
+ * {@link dmangames.team4.reap.dialogs.ReapDialog} has injectable members. This will
  * trigger a call to
  * {@link DaggerInjector#inject(Object) DaggerInjector.inject(this)},
  * and the object must be listed in the "injects" section of the

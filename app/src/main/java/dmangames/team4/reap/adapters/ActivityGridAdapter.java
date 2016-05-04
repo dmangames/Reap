@@ -24,6 +24,7 @@ import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog;
 import dmangames.team4.reap.dialogs.CreateNewActivityDialog.CreateNewActivityListener;
+import dmangames.team4.reap.dialogs.EditTimeDialog;
 import dmangames.team4.reap.objects.ActivityObject;
 import dmangames.team4.reap.objects.DataObject;
 import dmangames.team4.reap.dagger.DaggerInjector;
@@ -69,6 +70,9 @@ public class ActivityGridAdapter extends ReapAdapter<ActivityGridAdapter.Activit
                 case R.string.edit :
                     new CreateNewActivityDialog(context, this, activity).show();
                     return;
+                case R.string.edit_time :
+                    new EditTimeDialog(context, activity).show();
+                    return;
                 case R.string.delete :
                     new AlertDialog.Builder(context)
                             .setMessage(R.string.are_you_sure)
@@ -98,7 +102,7 @@ public class ActivityGridAdapter extends ReapAdapter<ActivityGridAdapter.Activit
 
     private ArrayList<String> names;
 
-    private static final int[] longPressOptions = {R.string.edit, R.string.delete};
+    private static final int[] longPressOptions = {R.string.edit, R.string.edit_time, R.string.delete};
 
     private static String[] longPressStrings;
 
