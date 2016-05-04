@@ -54,9 +54,11 @@ public class PixelPortraitsAdapter extends ReapAdapter<PixelPortraitsAdapter.Por
         }
 
         @OnClick(R.id.ll_griditem_container) void onContainerClicked() {
+            int[] coords = new int[2];
+            portrait.getLocationInWindow(coords);
             listener.onPortraitSelected(new RectF(
-                    portrait.getX(),
-                    portrait.getY(),
+                    coords[0],
+                    coords[1],
                     portrait.getWidth(),
                     portrait.getHeight()), activity, portraits.get(activity.getActivityName()));
         }
