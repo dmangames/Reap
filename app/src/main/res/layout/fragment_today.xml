@@ -1,24 +1,27 @@
-<LinearLayout
-    android:id="@+id/fl_timer_container"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fl_timer_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/sand"
     android:orientation="vertical"
     tools:context="dmangames.team4.reap.fragments.TodayFragment">
 
+    <TextView
+        android:id="@+id/tv_today_title"
+        style="@style/Theme.Reap.Title"
+        tools:text="History" />
+
     <Spinner
         android:id="@+id/spinner_date_range"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="4dp"
-        android:visibility="gone"
-        />
+        android:visibility="gone" />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_today_activity_list"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="match_parent" />
 
 </LinearLayout>

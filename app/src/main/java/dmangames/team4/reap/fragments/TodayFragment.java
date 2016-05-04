@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
+import android.widget.TextView;
 
 import javax.inject.Inject;
 
@@ -21,6 +22,7 @@ import dmangames.team4.reap.objects.ActivityBlob;
 @Layout(R.layout.fragment_today)
 public class TodayFragment extends ReapFragment {
     @Bind(R.id.rv_today_activity_list) RecyclerView activityList;
+    @Bind(R.id.tv_today_title) TextView title;
 
     @Inject ActivityBlob blob;
 
@@ -37,6 +39,7 @@ public class TodayFragment extends ReapFragment {
     @Override public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        title.setText(R.string.today);
         MainActivity activity = (MainActivity) getActivity();
         adapter = new TodayListAdapter(activity, blob);
 
