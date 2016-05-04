@@ -100,7 +100,7 @@ public class HistoryFragment extends ReapFragment {
                         Arrays.sort(specificDates, new Comparator<String>() {
                             @Override public int compare(String lhs, String rhs) {
                                 try {
-                                    return DATEFORMAT.parse(lhs).compareTo(DATEFORMAT.parse(rhs));
+                                    return -DATEFORMAT.parse(lhs).compareTo(DATEFORMAT.parse(rhs));
                                 } catch (ParseException e) {
                                     Timber.e(e, "Parse exception while sorting array!");
                                 }

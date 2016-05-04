@@ -42,5 +42,6 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     // Event Bus
     compile 'org.greenrobot:eventbus:3.0.0'
+    // App Intro
     compile 'com.github.paolorotolo:appintro:3.4.0'
 }
