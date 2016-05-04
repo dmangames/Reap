@@ -423,6 +423,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
         packIntent.putExtra(KEY_ACTIVITYOBJ_NAME, activityObject.getActivityName());
         packIntent.putExtra(KEY_TIMER_BREAK, pomodoroBreak);
+        timer.stop();
         timer.pack(packIntent);
     }
 
@@ -435,7 +436,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if (activityObject == null)
             activityObject = data.getBreakByName(name);
         pomodoroBreak = restoreIntent.getBooleanExtra(KEY_TIMER_BREAK, false);
-        activityObject.addTimeSpent(restoreIntent.getLongExtra(KEY_ACTIVITYOBJ_SPENT, 0));
+        activityObject.addTimeSpent(restoreIntent.getLongExtra(KEY_ACTIVITYOBJ_SPENT, 0) - 1);
         timer.unpack(restoreIntent);
     }
 
