@@ -94,6 +94,7 @@ public class ReapModule {
         else{
             Timber.d("Mock!");
             data = GsonWrapper.mockData(context);
+            data.archiveActivities(DataObject.DATEFORMAT.format(new Date()));
         }
 
         return data;
