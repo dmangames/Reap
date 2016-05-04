@@ -303,8 +303,10 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if (activityObject == null || state == NO_ACTIVITY)
             return;
         Timber.d("Saving Timer");
+        timer.stop();
         blob.updateActivity(activityObject);
-        data.updateActivity(activityObject);
+        if (!isBreak)
+            data.updateActivity(activityObject);
     }
 
     @Override
@@ -423,7 +425,6 @@ public class TimerFragment extends ReapFragment implements SecondListener {
 
         packIntent.putExtra(KEY_ACTIVITYOBJ_NAME, activityObject.getActivityName());
         packIntent.putExtra(KEY_TIMER_BREAK, pomodoroBreak);
-        timer.stop();
         timer.pack(packIntent);
     }
 
@@ -436,7 +437,7 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         if (activityObject == null)
             activityObject = data.getBreakByName(name);
         pomodoroBreak = restoreIntent.getBooleanExtra(KEY_TIMER_BREAK, false);
-        activityObject.addTimeSpent(restoreIntent.getLongExtra(KEY_ACTIVITYOBJ_SPENT, 0) - 1);
+        activityObject.addTimeSpent(restoreIntent.getLongExtra(KEY_ACTIVITYOBJ_SPENT, 0));
         timer.unpack(restoreIntent);
     }
 
