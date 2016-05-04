@@ -1,6 +1,7 @@
 package dmangames.team4.reap.dagger;
 
 import android.content.Context;
+import android.os.Build;
 
 import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
@@ -13,6 +14,7 @@ import javax.inject.Singleton;
 
 import dagger.Module;
 import dagger.Provides;
+import dmangames.team4.reap.BuildConfig;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.activities.MainActivity;
 import dmangames.team4.reap.adapters.ActivityGridAdapter;
@@ -60,11 +62,12 @@ import timber.log.Timber;
 public class ReapModule {
     private final Context appContext;
     private final String today;
-    private final boolean mockData = false;
+    private final boolean mockData;
 
     public ReapModule(Context context) {
         this.appContext = context;
         today = DataObject.DATEFORMAT.format(new Date());
+        mockData = BuildConfig.DEBUG;
     }
 
     @Provides Context provideApplicationContext() {

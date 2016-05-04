@@ -15,6 +15,7 @@ public class ActivityObject {
     String activityName;
     long timeSpent;
     int color;
+    long lastSaved;
 
     String iconURL;
 

@@ -11,4 +11,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         />
+
+    <include
+        android:id="@+id/ol_pxportrait_single"
+        layout="@layout/overlay_pixelportrait_single"
+        android:visibility="invisible"
+        />
 </FrameLayout>

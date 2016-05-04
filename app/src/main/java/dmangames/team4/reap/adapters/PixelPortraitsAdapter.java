@@ -1,14 +1,13 @@
 package dmangames.team4.reap.adapters;
 
 import android.content.Context;
+import android.graphics.RectF;
 import android.support.v7.widget.RecyclerView.ViewHolder;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,6 +16,7 @@ import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnClick;
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.objects.ActivityObject;
@@ -52,6 +52,14 @@ public class PixelPortraitsAdapter extends ReapAdapter<PixelPortraitsAdapter.Por
                 }
             });
         }
+
+        @OnClick(R.id.ll_griditem_container) void onContainerClicked() {
+            listener.onPortraitSelected(new RectF(
+                    portrait.getX(),
+                    portrait.getY(),
+                    portrait.getWidth(),
+                    portrait.getHeight()), activity, portraits.get(activity.getActivityName()));
+        }
     }
 
     @Inject DataObject activities;
@@ -59,10 +67,13 @@ public class PixelPortraitsAdapter extends ReapAdapter<PixelPortraitsAdapter.Por
     private ArrayList<String> names;
     private HashMap<String, PixelPortrait> portraits;
 
-    public PixelPortraitsAdapter(Context context) {
+    private PixelPortraitItemListener listener;
+
+    public PixelPortraitsAdapter(Context context, PixelPortraitItemListener listener) {
         super(context);
         names = new ArrayList<>(activities.getKeys());
         portraits = new HashMap<>();
+        this.listener = listener;
     }
 
     @Override
@@ -84,5 +95,9 @@ public class PixelPortraitsAdapter extends ReapAdapter<PixelPortraitsAdapter.Por
     public void update() {
         names = new ArrayList<>(activities.getKeys());
         notifyDataSetChanged();
+    }
+
+    public interface PixelPortraitItemListener {
+        void onPortraitSelected(RectF imgPos, ActivityObject object, PixelPortrait portrait);
     }
 }

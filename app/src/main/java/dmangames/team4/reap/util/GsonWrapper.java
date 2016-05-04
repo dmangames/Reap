@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Scanner;
 
 import dmangames.team4.reap.R;
 import dmangames.team4.reap.objects.DataObject;
@@ -74,16 +75,15 @@ public class GsonWrapper {
 
     }
 
-    public static DataObject mockData(Context context){
+    public static DataObject mockData(Context context) {
+        Scanner input = new Scanner(context.getResources().openRawResource(R.raw.mock));
 
-        String json = context.getString(R.string.mockData);
-
+        StringBuilder builder = new StringBuilder();
+        while (input.hasNextLine())
+            builder.append(input.nextLine());
         Gson gson = new Gson();
-
-        Timber.d("Mock Data: " + json);
-
-        return gson.fromJson(json, DataObject.class);
-
+        Timber.d("Mock Data: %s", builder);
+        return gson.fromJson(builder.toString(), DataObject.class);
     }
 
 }

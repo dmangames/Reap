@@ -65,14 +65,21 @@ public class PixelPortrait {
         Canvas canvas = new Canvas(portrait);
         Paint paint = new Paint();
         // TODO paint.setColor
+        paint.setColor(Color.LTGRAY);
+        canvas.drawRect(0, 0, canvas.getWidth(), canvas.getHeight(), paint);
         paint.setColor(Color.BLUE);
         paint.setStrokeWidth(1);
 
         int lines = (int) (activity.getTimeSpent() / (100 * HOUR_SECS));
         int dots = (int) (activity.getTimeSpent() / HOUR_SECS) % 100;
 
-        canvas.drawRect(new RectF(0, 0, portrait.getWidth(), lines), paint);
-        canvas.drawLine(0, lines + 1, dots, lines + 1, paint);
+        if (lines == 0)
+            canvas.drawLine(0, 0, dots, 0, paint);
+        else {
+            canvas.drawLine(0, lines + 1, dots, lines + 1, paint);
+            canvas.drawRect(new RectF(0, 0, portrait.getWidth(), lines), paint);
+        }
+
         save();
     }
 

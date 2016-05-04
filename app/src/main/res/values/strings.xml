@@ -14,7 +14,6 @@
     <string name="are_you_sure">Are you sure?</string>
     <string name="yes">Yes</string>
     <string name="no">No</string>
-    <string name="mockData">{"activityList":{"Android":{"activityName":"Android","color":0,"iconRes":2130837593,"timeSpent":0}},"breakList":{"eat":{"activityName":"eat","color":0,"iconRes":2130837589,"timeSpent":0},"play":{"activityName":"play","color":0,"iconRes":2130837588,"timeSpent":0},"restroom":{"activityName":"restroom","color":0,"iconRes":2130837598,"timeSpent":0},"sleep":{"activityName":"sleep","color":0,"iconRes":2130837581,"timeSpent":0},"social":{"activityName":"social","color":0,"iconRes":2130837599,"timeSpent":0}},"history":{"08-20-2015":{"ActivityMap":{"Android":{"activityName":"Android","color":0,"iconRes":2130837593,"timeSpent":60}},"date":"04-20-2016"},"03-20-2016":{"ActivityMap":{"Android":{"activityName":"Android","color":0,"iconRes":2130837593,"timeSpent":60}},"date":"04-20-2016"},"04-1-2016":{"ActivityMap":{"Android":{"activityName":"Android","color":0,"iconRes":2130837593,"timeSpent":60}},"date":"04-20-2016"},"04-15-2016":{"ActivityMap":{"Android":{"activityName":"Android","color":0,"iconRes":2130837593,"timeSpent":60}},"date":"04-20-2016"}},"name":"Steven","recentActivities":{"ActivityMap":{},"date":"04-20-2016"},"recentDate":"04-20-2016"}</string>
     <string name="action_exit">Quit</string>
     <string name="action_open">Open</string>
     <string name="service_connected">Reap is running in background</string>

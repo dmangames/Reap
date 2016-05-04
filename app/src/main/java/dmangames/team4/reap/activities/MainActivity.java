@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity
                     ((FragmentEventListener) fragment).unpackFromService(TimerService.class, intent);
                 else {
                     String name = intent.getStringExtra(KEY_ACTIVITYOBJ_NAME);
-                    ActivityObject object = data.getActivityByName(name);
+                    ActivityObject object = blob.getActivity(name);
                     if (object == null)
                         object = data.getBreakByName(name);
                     object.addTimeSpent(intent.getLongExtra(KEY_ACTIVITYOBJ_SPENT, 0));

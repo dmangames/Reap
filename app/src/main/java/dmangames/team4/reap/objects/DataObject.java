@@ -96,6 +96,12 @@ public class DataObject {
         recentActivities.updateActivity(obj);
     }
 
+    public void updateActivity(ActivityObject activity) {
+        ActivityObject object = getActivityByName(activity.activityName);
+        object.addTimeSpent(activity.getTimeSpent() - activity.lastSaved);
+        activity.lastSaved = activity.timeSpent;
+    }
+
     public boolean checkActivity(String name) {
         return recentActivities.checkActivity(name);
     }
@@ -174,7 +180,7 @@ public class DataObject {
 
     public ActivityBlob aggregateHistoryRange(String start, String end) {
 
-        Timber.d("Aggregating dates " + start + " to " + end);
+        Timber.d("Aggregating dates %s to %s", start, end);
 
         ActivityBlob out = new ActivityBlob();
 
