@@ -73,4 +73,8 @@ public class ActivityBlob {
             }
         }
     }
+
+    public String getDate() {
+        return date;
+    }
 }

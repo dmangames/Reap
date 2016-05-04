@@ -39,6 +39,7 @@ public class EditTimeDialog extends ReapDialog {
     @Bind(R.id.et_edittime_mins) EditText minutes;
 
     @Inject DataObject data;
+    @Inject ActivityBlob today;
 
     private boolean addTime;
     private final Context context;
@@ -105,9 +106,14 @@ public class EditTimeDialog extends ReapDialog {
                 cal.set(MONTH, monthOfYear);
                 cal.set(DAY_OF_MONTH, dayOfMonth);
                 String formattedDate = DataObject.DATEFORMAT.format(cal.getTime());
-                if (!data.blobExists(formattedDate))
-                    data.createBlob(formattedDate);
-                ActivityBlob blob = data.getActivityBlobByDate(formattedDate);
+                ActivityBlob blob;
+                if (formattedDate.equals(today.getDate()))
+                    blob = today;
+                else {
+                    if (!data.blobExists(formattedDate))
+                        data.createBlob(formattedDate);
+                    blob = data.getActivityBlobByDate(formattedDate);
+                }
                 ActivityObject obj = blob.getActivity(name);
                 if (obj == null) {
                     obj = new ActivityObject(name, activity.getIconURL());
