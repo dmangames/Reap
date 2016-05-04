@@ -8,6 +8,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -33,6 +34,7 @@ import timber.log.Timber;
 public class HistoryFragment extends ReapFragment {
     @Bind(R.id.spinner_date_range) Spinner dateSpinner;
     @Bind(R.id.rv_today_activity_list) RecyclerView activityList;
+    @Bind(R.id.tv_today_title) TextView title;
 
     @Inject DataObject data;
 
@@ -63,9 +65,8 @@ public class HistoryFragment extends ReapFragment {
 
         final String today = DataObject.DATEFORMAT.format(new Date());
 
-//        JarListadapter = new TodayListAdapter(activity, data.aggregateHistoryRange(today, today));
         activityList.setLayoutManager(new LinearLayoutManager(activity));
-//        activityList.setAdapter(JarListadapter);
+        title.setText(R.string.history);
 
         spinnerAdapter = new ArrayAdapter<>(activity, R.layout.simple_spinner_item, dateRanges);
         spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item);

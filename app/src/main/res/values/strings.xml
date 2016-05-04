@@ -17,4 +17,12 @@
     <string name="action_exit">Quit</string>
     <string name="action_open">Open</string>
     <string name="service_connected">Reap is running in background</string>
+    <string name="edit_time">Edit Time</string>
+    <string name="hours">hours</string>
+    <string name="minutes">min</string>
+    <string name="colon">:</string>
+    <string name="add">Add</string>
+    <string name="subtract">Subtract</string>
+    <string name="ok">OK</string>
+    <string name="when">When?</string>
 </resources>

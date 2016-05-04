@@ -347,12 +347,11 @@ public class TimerFragment extends ReapFragment implements SecondListener {
         stopSecondTimer();
         timer.reset();
 
-        ActivityBlob recent = data.getRecentActivities();
-        if (recent.checkActivity(activityName))
-            setActivityObject(recent.getActivity(activityName));
+        if (blob.checkActivity(activityName))
+            setActivityObject(blob.getActivity(activityName));
         else {
             setActivityObject(new ActivityObject(activityName, event.object.getIconURL()));
-            recent.addActivity(activityObject);
+            blob.addActivity(activityObject);
         }
 
         bus.removeStickyEvent(event);

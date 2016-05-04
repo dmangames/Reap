@@ -7,7 +7,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import butterknife.ButterKnife;
+import dmangames.team4.reap.annotations.HasInjections;
 import dmangames.team4.reap.annotations.Layout;
+import dmangames.team4.reap.dagger.DaggerInjector;
 
 /**
  * Created by stevenzhang on 3/30/16.
@@ -27,6 +29,9 @@ public class ReapDialog extends AlertDialog {
             ButterKnife.bind(this, view);
             setView(view);
         }
+
+        if (cls.isAnnotationPresent(HasInjections.class))
+            DaggerInjector.inject(this);
     }
 
     public void setPositiveButton(@StringRes int text, OnClickListener listener) {
