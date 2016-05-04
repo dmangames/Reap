@@ -201,6 +201,17 @@ public class MainActivity extends AppCompatActivity
     @Override
     protected void onPause() {
         super.onPause();
+        Timber.d("onPause");
+    }
+
+    /**
+     * Service must be started in onStop since onPause in called not only when the app is backgrounded,
+     * but also when the user returns to the app from the lock screen (by tapping the notification)
+     */
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Timber.d("onStop");
         bus.unregister(this);
         data.setRecentActivities(blob());
         GsonWrapper.commitData(data, getApplicationContext());
