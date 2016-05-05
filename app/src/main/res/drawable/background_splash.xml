@@ -7,6 +7,8 @@
     <item>
         <bitmap
             android:gravity="center"
+            android:width="500dp"
+            android:height="600dp"
             android:src="@drawable/reap_icon_splash"/>
     </item>
 
